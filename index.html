@@ -591,8 +591,8 @@ const THEME_KEY_PREFIX = "coach_theme_";      // final key: coach_theme_<user>
 // ✅ Mapping UID -> profil (à compléter une seule fois)
 // Mets ici les UID Firebase (Authentication → Users → UID)
 const PROFILE_BY_UID = {
-  // "9aKTzHEjQZSjHmPDQnLZGPt8MJi2": "JS",
-  // "c8u4kAlbi0W4xzWKUUrlEJTBwQw2": "YS",
+  // "c8u4kAlbi0W4xzWKUUrlEJTBwQw2": "JS",
+  // "9aKTzHEjQZSjHmPDQnLZGPt8MJi2": "YS",
 };
 
 function getInitialsForUid(uid, email){
@@ -893,12 +893,12 @@ function mountHomeControls(){
       alert("Non connecté.");
       return;
     }
-    const choice = prompt("👤 Menu utilisateur
+    const choice = prompt(`👤 Menu utilisateur
 
 1 = Logout
 2 = Réinitialiser MES séances (Firestore) + Réimporter (selon UID)
 
-Entre 1 ou 2 :", "1");
+Entre 1 ou 2 :`, "1");
     if(choice === "1" || choice === "" || choice === null){
       try{ if(window.pfSignOut) await window.pfSignOut(); }catch(e){ console.warn(e); }
       return;
