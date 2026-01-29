@@ -1,144 +1,449 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Programme Force</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Programme Force — App</title>
+<meta name="theme-color" content="#020617">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon-precomposed" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Force">
+<style>
+:root{
+  --bg:#020617;--card:#0b1220;--text:#f8fafc;--muted:#94a3b8;--accent:#38bdf8;
+  --line:#1e293b;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text);padding-top: env(safe-area-inset-top);}
+.view{display:none;min-height:100vh;padding:16px}
+.view.show{display:block}
+#debug{display:none;padding:10px 12px;background:rgba(34,197,94,.12);border-bottom:1px solid rgba(34,197,94,.25);color:#bbf7d0;font-family:var(--mono);font-size:12px;white-space:pre-wrap}
 
-  <style>
-    :root{color-scheme: dark;}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      background:#0f172a;
-      color:#fff;
-      padding-top:env(safe-area-inset-top);
+/* HOME */
+.home h1{margin:0;font-size:26px;font-weight:950}
+.home p{color:var(--muted);margin:8px 0 14px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+.card h2{margin:0;font-size:16px;font-weight:900}
+.card .meta{color:var(--muted);font-size:12px;margin-top:6px}
+.card button{margin-top:12px;width:100%;padding:14px;border-radius:14px;border:0;font-weight:900;background:var(--accent);color:#020617;cursor:pointer}
+
+/* WORKOUT */
+.app{padding-bottom:250px}
+.h1{font-size:20px;font-weight:950;margin:6px 0;text-align:center}
+.meta{color:var(--muted);font-size:13px;text-align:center}
+
+.topRow{position:relative;display:flex;align-items:center;justify-content:center;margin-top:6px}
+.topRow .h1{flex:1;margin:0;text-align:center;padding:0 58px} /* reserve space for back+switch */
+.coachSwitch{position:absolute;right:0;top:50%;transform:translateY(-50%);width:44px;height:26px;display:inline-block;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.coachSwitch input{display:none}
+.coachSwitch span{position:absolute;inset:0;border-radius:999px;background:rgba(148,163,184,.25);border:1px solid rgba(148,163,184,.28);transition:all .18s ease}
+.coachSwitch span:before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:999px;background:rgba(248,250,252,.92);box-shadow:0 8px 18px rgba(0,0,0,.25);transition:all .18s ease}
+.coachSwitch input:checked + span{background:rgba(34,197,94,.35);border-color:rgba(34,197,94,.45)}
+.coachSwitch input:checked + span:before{transform:translateX(18px);background:rgba(240,253,244,.98)}
+:root[data-theme="light"] .coachSwitch span{background:rgba(15,23,42,.12);border-color:rgba(15,23,42,.14)}
+:root[data-theme="light"] .coachSwitch span:before{background:#ffffff;box-shadow:0 8px 18px rgba(15,23,42,.14)}
+.backBtn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:12px;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.35);color:inherit;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:root[data-theme="light"] .backBtn{background:rgba(255,255,255,.82);border-color:rgba(15,23,42,.12)}
+.coachSwitch,.backBtn{transition:opacity .18s ease}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid1{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(148,163,184,.08);color:var(--muted);font-size:12px}
+.pill.accent{border-color:rgba(56,189,248,.35);color:#bae6fd;background:rgba(56,189,248,.08)}
+.pill.ok{border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08)}
+.pill.warn{border-color:rgba(245,158,11,.35);color:#fde68a;background:rgba(245,158,11,.08)}
+
+.media{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
+.media.one{grid-template-columns:1fr}
+.media img{width:100%;max-height:34vh;object-fit:contain;border-radius:16px;border:1px solid var(--line);background:#01040b}
+
+/* Petit bouton "i" superposé sur le GIF */
+.infoBtn{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(2,6,23,.62);
+  color:var(--text);
+  font-weight:950;
+  display:none;
+  place-items:center;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+}
+.infoBtn.show{display:grid}
+:root[data-theme="light"] .infoBtn{
+  background: rgba(255,255,255,.88);
+  color:#0f172a;
+  border-color: rgba(15,23,42,.14);
+  box-shadow: 0 10px 24px rgba(15,23,42,.10);
+}
+
+/* Overlay d'infos (Comment faire / Erreurs) */
+.infoOverlay{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+  background:rgba(2,6,23,.58);
+  border-radius:16px;
+  z-index:60;
+}
+.infoOverlay.show{display:flex}
+.infoPanel{
+  width:100%;
+  max-height:100%;
+  overflow:auto;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(2,6,23,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.42);
+}
+:root[data-theme="light"] .infoPanel{ background:rgba(255,255,255,.96); }
+.infoHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 12px 10px;
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+.infoTitle{font-weight:950}
+.infoClose{
+  width:34px;height:34px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(148,163,184,.10);
+  color:var(--text);
+  font-weight:950;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+:root[data-theme="light"] .infoClose{ background: rgba(15,23,42,.06); color:#0f172a; }
+.infoBody{ padding:12px; }
+.infoBody .section{ margin-top:10px; }
+.infoBody .section:first-child{ margin-top:0; }
+
+/* Overlay "exercice suivant" */
+.nextOverlay{
+  position:absolute; inset:0;
+  display:none; align-items:center; justify-content:center; text-align:center;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(2,6,23,.12), rgba(2,6,23,.72));
+  pointer-events:none;
+}
+.nextOverlay.show{display:flex}
+.nextOverlay .box{
+  border:1px solid rgba(56,189,248,.35);
+  background:rgba(2,6,23,.78);
+  padding:14px 16px;border-radius:14px;
+  max-width:92%;
+}
+.nextOverlay .label{
+  font-size:12px;letter-spacing:.14em;
+  color:#7dd3fc;font-weight:950;
+}
+.nextOverlay .name{
+  font-size:18px;font-weight:950;margin-top:6px;line-height:1.2
+}
+
+.section{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:12px}
+.section h3{margin:0 0 8px;font-size:14px;font-weight:900}
+.section ul{margin:0;padding-left:18px;font-size:13px;color:#cbd5e1}
+.section .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.small{color:var(--muted);font-size:12px;line-height:1.3}
+
+.dots{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.dot{width:10px;height:10px;border-radius:999px;background:rgba(148,163,184,.25);border:1px solid rgba(148,163,184,.25)}
+.dot.on{background:rgba(34,197,94,.9);border-color:rgba(34,197,94,.9)}
+.dot.cur{background:rgba(56,189,248,.9);border-color:rgba(56,189,248,.9)}
+
+.timerBox{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:#060c18;padding:12px;text-align:center}
+.clock{font-family:var(--mono);font-size:52px;font-weight:950}
+.mode{color:var(--muted);font-size:13px;margin-top:4px}
+
+.historyTop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.historyTop input{
+  width:160px;padding:10px 12px;border-radius:14px;border:1px solid rgba(148,163,184,.22);
+  background:#020617;color:var(--text);outline:none;
+}
+.historyTop button{padding:10px 12px;border-radius:14px;border:0;font-weight:900}
+.btnOk{background:rgba(56,189,248,.18);color:#bae6fd}
+.btnDanger{background:rgba(239,68,68,.18);color:#fecaca}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+th,td{padding:8px 6px;border-bottom:1px solid rgba(148,163,184,.14);text-align:left}
+th{color:var(--muted);font-weight:900}
+
+
+/* Transport controls (Prev / Play-Pause / Next) */
+.footer{position:fixed;left:0;right:0;bottom:0;padding:12px;background:rgba(2,6,23,.92);/* border-top supprimée (Option A) */backdrop-filter: blur(10px)}
+.transport{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px}
+.tbtn{
+  width:100%;
+  height:56px;
+  border-radius:16px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(148,163,184,.10);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.tbtn.primary{
+  background:rgba(56,189,248,.20);
+  border-color:rgba(56,189,248,.35);
+  color:#bae6fd;
+}
+.tbtn svg{width:26px;height:26px;display:block}
+.tbtn:disabled{opacity:.35;cursor:default;}
+.tbtn:disabled svg{opacity:.9}
+:root[data-theme="light"] .footer{ background: rgba(243,245,248,.92) !important; }
+:root[data-theme="light"] .tbtn{
+  background:#f1f5f9;
+  border-color:rgba(15,23,42,.12);
+  color:#0f172a;
+}
+:root[data-theme="light"] .tbtn.primary{
+  background:rgba(56,189,248,.18);
+  border-color:rgba(56,189,248,.30);
+  color:#0f172a;
+}
+
+
+    :root[data-theme="light"] .card button{
+      background: var(--accent);
+      color: #ffffff;
     }
-    .hidden{display:none}
-    .center{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box}
-    .card{width:min(380px, 100%);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
-    h2{margin:0 0 12px 0;font-size:22px}
-    label{display:block;font-size:13px;opacity:.85;margin:10px 0 6px}
-    input{
-      padding:12px;
-      font-size:16px;
-      width:100%;
-      border-radius:10px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.2);
-      color:white;
-      outline:none;
-      box-sizing:border-box;
+    :root[data-theme="light"] .secondary{
+      background: #e5e7eb;
+      color: #0f172a;
     }
-    button{
-      padding:14px 16px;
-      font-size:16px;
-      border:none;
-      border-radius:12px;
-      background:#2563eb;
-      color:white;
-      cursor:pointer;
+    :root[data-theme="light"] .tertiary{
+      background: #f1f5f9;
+      color: #0f172a;
     }
-    button.secondary{background:#334155}
-    button.danger{background:#b91c1c}
-    button:disabled{opacity:.6;cursor:not-allowed}
-    .msg{margin-top:12px;font-size:14px;line-height:1.35}
-    .msg.ok{color:#86efac}
-    .msg.err{color:#fca5a5}
-    header{
-      padding:16px;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      border-bottom:1px solid rgba(255,255,255,.08);
-      gap:10px;
+    :root[data-theme="light"] .themeSwitch label{
+      background: #e2e8f0;
     }
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 10px;border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      font-size:13px;
-      white-space:nowrap;
+    :root[data-theme="light"] .themeSwitch span{
+      background: #0f172a;
     }
-    main{padding:16px}
-    ul{margin:10px 0 0 0;padding:0;list-style:none}
-    li{padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.04)}
-    .tiny{font-size:12px;opacity:.75;margin-top:10px}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    .row > button{flex:1;min-width:160px}
-  </style>
+
+</style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" class="center">
-  <div class="card">
-    <h2>Connexion</h2>
+<div id="debug"></div>
 
-    <form id="loginForm">
-      <label for="email">Email</label>
-      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="ex: toi@email.com" required />
+<!-- HOME -->
+<section id="home" class="view show home">
+  <h1>Programme Force</h1>
+  <p>Choisis ta séance. Ensuite : échauffement → travail → repos (mode coach possible).</p>
+  <div id="sessionsList" class="grid"></div>
+</section>
 
-      <label for="password">Mot de passe</label>
-      <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+<!-- WORKOUT -->
+<section id="workout" class="view">
+  <div class="app">
+    <div class="topRow">
+      <button class="backBtn" id="backBtn" type="button" aria-label="Retour">←</button>
+      <div class="h1" id="title">—</div>
+      <label class="coachSwitch" title="Mode coach">
+        <input type="checkbox" id="coachToggle" />
+        <span></span>
+      </label>
+    </div>
+    <div class="meta" id="meta">—</div>
 
-      <button id="loginBtn" type="submit" style="width:100%;margin-top:12px">Se connecter</button>
-    </form>
+    <div class="pills">
+      <span class="pill accent" id="phasePill">—</span>
+      <span class="pill" id="setPill">—</span>
+      <span class="pill ok" id="coachPill">Coach : OFF</span>
+    </div>
 
-    <div id="loginMsg" class="msg"></div>
+    <div id="media" class="media one">
+      <img id="gifA" alt="Exercice" />
+      <img id="gifB" alt="Superset" style="display:none" />
+      <div id="nextOverlay" class="nextOverlay">
+        <div class="box">
+          <div class="label">EXERCICE SUIVANT</div>
+          <div class="name" id="nextName">—</div>
+        </div>
+      </div>
 
-    <div class="tiny">
-      Si tu as <code>auth/unauthorized-domain</code> : Firebase → Authentication → Settings → Authorized domains → ajoute <b>tonpseudo.github.io</b>.
+      <!-- Bouton infos (Comment faire / Erreurs) -->
+      <button id="infoBtn" class="infoBtn" type="button" aria-label="Infos exercice">i</button>
+
+      <!-- Overlay infos exercice -->
+      <div id="infoOverlay" class="infoOverlay" role="dialog" aria-modal="true" aria-label="Infos exercice">
+      <div class="infoPanel">
+      <div class="infoHeader">
+      <div class="infoTitle">Infos exercice</div>
+      <button id="infoClose" class="infoClose" type="button" aria-label="Fermer">✕</button>
+      </div>
+      <div class="infoBody">
+      <div class="section" id="howtoBox">
+      <h3>Comment faire</h3>
+      <ul id="steps"></ul>
+      </div>
+      <div class="section" id="mistakesBox">
+      <h3>Erreurs à éviter</h3>
+      <ul id="mistakes"></ul>
+      </div>
+      </div>
+    </div></div>
+    </div>
+
+    <div class="section">
+      <div class="row">
+        <h3 style="margin:0">À faire</h3>
+        <div class="dots" id="dots"></div>
+      </div>
+      <div id="todo" style="font-weight:900;margin-top:6px">—</div>
+      <div class="small" id="desc" style="margin-top:6px">—</div>
+      <div class="pills" style="justify-content:flex-start;margin-top:10px">
+        <span class="pill accent" id="muscle">—</span>
+        <span class="pill" id="restPill">Repos: —</span>
+      </div>
+    </div>
+
+    <div class="timerBox">
+      <div class="clock" id="clock">00:45</div>
+</div>
+
+    <div class="section" id="historyBox">
+      <div class="historyTop">
+        <div>
+          <div style="font-weight:900">Historique de charge</div>
+          <div class="small">Ex : <b>22</b> ou <b>2×22</b> • sauvegardé sur cet appareil</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input id="weightInput" type="text" placeholder="Charge" />
+          <button class="btnOk" id="saveWeightBtn">OK</button>
+          <button class="btnDanger" id="clearWeightBtn">Effacer</button>
+        </div>
+      </div>
+      <div style="overflow:auto;max-height:180px">
+        <table>
+          <thead><tr><th>Date</th><th>Charge</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <div class="transport">
+      <button class="tbtn" id="prevBtn" type="button" aria-label="Précédent"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5L3 12l8 7V5zm10 0L13 12l8 7V5z"/></svg></button>
+      <button class="tbtn primary" id="startPause" type="button" aria-label="Start / Pause"><span id="startPauseIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></span></button>
+      <button class="tbtn" id="nextBtn" type="button" aria-label="Suivant"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5v14l8-7-8-7zm10 0v14l8-7-8-7z"/></svg></button>
+    </div>
+  </div>
+</section>
+
+<!-- Sessions maintenant chargées depuis Firestore (Firebase) -->
+<script src="images.js"></script>
+
+<!-- FIREBASE LOGIN OVERLAY -->
+<div id="loginOverlay" class="pf-login-overlay hidden" aria-hidden="true">
+  <div class="pf-login-card" role="dialog" aria-modal="true" aria-labelledby="pfLoginTitle">
+    <div class="pf-login-title" id="pfLoginTitle">Connexion</div>
+    <div class="pf-login-row">
+      <label class="pf-login-label" for="pfEmail">Email</label>
+      <input id="pfEmail" class="pf-login-input" type="email" inputmode="email" autocomplete="email" placeholder="ex: toi@email.com" />
+    </div>
+    <div class="pf-login-row">
+      <label class="pf-login-label" for="pfPassword">Mot de passe</label>
+      <input id="pfPassword" class="pf-login-input" type="password" autocomplete="current-password" placeholder="••••••••" />
+    </div>
+    <button id="pfLoginBtn" class="pf-login-btn">Se connecter</button>
+    <div id="pfLoginMsg" class="pf-login-msg"></div>
+    <div class="pf-login-hint">
+      Astuce : si tu vois <code>auth/unauthorized-domain</code>, ajoute ton domaine GitHub Pages dans Firebase → Authentication → Settings → Authorized domains.
     </div>
   </div>
 </div>
 
-<!-- APP -->
-<div id="appScreen" class="hidden">
-  <header>
-    <strong>Programme Force</strong>
-    <div class="row" style="justify-content:flex-end;flex:1">
-      <span id="userPill" class="pill">—</span>
-      <button id="logoutBtn" class="secondary">Logout</button>
-    </div>
-  </header>
+<style>
+  .pf-login-overlay{
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    background:rgba(2,6,23,.82);
+    backdrop-filter: blur(8px);
+    z-index:9999;
+  }
+  .pf-login-overlay.hidden{display:none}
+  .pf-login-card{
+    width:min(420px, 100%);
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:18px;
+    box-shadow:0 18px 50px rgba(0,0,0,.45);
+    padding:18px 16px 14px 16px;
+  }
+  .pf-login-title{font-size:20px;font-weight:800;margin:2px 0 12px 0}
+  .pf-login-row{margin-bottom:10px}
+  .pf-login-label{display:block;font-size:12px;opacity:.85;margin:0 0 6px 2px}
+  .pf-login-input{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(2,6,23,.35);
+    color:#fff;
+    font-size:16px;
+    outline:none;
+  }
+  .pf-login-btn{
+    width:100%;
+    padding:13px 14px;
+    border-radius:14px;
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .pf-login-btn:disabled{opacity:.65;cursor:not-allowed}
+  .pf-login-msg{margin-top:10px;font-size:13px;line-height:1.35}
+  .pf-login-msg.ok{color:#86efac}
+  .pf-login-msg.err{color:#fca5a5}
+  .pf-login-hint{margin-top:10px;font-size:12px;opacity:.78;line-height:1.35}
+  .pf-login-hint code{opacity:.95}
+</style>
 
-  <main>
-    <div id="appMsg" class="msg"></div>
 
-    <div id="emptyBox" class="hidden" style="margin-top:14px">
-      <div class="pill" style="display:block;border-radius:14px;padding:12px 14px">
-        <div style="font-weight:600;margin-bottom:6px">Aucune séance dans Firestore</div>
-        <div style="opacity:.85;font-size:13px;line-height:1.35">
-          Tu es connecté, mais ta collection est vide :<br/>
-          <code>users/&lt;uid&gt;/sessions</code><br/><br/>
-          👉 Clique sur <b>Importer mes séances</b> pour copier tes séances locales (sessions.js) dans Firestore.
-        </div>
-        <div class="row" style="margin-top:12px">
-          <button id="importBtn">Importer mes séances</button>
-          <button id="refreshBtn" class="secondary">Rafraîchir</button>
-        </div>
-        <div class="tiny" style="margin-top:10px">
-          Note : l'import utilise <code>window.SESSIONS</code>. Donc garde ton <code>sessions.js</code> dans le projet.
-        </div>
-      </div>
-    </div>
-
-    <h3 style="margin:18px 0 10px">Mes séances</h3>
-    <ul id="sessionsList"></ul>
-  </main>
-</div>
-
-<!-- Tes séances locales (à conserver dans ton repo) -->
-<script src="sessions.js"></script>
-
-<!-- FIREBASE + APP LOGIC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import {
@@ -152,13 +457,10 @@
   import {
     getFirestore,
     collection,
-    getDocs,
-    doc,
-    setDoc,
-    serverTimestamp
+    getDocs
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // ✅ Ton bloc Firebase
+  // ✅ Ton projet Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
     authDomain: "programme-force.firebaseapp.com",
@@ -172,183 +474,1326 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // UI refs
-  const loginScreen = document.getElementById("loginScreen");
-  const appScreen = document.getElementById("appScreen");
-  const loginForm = document.getElementById("loginForm");
-  const loginBtn = document.getElementById("loginBtn");
-  const logoutBtn = document.getElementById("logoutBtn");
-  const loginMsg = document.getElementById("loginMsg");
-  const appMsg = document.getElementById("appMsg");
-  const sessionsList = document.getElementById("sessionsList");
-  const emptyBox = document.getElementById("emptyBox");
-  const importBtn = document.getElementById("importBtn");
-  const refreshBtn = document.getElementById("refreshBtn");
-  const userPill = document.getElementById("userPill");
+  try{ await setPersistence(auth, browserLocalPersistence); }catch(e){ console.warn("setPersistence failed", e); }
 
-  function setMsg(el, text, kind){
-    el.textContent = text || "";
-    el.classList.remove("ok","err");
-    if(kind) el.classList.add(kind);
-  }
+  // Expose helpers to non-module code
+  window.pfAuth = auth;
+  window.pfDB = db;
 
-  // Persistance
-  try{
-    await setPersistence(auth, browserLocalPersistence);
-  }catch(e){
-    console.warn("setPersistence failed:", e);
-  }
+  window.pfSignIn = async (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
 
-  // Login
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    setMsg(loginMsg, "", null);
+  window.pfSignOut = async () => {
+    return signOut(auth);
+  };
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+  window.pfFetchSessions = async (uid) => {
+    const out = {};
+    const snap = await getDocs(collection(db, `users/${uid}/sessions`));
+    snap.forEach(d => {
+      const v = d.data() || {};
+      // on stocke la structure originale de séance dans v.data si présente, sinon v
+      out[d.id] = (v && typeof v === "object" && v.data) ? v.data : v;
+    });
+    return out;
+  };
 
-    loginBtn.disabled = true;
-    loginBtn.textContent = "Connexion…";
+  // Auth relay (module -> window callback)
+  let lastUser = null;
+  onAuthStateChanged(auth, (user) => {
+    lastUser = user || null;
+    if(typeof window.__pfOnAuth === "function") window.__pfOnAuth(lastUser);
+    else window.__pfLastUser = lastUser;
+  });
 
-    try{
-      await signInWithEmailAndPassword(auth, email, password);
-      setMsg(loginMsg, "Connecté ✅", "ok");
-    }catch(err){
-      console.error("Login error:", err);
-      const code = err?.code || "";
-      let human = "Erreur de connexion.";
+  window.pfGetLastUser = () => lastUser || window.__pfLastUser || null;
+</script>
 
-      if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
-      else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable (crée-le dans Firebase Auth).";
-      else if(code.includes("auth/invalid-email")) human = "Email invalide.";
-      else if(code.includes("auth/network-request-failed")) human = "Problème réseau (ou domaine bloqué). Vérifie Authorized domains.";
-      else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
-      else if(code.includes("auth/too-many-requests")) human = "Trop de tentatives. Réessaie plus tard.";
-      else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé. Ajoute ton domaine GitHub Pages dans Authorized domains.";
+<script>
+/* ========= SAFE REFERENCES ========= */
+const IMG = window.IMG || {};
+const $ = (id)=>document.getElementById(id);
 
-      setMsg(loginMsg, `${human} (${code || "no-code"})`, "err");
-      alert(`${human}\n\nCode: ${code || "no-code"}`);
-    }finally{
-      loginBtn.disabled = false;
-      loginBtn.textContent = "Se connecter";
+const PLAY_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
+const PAUSE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
+function setStartPauseUI(running){
+  const icon = $("startPauseIcon");
+  if(icon) icon.innerHTML = running ? PAUSE_ICON : PLAY_ICON;
+  $("startPause").setAttribute("aria-label", running ? "Pause" : "Start");
+}
+
+
+
+/* ========= PREVENT ZOOM (iOS Safari) ========= */
+(function preventZoom(){
+  // Disable pinch-to-zoom gestures (iOS)
+  document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive:false });
+  document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive:false });
+  document.addEventListener('gestureend', (e) => e.preventDefault(), { passive:false });
+
+  // Disable double-tap to zoom (common accidental zoom)
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if(now - lastTouchEnd <= 300){
+      e.preventDefault();
     }
+    lastTouchEnd = now;
+  }, { passive:false });
+})();
+
+
+
+
+/* ========= USER + THEME (Light/Dark) — compact, HOME only ========= */
+const USER_KEY = "coach_active_user";         // e.g. "JS" / "YS"
+const THEME_KEY_PREFIX = "coach_theme_";      // final key: coach_theme_<user>
+
+function getActiveUser(){
+  return (window.__pfUserInitials || "—");
+}
+function setActiveUser(u){
+  localStorage.setItem(USER_KEY, u);
+  // re-apply theme for that user
+  applyTheme(getSavedOrPreferredTheme());
+  // refresh UI
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
+    try{
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
+      }
+    }catch(_){}
+
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }
+
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
+        return;
+      }
+      loginBtn.disabled = true;
+      const old = loginBtn.textContent;
+      loginBtn.textContent = "Connexion…";
+      setLoginMsg("", null);
+      try{
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
+      }catch(err){
+        console.error("Login error:", err);
+        const code = err?.code || "";
+        let human = "Erreur de connexion.";
+        if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
+        else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
+        else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
+        alert(`${human}\n\nCode: ${code || "no-code"}`);
+      }finally{
+        loginBtn.disabled = false;
+        loginBtn.textContent = old;
+      }
+    });
+  }
+
+  // Auth callback from module script
+  window.__pfOnAuth = async (user)=>{
+    if(user){
+      hideLogin();
+      // Initiales affichées en haut (👤)
+      const initials = (user.email ? user.email.split("@")[0].slice(0,2) : "OK").toUpperCase();
+      window.__pfUserInitials = initials;
+      refreshUserUI();
+
+      await loadSessionsFromFirestore(user.uid);
+    }else{
+      window.__pfUserInitials = "—";
+      refreshUserUI();
+      window.SESSIONS = {};
+      renderSessions();
+      showLogin();
+    }
+  };
+
+  // Si l'état auth a déjà été récupéré avant que ce callback soit prêt
+  try{
+    const u = window.pfGetLastUser ? window.pfGetLastUser() : null;
+    if(u || u === null) window.__pfOnAuth(u);
+  }catch(_){}
+
+  refreshUserUI();
+  applyUserSessions();
+  refreshUserUI();
+}
+
+function injectThemeCSS(){
+  let st = document.getElementById("themeStyle");
+  if(!st){
+    st = document.createElement("style");
+    st.id = "themeStyle";
+    document.head.appendChild(st);
+  }
+  // we only add overrides; your base CSS stays untouched
+  st.textContent = `
+    :root[data-theme="light"]{
+      --bg:#f3f5f8;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#475569;
+      --accent:#2563eb;
+      --line:#e2e8f0;
+      --ok:#16a34a;
+      --warn:#d97706;
+      --danger:#dc2626;
+    }
+    :root[data-theme="light"] .timerBox{ background:#f1f5f9 !important; }
+    :root[data-theme="light"] .media img{ background:#f8fafc !important; }
+    :root[data-theme="light"] .historyTop input{ background:#fff !important; color: var(--text) !important; }
+
+    /* Compact controls (HOME only) */
+    .homeControls{
+      position:fixed;
+      top: calc(8px + env(safe-area-inset-top));
+      right: 8px;
+      z-index: 9999;
+      display:flex;
+      gap:6px;
+      align-items:center;
+      pointer-events:auto;
+    }
+    .hcBtn{
+      width: 30px; height: 30px;
+      border-radius: 999px;
+      border: 1px solid rgba(148,163,184,.22);
+      background: rgba(2,6,23,.55);
+      color: var(--text);
+      display:grid;
+      place-items:center;
+      font-size: 14px;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 10px 24px rgba(0,0,0,.22);
+      user-select:none;
+      cursor:pointer;
+      position:relative;
+    }
+    .uBadge{
+      position:absolute;
+      bottom:-6px;
+      right:-6px;
+      min-width:18px;
+      height:18px;
+      padding:0 5px;
+      border-radius:999px;
+      background: var(--accent);
+      color:#020617;
+      font-size:11px;
+      line-height:18px;
+      font-weight:950;
+      border:1px solid rgba(0,0,0,.15);
+      box-shadow: 0 8px 16px rgba(0,0,0,.25);
+      display:grid;
+      place-items:center;
+    }
+    :root[data-theme="light"] .uBadge{ border-color: rgba(15,23,42,.14); box-shadow: 0 8px 16px rgba(15,23,42,.10); }
+
+    :root[data-theme="light"] .hcBtn{
+      background: rgba(255,255,255,.88);
+      color: #0f172a;
+      border-color: rgba(15,23,42,.14);
+      box-shadow: 0 10px 24px rgba(15,23,42,.10);
+    }
+    :root[data-theme="light"] .primary{ color: #ffffff !important; }
+    :root[data-theme="light"] .card button{ color: #ffffff !important; }
+  `;
+}
+
+function themeKey(){
+  return THEME_KEY_PREFIX + getActiveUser();
+}
+
+function getSavedOrPreferredTheme(){
+  const saved = localStorage.getItem(themeKey());
+  if(saved === "dark" || saved === "light") return saved;
+
+  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return prefersDark ? "dark" : "light";
+}
+
+function applyTheme(theme){
+  injectThemeCSS();
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem(themeKey(), theme);
+
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if(meta){
+    meta.setAttribute("content", theme === "light" ? "#f3f5f8" : "#020617");
+  }
+
+  // update button icon if present
+  const t = document.getElementById("themeBtn");
+  if(t){
+    t.textContent = (theme === "light") ? "☀︎" : "☾";
+    t.setAttribute("aria-label", theme === "light" ? "Thème clair" : "Thème sombre");
+  }
+}
+
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute("data-theme") || "dark";
+  applyTheme(cur === "dark" ? "light" : "dark");
+}
+
+function mountHomeControls(){
+  // create once
+  if(document.getElementById("homeControls")) return;
+
+  const wrap = document.createElement("div");
+  wrap.id = "homeControls";
+  wrap.className = "homeControls";
+
+  const userBtn = document.createElement("div");
+  userBtn.id = "userBtn";
+  userBtn.className = "hcBtn";
+  userBtn.innerHTML = `👤<span class="uBadge" id="userBadge"></span>`;
+  userBtn.title = "Utilisateur";
+  userBtn.setAttribute("role","button");
+  userBtn.setAttribute("tabindex","0");
+
+  const themeBtn = document.createElement("div");
+  themeBtn.id = "themeBtn";
+  themeBtn.className = "hcBtn";
+  themeBtn.textContent = "☾";
+  themeBtn.title = "Thème";
+  themeBtn.setAttribute("role","button");
+  themeBtn.setAttribute("tabindex","0");
+
+  const act = (el, fn) => {
+    el.addEventListener("click", (e)=>{ e.preventDefault(); fn(); });
+    el.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter" || e.key === " "){
+        e.preventDefault(); fn();
+      }
+    });
+  };
+
+  act(themeBtn, toggleTheme);
+
+  act(userBtn, async ()=>{
+    try{
+      if(window.pfSignOut) await window.pfSignOut();
+    }catch(e){ console.warn(e); }
   });
+wrap.appendChild(userBtn);
+  wrap.appendChild(themeBtn);
+  document.body.appendChild(wrap);
+}
 
-  // Logout
-  logoutBtn.addEventListener("click", async () => {
-    try{ await signOut(auth); }catch(e){ console.error(e); }
+function refreshThemeUIVisibility(){
+  const controls = document.getElementById("homeControls");
+  if(!controls) return;
+
+  // show only when HOME is visible
+  const homeVisible = $("home").classList.contains("show");
+  controls.style.display = homeVisible ? "flex" : "none";
+}
+
+function refreshUserUI(){
+  const badge = document.getElementById("userBadge");
+  if(badge) badge.textContent = getActiveUser();
+}
+
+function applyUserSessions(){
+  const u = getActiveUser();
+  const map = {
+    JS: window.SESSIONS_JS || {},
+    YS: window.SESSIONS_YS || {}
+  };
+  window.SESSIONS = map[u] || {};
+}
+
+/* ========= STATE ========= */
+let sessionKey = null;
+let session = null;
+let warmup = [];
+let work = [];
+
+let phase = "warmup";   // warmup | work | rest
+let wIndex = 0;         // warmup index
+let exIndex = 0;        // exercise index
+let setIndex = 1;       // 1..sets
+
+let remaining = 45;
+let timer = null;
+let running = false;
+
+let coachMode = true;
+let coachHold = false;  // quand on a cliqué "Pause" (coach), on n'auto-redémarre plus
+
+// Overlay infos exercice
+/* ========= AUDIO / VOICE ========= */
+function beep(freq=880, ms=220){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type='sine';
+    o.frequency.value=freq;
+    o.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.001, ctx.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + ms/1000);
+    o.start(); o.stop(ctx.currentTime + ms/1000 + 0.02);
+  }catch(e){}
+}
+function speak(text){
+  try{
+    if(!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='fr-FR';
+    u.rate=1.02;
+    u.pitch=1.0;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+function announcePhaseStart(p){
+  if(!coachMode) return;
+  if(p === "work") speak("Début de l'exercice");
+  else if(p === "rest") speak("Début du repos");
+  else if(p === "warmup") speak("Échauffement");
+}
+
+function openInfo(){
+  const ov = $("infoOverlay");
+  if(!ov) return;
+  if(ov.classList.contains("show")) return;
+  ov.classList.add("show");
+}
+
+function closeInfo(){
+  const ov = $("infoOverlay");
+  if(!ov) return;
+  ov.classList.remove("show");
+}
+
+/* ========= HISTORY (localStorage) ========= */
+function keyFor(exId){ const u = getActiveUser(); return `coach_force_log_${u}_${exId}`; }
+function loadLog(exId){
+  try{ const raw = localStorage.getItem(keyFor(exId)); return raw ? (JSON.parse(raw) || []) : []; }
+  catch(e){ return []; }
+}
+function saveLog(exId, arr){ localStorage.setItem(keyFor(exId), JSON.stringify(arr.slice(0,200))); }
+function addEntry(exId, weight){
+  const arr = loadLog(exId);
+  arr.unshift({ ts: Date.now(), weight: String(weight).trim() });
+  saveLog(exId, arr);
+  return arr;
+}
+function lastWeightFor(exId){ const l = loadLog(exId); return l.length ? l[0].weight : null; }
+function fmtDate(ts){
+  const d = new Date(ts);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = d.getFullYear();
+  return `${dd}.${mm}.${yy}`;
+}
+function renderHistory(exId){
+  const body = $("historyBody");
+  const log = loadLog(exId).slice(0,10);
+  body.innerHTML = "";
+  if(!log.length){
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="color:var(--muted)">Aucune entrée</td><td></td>`;
+    body.appendChild(tr);
+    return;
+  }
+  log.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${fmtDate(r.ts)}</td><td><b>${r.weight}</b></td>`;
+    body.appendChild(tr);
   });
+}
 
-  // Refresh
-  refreshBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if(!user) return;
-    await loadSessions(user.uid);
-  });
+/* ========= HELPERS ========= */
+function clamp0(n){ return Math.max(0, Math.round(n||0)); }
+function fmtClock(sec){
+  sec = clamp0(sec);
+  const mm = String(Math.floor(sec/60)).padStart(2,'0');
+  const ss = String(sec%60).padStart(2,'0');
+  return `${mm}:${ss}`;
+}
+function setClock(sec){
+  remaining = clamp0(sec);
+  $("clock").textContent = fmtClock(remaining);
+}
+function resolveImage(valueOrKey){
+  if(!valueOrKey) return "";
+  const v = String(valueOrKey);
+  // si on te donne déjà un chemin
+  if(v.startsWith("images/") || v.startsWith("./images/") || v.startsWith("../images/")) return v;
+  // sinon c'est une clé de mapping
+  return IMG[v] || "";
+}
+function currentWarmup(){ return warmup[wIndex] || null; }
+function currentExercise(){ return work[exIndex] || null; }
 
-  // Import local sessions.js -> Firestore
-  importBtn.addEventListener("click", async () => {
-    const user = auth.currentUser;
-    if(!user) return;
+function shouldShowNextPreview(){
+  // dernier repos de l'exercice courant => setIndex === sets ET il existe un exercice suivant
+  if(phase !== "rest") return false;
+  const ex = currentExercise();
+  if(!ex) return false;
+  const sets = Number(ex.sets || 1);
+  return (setIndex === sets) && (exIndex < work.length - 1);
+}
+function nextExercise(){ return (exIndex < work.length - 1) ? work[exIndex+1] : null; }
 
-    // Your existing sessions.js must define window.SESSIONS
-    const localSessions = window.SESSIONS;
-    if(!localSessions || typeof localSessions !== "object" || Object.keys(localSessions).length === 0){
-      alert("sessions.js n'est pas chargé ou vide. Vérifie que sessions.js est bien présent à la racine et qu'il fait window.SESSIONS = {...}.");
+function renderDots(sets){
+  const box = $("dots");
+  box.innerHTML = "";
+  for(let i=1;i<=sets;i++){
+    const s = document.createElement('span');
+    s.className = "dot" + (i < setIndex ? " on" : (i === setIndex ? " cur" : ""));
+    box.appendChild(s);
+  }
+}
+
+/* ========= TIMER ========= */
+function stopTimer(){
+  running = false;
+  if(timer){ clearInterval(timer); timer = null; }
+  setStartPauseUI(false);
+}
+function startTimer(){
+  if(running) return;
+  running = true;
+  setStartPauseUI(true);
+  timer = setInterval(()=>{
+    remaining -= 1;
+    $("clock").textContent = fmtClock(remaining);
+
+    // Décompte vocal UNIQUEMENT en fin de phase
+    if(coachMode && remaining === 3) speak("3");
+    if(coachMode && remaining === 2) speak("2");
+    if(coachMode && remaining === 1) speak("1");
+
+    if(remaining <= 0){
+      stopTimer();
+      onTimerDone();
+    }
+  }, 1000);
+}
+function autoStartIfCoach(){
+  if(coachMode && !coachHold){
+    startTimer();
+  }
+}
+
+/* ========= FLOW (NEXT/PREV) ========= */
+function goWarmup(){
+  phase = "warmup";
+  announcePhaseStart("warmup");
+  render();
+}
+function goWork(){
+  phase = "work";
+  announcePhaseStart("work");
+  const ex = currentExercise();
+  if(coachMode && ex && Number(ex.sets||1) === setIndex) speak("Dernière série");
+  render();
+}
+function goRest(){
+  phase = "rest";
+  announcePhaseStart("rest");
+  render();
+}
+
+function onTimerDone(){
+  // warmup -> next warmup or work
+  if(phase === "warmup"){
+    if(wIndex < warmup.length - 1){
+      wIndex++;
+      goWarmup();
+      autoStartIfCoach();
+      return;
+    }
+    // warmup fini -> premier exercice
+    phase = "work";
+    exIndex = 0;
+    setIndex = 1;
+    goWork();
+    autoStartIfCoach();
+    return;
+  }
+
+  // work timer done -> rest (si besoin) ou exercice suivant / fin
+  if(phase === "work"){
+    const ex = currentExercise();
+    const sets = Number(ex?.sets || 1);
+    const hasNextExercise = exIndex < work.length - 1;
+
+    // on met du repos si :
+    // - pas dernière série, ou
+    // - dernière série mais il reste un exercice après (repos de transition)
+    const needsRest = (setIndex < sets) || (setIndex === sets && hasNextExercise);
+
+    if(needsRest){
+      goRest();
+      autoStartIfCoach();
       return;
     }
 
-    importBtn.disabled = true;
-    importBtn.textContent = "Import…";
-    setMsg(appMsg, "Import en cours…", null);
+    // fin du dernier exo (dernier set) -> retour menu
+    showHome();
+    return;
+  }
 
+  // rest done -> soit prochaine série du même exo, soit exercice suivant
+  if(phase === "rest"){
+    const ex = currentExercise();
+    const sets = Number(ex?.sets || 1);
+
+    if(setIndex < sets){
+      setIndex++;
+      goWork();
+      autoStartIfCoach();
+      return;
+    }
+
+    // fin de l'exo -> next exo
+    if(exIndex < work.length - 1){
+      exIndex++;
+      setIndex = 1;
+      goWork();
+      autoStartIfCoach();
+      return;
+    }
+
+    // fin de séance
+    showHome();
+  }
+}
+
+function nextManual(){
+  // "Suivant (série)" : avance selon phase et logique de séance (comme un coach)
+  stopTimer(); // on stoppe net, puis on avance
+  if(coachMode) coachHold = true; // en mode coach, un clic manuel = on met hold
+  onTimerDone();
+}
+function prevManual(){
+  stopTimer();
+  if(phase === "warmup"){
+    wIndex = Math.max(0, wIndex - 1);
+    render();
+    return;
+  }
+  if(phase === "rest"){
+    // revenir au work du même set
+    phase = "work";
+    render();
+    return;
+  }
+  // phase work
+  if(setIndex > 1){
+    setIndex--;
+    render();
+    return;
+  }
+  if(exIndex > 0){
+    exIndex--;
+    const ex = currentExercise();
+    setIndex = Number(ex?.sets || 1);
+    render();
+    return;
+  }
+}
+
+/* ========= UI ========= */
+function showHome(){
+  stopTimer();
+  coachHold = false;
+  phase = "warmup";
+  wIndex = 0; exIndex = 0; setIndex = 1;
+  $("home").classList.add("show");
+  $("workout").classList.remove("show");
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
     try{
-      const entries = Object.entries(localSessions);
-      for(const [sessionId, sessionData] of entries){
-        // Store under users/{uid}/sessions/{sessionId}
-        await setDoc(
-          doc(db, `users/${user.uid}/sessions/${sessionId}`),
-          {
-            title: sessionData?.title || sessionData?.name || sessionId,
-            data: sessionData,
-            updatedAt: serverTimestamp()
-          },
-          { merge: true }
-        );
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
       }
-      setMsg(appMsg, `Import terminé ✅ (${entries.length} séances)`, "ok");
-      await loadSessions(user.uid);
-    }catch(err){
-      console.error("Import error:", err);
-      const code = err?.code || "";
-      let human = "Échec de l'import vers Firestore.";
-      if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore).";
-      setMsg(appMsg, `${human} (${code || "no-code"})`, "err");
-      alert(`${human}\n\nCode: ${code || "no-code"}`);
-    }finally{
-      importBtn.disabled = false;
-      importBtn.textContent = "Importer mes séances";
-    }
-  });
+    }catch(_){}
 
-  // Auth state
-  onAuthStateChanged(auth, async (user) => {
-    if(user){
-      loginScreen.classList.add("hidden");
-      appScreen.classList.remove("hidden");
-      userPill.textContent = user.email || user.uid;
-      setMsg(appMsg, `Connecté en tant que ${user.email}`, "ok");
-      await loadSessions(user.uid);
-    }else{
-      appScreen.classList.add("hidden");
-      loginScreen.classList.remove("hidden");
-      setMsg(appMsg, "", null);
-      sessionsList.innerHTML = "";
-      emptyBox.classList.add("hidden");
-      userPill.textContent = "—";
-    }
-  });
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }
 
-  // Load sessions
-  async function loadSessions(uid){
-    sessionsList.innerHTML = "";
-    emptyBox.classList.add("hidden");
-
-    try{
-      const snap = await getDocs(collection(db, `users/${uid}/sessions`));
-      if(snap.empty){
-        emptyBox.classList.remove("hidden");
-        const li = document.createElement("li");
-        li.innerHTML = `Aucune séance trouvée dans <code>users/${uid}/sessions</code>.`;
-        sessionsList.appendChild(li);
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
         return;
       }
+      loginBtn.disabled = true;
+      const old = loginBtn.textContent;
+      loginBtn.textContent = "Connexion…";
+      setLoginMsg("", null);
+      try{
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
+      }catch(err){
+        console.error("Login error:", err);
+        const code = err?.code || "";
+        let human = "Erreur de connexion.";
+        if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
+        else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
+        else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
+        alert(`${human}\n\nCode: ${code || "no-code"}`);
+      }finally{
+        loginBtn.disabled = false;
+        loginBtn.textContent = old;
+      }
+    });
+  }
 
-      snap.forEach(d => {
-        const v = d.data() || {};
-        const li = document.createElement("li");
-        const title = v.title || d.id;
-        li.innerHTML = `<div style="font-weight:650">${escapeHtml(title)}</div>
-                        <div class="tiny">docId: <code>${escapeHtml(d.id)}</code></div>`;
-        sessionsList.appendChild(li);
-      });
-    }catch(err){
-      console.error("Firestore loadSessions error:", err);
-      const code = err?.code || "";
-      let human = "Impossible de charger les séances depuis Firestore.";
-      if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore / uid).";
-      setMsg(appMsg, `${human} (${code || "no-code"})`, "err");
-      const li = document.createElement("li");
-      li.textContent = `${human}`;
-      sessionsList.appendChild(li);
+  // Auth callback from module script
+  window.__pfOnAuth = async (user)=>{
+    if(user){
+      hideLogin();
+      // Initiales affichées en haut (👤)
+      const initials = (user.email ? user.email.split("@")[0].slice(0,2) : "OK").toUpperCase();
+      window.__pfUserInitials = initials;
+      refreshUserUI();
+
+      await loadSessionsFromFirestore(user.uid);
+    }else{
+      window.__pfUserInitials = "—";
+      refreshUserUI();
+      window.SESSIONS = {};
+      renderSessions();
+      showLogin();
+    }
+  };
+
+  // Si l'état auth a déjà été récupéré avant que ce callback soit prêt
+  try{
+    const u = window.pfGetLastUser ? window.pfGetLastUser() : null;
+    if(u || u === null) window.__pfOnAuth(u);
+  }catch(_){}
+
+}
+function showWorkout(){
+  $("home").classList.remove("show");
+  $("workout").classList.add("show");
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
+    try{
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
+      }
+    }catch(_){}
+
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }
+
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
+        return;
+      }
+      loginBtn.disabled = true;
+      const old = loginBtn.textContent;
+      loginBtn.textContent = "Connexion…";
+      setLoginMsg("", null);
+      try{
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
+      }catch(err){
+        console.error("Login error:", err);
+        const code = err?.code || "";
+        let human = "Erreur de connexion.";
+        if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
+        else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
+        else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
+        alert(`${human}\n\nCode: ${code || "no-code"}`);
+      }finally{
+        loginBtn.disabled = false;
+        loginBtn.textContent = old;
+      }
+    });
+  }
+
+  // Auth callback from module script
+  window.__pfOnAuth = async (user)=>{
+    if(user){
+      hideLogin();
+      // Initiales affichées en haut (👤)
+      const initials = (user.email ? user.email.split("@")[0].slice(0,2) : "OK").toUpperCase();
+      window.__pfUserInitials = initials;
+      refreshUserUI();
+
+      await loadSessionsFromFirestore(user.uid);
+    }else{
+      window.__pfUserInitials = "—";
+      refreshUserUI();
+      window.SESSIONS = {};
+      renderSessions();
+      showLogin();
+    }
+  };
+
+  // Si l'état auth a déjà été récupéré avant que ce callback soit prêt
+  try{
+    const u = window.pfGetLastUser ? window.pfGetLastUser() : null;
+    if(u || u === null) window.__pfOnAuth(u);
+  }catch(_){}
+
+}
+
+function render(){
+  const overlay = $("nextOverlay");
+  overlay.classList.remove("show");
+  $("nextName").textContent = "—";
+
+  // Coach pill
+  $("coachPill").textContent = `Coach : ${coachMode ? "ON" : "OFF"}`;
+  $("coachPill").className = "pill " + (coachMode ? "ok" : "ok");
+
+  // Phase pill
+  if(phase === "warmup") $("phasePill").textContent = "Échauffement";
+  if(phase === "work") $("phasePill").textContent = "Travail";
+  if(phase === "rest") $("phasePill").textContent = "Repos";
+
+  // Hide top controls during work (keep title visible)
+  document.documentElement.classList.toggle("phase-work", phase === "work");
+
+  // Content
+  let title = "—";
+  let meta = "—";
+  let todo = "—";
+  let desc = "—";
+  let muscle = "—";
+  let restSec = 60;
+  let workSec = 45;
+  let sets = 0;
+
+  // Images
+  let imgA = "";
+  let imgB = "";
+
+  if(phase === "warmup"){
+    const w = currentWarmup();
+    if(typeof w === "string"){
+      title = w;
+      meta = "Échauffement";
+      todo = "45 s";
+      desc = "Prépare le mouvement, amplitude contrôlée, respiration."
+      muscle = "—";
+      sets = 0;
+      workSec = 45;
+      restSec = 0;
+      imgA = "";
+    } else if(w){
+      title = w.name || "Échauffement";
+      meta = "Échauffement";
+      todo = w.todo || (w.seconds ? `${w.seconds}s` : "45 s");
+      desc = w.desc || "";
+      muscle = w.muscle || "—";
+      sets = 0;
+      workSec = w.seconds || w.work || 45;
+      restSec = 0;
+      imgA = resolveImage(w.icon);
+    }
+    $("setPill").textContent = `Échauffement ${wIndex+1}/${warmup.length || 1}`;
+    renderDots(0);
+  }
+
+  if(phase === "work" || phase === "rest"){
+    const ex = currentExercise();
+    if(ex){
+      title = ex.name || "Exercice";
+      meta = phase === "rest" ? "Repos" : "Exercice";
+      muscle = ex.muscle || "—";
+      sets = Number(ex.sets || 1);
+      restSec = Number(ex.rest || 60);
+      workSec = (ex.type === "time") ? Number(ex.seconds || 40) : 40;
+
+      todo = (phase === "rest")
+        ? `Repos ${restSec}s`
+        : `${sets} × ${ex.reps || "—"}`;
+
+      desc = ex.desc || "—";
+
+      // images
+      if(ex.images && (ex.images.a || ex.images.b)){
+        imgA = resolveImage(ex.images.a);
+        imgB = resolveImage(ex.images.b) || imgA;
+      } else {
+        imgA = resolveImage(ex.icon);
+        imgB = "";
+      }
+
+      $("setPill").textContent = `Série ${setIndex}/${sets}`;
+      renderDots(sets);
+
+      // Historique
+      const last = lastWeightFor(ex.id);
+      $("weightInput").value = last || "";
+      renderHistory(ex.id);
+    } else {
+      $("setPill").textContent = "—";
+      renderDots(0);
     }
   }
 
-  function escapeHtml(str){
-    return String(str).replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#039;"
-    }[m]));
+  // Preview sur le DERNIER repos avant le prochain exo
+  if(shouldShowNextPreview()){
+    const nx = nextExercise();
+    if(nx){
+      overlay.classList.add("show");
+      const lw = (nx && nx.id) ? lastWeightFor(nx.id) : null;
+      $("nextName").innerHTML = `${(nx.name || "—")}${lw ? `<div style="margin-top:6px;font-size:12px;color:#cbd5e1;font-weight:800">Dernière charge : <span style="color:#fff">${lw}</span></div>` : ""}`;
+      const previewImg = (nx.images && nx.images.a) ? resolveImage(nx.images.a) : resolveImage(nx.icon);
+      if(previewImg) imgA = previewImg;
+    }
   }
+
+  // Write UI
+  $("title").textContent = title;
+  $("meta").textContent = meta;
+  $("todo").textContent = todo;
+  $("desc").textContent = desc;
+  $("muscle").textContent = muscle;
+  $("restPill").textContent = `Repos: ${phase==="warmup" ? "—" : (restSec + "s")}`;
+
+  // Steps / mistakes
+  const ex = currentExercise();
+  if(phase === "warmup"){
+    $("steps").innerHTML = "";
+    $("mistakes").innerHTML = "";
+    // pas d'infos en échauffement
+    $("infoBtn").classList.remove("show");
+    closeInfo();
+  } else {
+    $("steps").innerHTML = (ex?.steps || []).map(s=>`<li>${s}</li>`).join("");
+    $("mistakes").innerHTML = (ex?.mistakes || []).map(s=>`<li>${s}</li>`).join("");
+
+    const hasInfo = ((ex?.steps || []).length + (ex?.mistakes || []).length) > 0;
+    $("infoBtn").classList.toggle("show", hasInfo);
+    if(!hasInfo) closeInfo();
+  }
+
+  // Images display
+  $("gifA").src = imgA || "";
+  if(imgB){
+    $("gifB").src = imgB;
+    $("gifB").style.display = "block";
+    $("media").classList.remove("one");
+  } else {
+    $("gifB").style.display = "none";
+    $("media").classList.add("one");
+  }
+
+  // Set timer for current phase
+  if(phase === "warmup" || phase === "work"){
+    setClock(workSec);
+  } else {
+    setClock(restSec);
+  }
+
+  updateTransportButtons();
+}
+
+/* ========= SESSION LIST ========= */
+function renderSessions(){
+  const box = $("sessionsList");
+  box.innerHTML = "";
+  const S = window.SESSIONS || {};
+  const keys = Object.keys(S);
+  if(!keys.length){
+    box.innerHTML = `<div class="card"><h2>Aucune séance</h2><div class="meta">sessions.js n'est pas chargé ou vide.</div></div>`;
+    return;
+  }
+  keys.forEach(k=>{
+    const s = S[k];
+    const name = s.name || `Séance ${k}`;
+    const wlen = (s.warmup || []).length;
+    const ilen = (s.items || s.exercises || []).length;
+    const c = document.createElement("div");
+    c.className = "card";
+    c.innerHTML = `<h2>${name}</h2><div class="meta">${wlen} échauffements • ${ilen} exercices</div>`;
+    const b = document.createElement("button");
+    b.textContent = "Démarrer";
+    b.onclick = ()=>startSession(k);
+    c.appendChild(b);
+    box.appendChild(c);
+  });
+}
+
+function startSession(k){
+  sessionKey = k;
+  session = window.SESSIONS[k];
+  warmup = session.warmup || [];
+  work = session.items || session.exercises || [];
+
+  phase = warmup.length ? "warmup" : "work";
+  wIndex = 0;
+  exIndex = 0;
+  setIndex = 1;
+  coachHold = false;
+
+  showWorkout();
+  render();
+  autoStartIfCoach();
+}
+
+function haptic(ms=10){
+  try{
+    if(navigator.vibrate) navigator.vibrate(ms);
+  }catch(e){}
+}
+function canPrev(){
+  if(phase === "warmup") return wIndex > 0;
+  if(phase === "rest") return true;
+  if(setIndex > 1) return true;
+  if(exIndex > 0) return true;
+  return false;
+}
+function updateTransportButtons(){
+  const prev = $("prevBtn");
+  if(prev) prev.disabled = !canPrev();
+}
+
+/* ========= EVENTS ========= */
+$("startPause").onclick = ()=>{
+  haptic();
+  if(running){
+    coachHold = true;
+    stopTimer();
+  }else{
+    coachHold = false;
+    startTimer();
+  }
+};
+$("nextBtn").onclick = ()=>{ haptic(); nextManual(); };
+$("prevBtn").onclick = ()=>{ haptic(); prevManual(); };
+// Switch Mode coach (en haut à droite)
+const coachToggle = $("coachToggle");
+function syncCoachUI(){
+  if(coachToggle) coachToggle.checked = !!coachMode;
+  $("coachPill").textContent = `Coach : ${coachMode ? "ON" : "OFF"}`;
+}
+if(coachToggle){
+  coachToggle.addEventListener("change", ()=>{
+  haptic(8);
+    coachMode = !!coachToggle.checked;
+    coachHold = false;
+    syncCoachUI();
+    beep(coachMode ? 880 : 440, 160);
+    if(coachMode && !running){
+      // au basculement, on démarre si on est dans workout
+      if($("workout").classList.contains("show")) autoStartIfCoach();
+    }
+  });
+}
+syncCoachUI();
+$("backBtn").onclick = showHome;
+
+$("saveWeightBtn").onclick = ()=>{
+  const ex = currentExercise();
+  if(!ex || !ex.id) return;
+  const v = $("weightInput").value.trim();
+  if(!v) return;
+  addEntry(ex.id, v);
+  renderHistory(ex.id);
+  beep(880, 140);
+};
+$("clearWeightBtn").onclick = ()=>{
+  const ex = currentExercise();
+  if(!ex || !ex.id) return;
+  localStorage.removeItem(keyFor(ex.id));
+  renderHistory(ex.id);
+  beep(440, 140);
+};
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  // Theme + user
+  mountHomeControls();
+  applyTheme(getSavedOrPreferredTheme());
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
+    try{
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
+      }
+    }catch(_){}
+
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }
+
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
+        return;
+      }
+      loginBtn.disabled = true;
+      const old = loginBtn.textContent;
+      loginBtn.textContent = "Connexion…";
+      setLoginMsg("", null);
+      try{
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
+      }catch(err){
+        console.error("Login error:", err);
+        const code = err?.code || "";
+        let human = "Erreur de connexion.";
+        if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
+        else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
+        else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
+        alert(`${human}\n\nCode: ${code || "no-code"}`);
+      }finally{
+        loginBtn.disabled = false;
+        loginBtn.textContent = old;
+      }
+    });
+  }
+
+  // Auth callback from module script
+  window.__pfOnAuth = async (user)=>{
+    if(user){
+      hideLogin();
+      // Initiales affichées en haut (👤)
+      const initials = (user.email ? user.email.split("@")[0].slice(0,2) : "OK").toUpperCase();
+      window.__pfUserInitials = initials;
+      refreshUserUI();
+
+      await loadSessionsFromFirestore(user.uid);
+    }else{
+      window.__pfUserInitials = "—";
+      refreshUserUI();
+      window.SESSIONS = {};
+      renderSessions();
+      showLogin();
+    }
+  };
+
+  // Si l'état auth a déjà été récupéré avant que ce callback soit prêt
+  try{
+    const u = window.pfGetLastUser ? window.pfGetLastUser() : null;
+    if(u || u === null) window.__pfOnAuth(u);
+  }catch(_){}
+
+
+  // Infos exercice overlay
+  const infoBtn = $("infoBtn");
+  const infoOverlay = $("infoOverlay");
+  const infoClose = $("infoClose");
+  if(infoBtn) infoBtn.addEventListener("click", (e)=>{ e.preventDefault(); openInfo(); });
+  if(infoClose) infoClose.addEventListener("click", (e)=>{ e.preventDefault(); closeInfo(); });
+  if(infoOverlay){
+    // click sur le fond = fermer
+    infoOverlay.addEventListener("click", (e)=>{
+      if(e.target === infoOverlay) closeInfo();
+    });
+  }
+
+const d = $("debug");
+  d.style.display = "none";
+  const hasSessions = !!window.SESSIONS;
+  const hasImages = !!window.IMG;
+  d.textContent = `✅ init\\nSESSIONS: ${hasSessions ? Object.keys(window.SESSIONS).length : "absent"}\\nIMG keys: ${hasImages ? Object.keys(window.IMG).length : "absent"}`;
+  renderSessions();
+});
 </script>
 </body>
 </html>
