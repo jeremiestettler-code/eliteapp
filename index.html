@@ -384,7 +384,6 @@ th{color:var(--muted);font-weight:900}
   </div>
 </section>
 
-
 <script src="images.js"></script>
 <script>
 /* ========= SAFE REFERENCES ========= */
@@ -1198,534 +1197,90 @@ const d = $("debug");
   const hasSessions = !!window.SESSIONS;
   const hasImages = !!window.IMG;
   d.textContent = `✅ init\\nSESSIONS: ${hasSessions ? Object.keys(window.SESSIONS).length : "absent"}\\nIMG keys: ${hasImages ? Object.keys(window.IMG).length : "absent"}`;
-  renderSessions();
+  // Render sessions when available (loaded via Firebase)
+  const tryRender = ()=>{ try{ renderSessions(); }catch(e){} };
+  if(window.SESSIONS && Object.keys(window.SESSIONS||{}).length){
+    tryRender();
+  }else{
+    window.addEventListener("pf:sessionsReady", ()=>tryRender(), { once:true });
+    setTimeout(()=>{ if(!(window.SESSIONS && Object.keys(window.SESSIONS||{}).length)) tryRender(); }, 2000);
+  }
 });
 </script>
 
 <script type="module">
-    /***********************
-     * 1) Firebase imports
-     ***********************/
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    /*******************************************************
-     * 2) Firebase config (FOURNIE PAR TOI)
-     *******************************************************/
-    const firebaseConfig = {
-      apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
-      authDomain: "programme-force.firebaseapp.com",
-      projectId: "programme-force",
-      storageBucket: "programme-force.firebasestorage.app",
-      messagingSenderId: "1070910165788",
-      appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
+  authDomain: "programme-force.firebaseapp.com",
+  projectId: "programme-force",
+  storageBucket: "programme-force.firebasestorage.app",
+  messagingSenderId: "1070910165788",
+  appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
 
-    /***********************
-     * 3) Helpers UI
-     ***********************/
-    const $ = (id)=>document.getElementById(id);
-    const screens = { login:$("screenLogin"), home:$("screenHome"), workout:$("screenWorkout") };
-    function showScreen(name){
-      Object.values(screens).forEach(s=>s.classList.remove("active"));
-      screens[name].classList.add("active");
+function loadScriptOnce(src){
+  return new Promise((resolve, reject)=>{
+    if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
+    const s = document.createElement("script");
+    s.src = src;
+    s.async = true;
+    s.setAttribute("data-dyn", src);
+    s.onload = ()=>resolve();
+    s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
+    document.head.appendChild(s);
+  });
+}
+
+async function loadUserSessions(uid){
+  const snap = await getDoc(doc(db, `users/${uid}/profile/config`));
+  if(!snap.exists()) throw new Error("Config manquante: users/{uid}/profile/config");
+  const cfg = snap.data() || {};
+  const file = cfg.sessionsFile;
+  const varName = cfg.sessionsVar;
+  if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar");
+  await loadScriptOnce(file);
+  const obj = window[varName];
+  if(!obj) throw new Error(`sessionsVar introuvable: ${varName}`);
+  window.SESSIONS = obj;
+  window.dispatchEvent(new Event("pf:sessionsReady"));
+}
+
+async function promptLoginOnce(){
+  const email = prompt("Email (Firebase) :");
+  if(!email) return false;
+  const pass = prompt("Mot de passe :");
+  if(!pass) return false;
+  await signInWithEmailAndPassword(auth, email.trim(), pass);
+  return true;
+}
+
+onAuthStateChanged(auth, async (user)=>{
+  try{
+    if(!user){
+      const ok = await promptLoginOnce();
+      if(!ok) return;
+      return;
     }
-    function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
+    await loadUserSessions(user.uid);
+  }catch(e){
+    console.error(e);
+    alert("Erreur chargement des séances:\n" + (e?.message || e));
+  }
+});
+
+// Optional offline SW if present
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+}
+</script>
 
-    /***********************
-     * 4) Theme (home only)
-     ***********************/
-    const THEME_KEY = "coach_theme";
-    function applyTheme(t){
-      document.documentElement.setAttribute("data-theme", t);
-      localStorage.setItem(THEME_KEY, t);
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute("content", t==="light" ? "#f5f7fb" : "#0b0f17");
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) || "dark");
-    $("btnTheme").addEventListener("click", ()=>{
-      const cur = document.documentElement.getAttribute("data-theme") || "dark";
-      applyTheme(cur === "dark" ? "light" : "dark");
-    });
-
-    /***********************
-     * 5) Per-user storage
-     ***********************/
-    let currentUser = null;
-    function ukey(suffix){
-      const uid = currentUser?.uid || "anon";
-      return `${uid}__${suffix}`;
-    }
-
-    /***********************
-     * 6) Coach audio
-     ***********************/
-    let coachMode = true;
-
-    function speak(text){
-      try{
-        if(!coachMode) return;
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "fr-FR";
-        u.rate = 1.0;
-        speechSynthesis.speak(u);
-      }catch(e){}
-    }
-    function beep(freq=880, ms=90){
-      try{
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = freq;
-        o.connect(g); g.connect(ctx.destination);
-        g.gain.value = 0.06;
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
-      }catch(e){}
-    }
-
-    function loadCoachMode(){
-      const v = localStorage.getItem(ukey("coach_mode"));
-      coachMode = (v === null) ? true : (v === "1");
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-    }
-    function toggleCoachMode(){
-      coachMode = !coachMode;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-    }
-    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
-
-    /***********************
-     * 7) Dynamic sessions loader (Option B)
-     ***********************/
-    function loadScriptOnce(src){
-      return new Promise((resolve, reject)=>{
-        if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
-        const s = document.createElement("script");
-        s.src = src;
-        s.async = true;
-        s.setAttribute("data-dyn", src);
-        s.onload = ()=>resolve();
-        s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
-        document.head.appendChild(s);
-      });
-    }
-
-    async function getUserConfig(uid){
-      const ref = doc(db, `users/${uid}/profile/config`);
-      const snap = await getDoc(ref);
-      if(!snap.exists()){
-        throw new Error("Config Firestore manquante : users/{uid}/profile/config");
-      }
-      return snap.data();
-    }
-
-    // Normalisation: toute l'app lit window.SESSIONS
-    window.SESSIONS = null;
-
-    async function loadUserSessions(uid){
-      const cfg = await getUserConfig(uid);
-      const file = cfg.sessionsFile;
-      const varName = cfg.sessionsVar;
-
-      if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar.");
-      await loadScriptOnce(file);
-
-      const obj = window[varName];
-      if(!obj) throw new Error(`Variable sessions introuvable: window["${varName}"]`);
-
-      window.SESSIONS = obj;
-      $("userLine").textContent = cfg.displayName || currentUser?.email || "Connecté";
-    }
-
-    /***********************
-     * 8) Sessions UI (Home)
-     ***********************/
-    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
-
-    function renderHome(){
-      const sessions = window.SESSIONS || {};
-      const keys = Object.keys(sessions);
-
-      const host = $("sessionList");
-      host.innerHTML = "";
-
-      if(keys.length === 0){
-        host.innerHTML = `<div class="muted small">Aucune séance trouvée dans ton pack.</div>`;
-        return;
-      }
-
-      keys.forEach((k)=>{
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nItems = (s?.items||[]).length;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        host.appendChild(card);
-      });
-    }
-
-    /***********************
-     * 9) Workout engine
-     ***********************/
-    // History (localStorage per user)
-    function histKey(exoId){ return ukey(`hist__${exoId}`); }
-    function getLastLoad(exoId){
-      return localStorage.getItem(histKey(exoId)) || "";
-    }
-    function setLastLoad(exoId, val){
-      if(val === null || val === undefined) return;
-      localStorage.setItem(histKey(exoId), String(val));
-    }
-
-    // Workout state
-    let curSessionId = null;
-    let curSession = null;
-    let seq = []; // flattened
-    let idx = 0;
-
-    let running = false;
-    let timer = null;
-    let remaining = 0;
-
-    function mmss(sec){
-      const s = Math.max(0, Math.floor(sec));
-      const m = Math.floor(s/60);
-      const r = s%60;
-      return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
-    }
-
-    function setPhaseUI(phase, hint){
-      $("phasePill").textContent = phase;
-      $("phaseHint").textContent = hint || "";
-    }
-
-    function stopTimer(){
-      running = false;
-      if(timer){ clearInterval(timer); timer=null; }
-      $("btnPlayPause").textContent = "▶︎";
-    }
-
-    function startTimer(){
-      if(running) return;
-      running = true;
-      $("btnPlayPause").textContent = "⏸";
-      let lastTick = Date.now();
-
-      timer = setInterval(()=>{
-        const now = Date.now();
-        const dt = (now - lastTick) / 1000;
-        lastTick = now;
-        remaining -= dt;
-
-        // 3-2-1 only at end of WORK (not rest)
-        const cur = seq[idx];
-        if(cur?.type === "work"){
-          if(Math.ceil(remaining) === 3) speak("3");
-          if(Math.ceil(remaining) === 2) speak("2");
-          if(Math.ceil(remaining) === 1) speak("1");
-        }
-
-        if(remaining <= 0){
-          clearInterval(timer); timer=null;
-          running = false;
-          $("btnPlayPause").textContent = "▶︎";
-          onPhaseEnd();
-          return;
-        }
-        $("timeText").textContent = mmss(remaining);
-      }, 120);
-    }
-
-    function onPhaseStart(){
-      const cur = seq[idx];
-      if(!cur) return;
-
-      remaining = cur.seconds || 0;
-      $("timeText").textContent = mmss(remaining);
-
-      if(cur.type === "work"){
-        setPhaseUI("EXERCICE", "Début de l'exercice");
-        speak("Début de l'exercice");
-        beep(880, 80);
-      }else if(cur.type === "rest"){
-        setPhaseUI("REPOS", "Début du repos");
-        speak("Début du repos");
-        beep(660, 80);
-      }else if(cur.type === "warmup"){
-        setPhaseUI("ÉCHAUFFEMENT", "Début de l'échauffement");
-        speak("Début de l'échauffement");
-        beep(740, 80);
-      }else{
-        setPhaseUI("PRÊT", "Appuie sur ▶︎ pour démarrer");
-      }
-    }
-
-    function onPhaseEnd(){
-      const cur = seq[idx];
-      if(!cur) return;
-
-      // If last rest of an exercise -> show overlay next exercise
-      if(cur.type === "rest" && cur.isLastRestOfExercise){
-        showNextOverlay();
-      }
-
-      // Auto-advance if coachMode
-      if(coachMode){
-        idx = Math.min(seq.length-1, idx+1);
-        renderWorkoutStep();
-        startTimer();
-      }else{
-        idx = Math.min(seq.length-1, idx+1);
-        renderWorkoutStep();
-      }
-    }
-
-    function setImg(imgEl, iconKey){
-      const map = window.IMG || {};
-      const path = map[iconKey] || iconKey || "";
-      imgEl.src = path;
-    }
-
-    function buildSequence(session){
-      const out = [];
-
-      // warmup as timed blocks
-      (session.warmup || []).forEach((w)=>{
-        out.push({
-          type:"warmup",
-          title: w.name || "Échauffement",
-          desc: w.desc || w.todo || "",
-          seconds: w.seconds || 60,
-          icon: w.icon || ""
-        });
-      });
-
-      // each exercise expands to work/rest repeated by sets
-      (session.items || []).forEach((e)=>{
-        const sets = Number(e.sets || 1);
-        const work = Number(e.work || (e.type==="time" ? e.seconds : 45) || 45);
-        const rest = Number(e.rest || 60);
-
-        for(let s=1; s<=sets; s++){
-          out.push({
-            type:"work",
-            exo: e,
-            setIndex: s,
-            setTotal: sets,
-            seconds: work
-          });
-          // rest after each set, last rest marked for overlay
-          out.push({
-            type:"rest",
-            exo: e,
-            setIndex: s,
-            setTotal: sets,
-            seconds: rest,
-            isLastRestOfExercise: (s === sets)
-          });
-        }
-      });
-
-      return out;
-    }
-
-    function renderWorkoutStep(){
-      stopTimer();
-
-      const cur = seq[idx];
-      if(!cur){
-        showScreen("home");
-        return;
-      }
-
-      // Determine displayed content:
-      let title = "";
-      let desc  = "";
-      let reps  = "—";
-      let rest  = "—";
-      let last  = "—";
-      let imgKey = "";
-
-      if(cur.type === "warmup"){
-        title = cur.title || "Échauffement";
-        desc = cur.desc || "";
-        reps = "—";
-        rest = "—";
-        last = "—";
-        imgKey = cur.icon || "";
-        $("setBadge").textContent = "Échauff.";
-      }else if(cur.type === "work" || cur.type === "rest"){
-        const e = cur.exo || {};
-        title = e.name || "Exercice";
-        desc  = e.desc || e.muscle || "";
-        reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
-        rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
-        last  = getLastLoad(e.id || e.name || title) || "—";
-        imgKey = e.icon || "";
-
-        $("setBadge").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
-      }
-
-      $("exoName").textContent = title;
-      $("exoDesc").textContent = desc || "—";
-      $("kpiReps").textContent = reps;
-      $("kpiRest").textContent = rest;
-      $("kpiLast").textContent = last;
-
-      setImg($("exoImg"), imgKey);
-
-      // Header
-      $("workoutTitle").textContent = curSession?.name || "Séance";
-      $("workoutSubtitle").textContent = cur.type === "warmup" ? "Échauffement" : (cur.type === "work" ? "Travail" : "Repos");
-
-      onPhaseStart();
-    }
-
-    function startSession(sessionId){
-      curSessionId = sessionId;
-      curSession = (window.SESSIONS || {})[sessionId];
-      if(!curSession) return;
-
-      seq = buildSequence(curSession);
-      idx = 0;
-
-      showScreen("workout");
-      renderWorkoutStep();
-    }
-
-    function stepPrev(){
-      stopTimer();
-      idx = Math.max(0, idx-1);
-      renderWorkoutStep();
-    }
-    function stepNext(){
-      stopTimer();
-      idx = Math.min(seq.length-1, idx+1);
-      renderWorkoutStep();
-    }
-
-    $("btnPrev").addEventListener("click", stepPrev);
-    $("btnNext").addEventListener("click", stepNext);
-
-    $("btnPlayPause").addEventListener("click", ()=>{
-      if(running){
-        stopTimer();
-      }else{
-        startTimer();
-      }
-    });
-
-    $("btnBackHome").addEventListener("click", ()=>{
-      stopTimer();
-      showScreen("home");
-    });
-
-    /***********************
-     * 10) Next overlay
-     ***********************/
-    function showNextOverlay(){
-      const next = seq.slice(idx+1).find(x=>x.type==="work");
-      if(!next || !next.exo) return;
-
-      const e = next.exo;
-      $("nextName").textContent = e.name || "Exercice";
-      const last = getLastLoad(e.id || e.name) || "—";
-      $("nextLast").textContent = `Dernière charge : ${last}`;
-      $("nextBadge").textContent = `Série 1/${e.sets || 1}`;
-      setImg($("nextImg"), e.icon || "");
-
-      $("overlayNext").classList.add("active");
-    }
-    $("btnCloseOverlay").addEventListener("click", ()=> $("overlayNext").classList.remove("active"));
-    $("overlayNext").addEventListener("click", (ev)=>{
-      if(ev.target === $("overlayNext")) $("overlayNext").classList.remove("active");
-    });
-
-    /***********************
-     * 11) Auth UI
-     ***********************/
-    $("btnLogin").addEventListener("click", async ()=>{
-      setMsg("");
-      const email = $("loginEmail").value.trim();
-      const pass  = $("loginPass").value;
-      if(!email || !pass){
-        setMsg("Entre email + mot de passe.");
-        return;
-      }
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-      }catch(e){
-        setMsg("Connexion impossible : " + (e?.message || e));
-      }
-    });
-
-    $("btnLogout").addEventListener("click", async ()=>{
-      try{ await signOut(auth); }catch(e){}
-    });
-
-    onAuthStateChanged(auth, async (user)=>{
-      currentUser = user;
-
-      if(!user){
-        $("userLine").textContent = "Non connecté";
-        $("pillStatus").textContent = "🔒";
-        $("btnLogout").style.display = "none";
-        showScreen("login");
-        return;
-      }
-
-      $("pillStatus").textContent = "✅";
-      $("btnLogout").style.display = "inline-flex";
-
-      try{
-        await loadUserSessions(user.uid);
-        loadCoachMode();
-        renderHome();
-        showScreen("home");
-      }catch(e){
-        showScreen("login");
-        setMsg("Erreur chargement config/séances : " + (e?.message || e));
-      }
-    });
-
-    /***********************
-     * 12) PWA service worker (si présent)
-     ***********************/
-    if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
-    }
-
-    /***********************
-     * 13) iOS double-tap zoom guard
-     ***********************/
-    let lastTouchEnd = 0;
-    document.addEventListener("touchend", function (event) {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, { passive:false });
-
-  </script>
 </body>
 </html>
