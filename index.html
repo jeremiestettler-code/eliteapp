@@ -482,7 +482,23 @@ th{color:var(--muted);font-weight:900}
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  try{ await setPersistence(auth, browserLocalPersistence); }catch(e){ console.warn("setPersistence failed", e); }
+  
+    // Firestore n'accepte pas les valeurs `undefined` => on nettoie récursivement
+    function sanitizeForFirestore(value){
+      if(value === undefined) return null; // Firestore accepte null
+      if(value === null) return null;
+      if(Array.isArray(value)) return value.map(sanitizeForFirestore);
+      if(typeof value === "object"){
+        const out = {};
+        for(const [k,v] of Object.entries(value)){
+          if(v === undefined) continue;          // on drop les champs undefined
+          out[k] = sanitizeForFirestore(v);
+        }
+        return out;
+      }
+      return value;
+    }
+try{ await setPersistence(auth, browserLocalPersistence); }catch(e){ console.warn("setPersistence failed", e); }
 
   // Expose helpers to non-module code
   window.pfAuth = auth;
@@ -514,8 +530,8 @@ th{color:var(--muted);font-weight:900}
       await setDoc(
         doc(db, `users/${uid}/sessions/${sessionId}`),
         {
-          title: sessionData?.title || sessionData?.name || sessionId,
-          data: sessionData,
+          title: String(sessionData?.title || sessionData?.name || sessionId),
+          data: sanitizeForFirestore(sessionData),
           updatedAt: serverTimestamp()
         },
         { merge: true }
