@@ -202,7 +202,7 @@
     <!-- TOPBAR -->
     <div class="topbar">
       <div class="brand">
-        <div class="title">Programme Force</div>
+        <div class="title" id="brandTitle">Programme Force</div>
         <div class="sub" id="userLine">Non connecté</div>
       </div>
       <div class="pill" id="pillAuth">
@@ -269,10 +269,7 @@
       <div class="card">
         <div class="row">
           <button class="btn secondary" id="btnBackHome">←</button>
-          <div class="grow">
-            <div class="h2" id="workoutTitle">Séance</div>
-            <div class="muted small" id="workoutSubtitle">—</div>
-          </div>
+          <div class="grow"></div>
           <span class="badge" id="setBadge">Série 1/1</span>
         </div>
 
@@ -286,8 +283,7 @@
 
         <div class="row">
           <div class="grow">
-            <div class="h1" id="exoName">—</div>
-            <div class="muted small" id="exoDesc">—</div>
+            <div class="muted" id="exoDesc">—</div>
           </div>
         </div>
 
@@ -378,10 +374,20 @@
      * 3) Helpers UI
      ***********************/
     const $ = (id)=>document.getElementById(id);
+
+    const APP_TITLE = "Programme Force";
+    let topbarUserText = "Non connecté";
     const screens = { login:$("screenLogin"), home:$("screenHome"), workout:$("screenWorkout") };
     function showScreen(name){
       Object.values(screens).forEach(s=>s.classList.remove("active"));
       screens[name].classList.add("active");
+
+      // Topbar title/subtitle
+      const bt = $("brandTitle");
+      if(bt) bt.textContent = (name === "workout") ? (curSession?.name || "Séance") : APP_TITLE;
+      const ul = $("userLine");
+      if(ul && name !== "workout") ul.textContent = topbarUserText;
+
       // Topbar: sur la page exercice, on remplace Déconnexion par un switch Coach
       const wrap = $("coachSwitchWrap");
       if(wrap) wrap.style.display = (name === "workout") ? "flex" : "none";
@@ -504,7 +510,9 @@
       if(!obj) throw new Error(`Variable sessions introuvable: window["${varName}"]`);
 
       window.SESSIONS = obj;
-      $("userLine").textContent = cfg.displayName || currentUser?.email || "Connecté";
+      topbarUserText = cfg.displayName || currentUser?.email || "Connecté";
+      // Si on n'est pas en séance, on reflète le nom en haut
+      if(!screens.workout.classList.contains("active")) $("userLine").textContent = topbarUserText;
     }
 
     /***********************
@@ -748,7 +756,8 @@
         $("setBadge").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
       }
 
-      $("exoName").textContent = title;
+      const exoNameEl = $("exoName");
+      if(exoNameEl) exoNameEl.textContent = title;
       $("exoDesc").textContent = desc || "—";
       $("kpiReps").textContent = reps;
       $("kpiRest").textContent = rest;
@@ -756,9 +765,11 @@
 
       setImg($("exoImg"), imgKey);
 
-      // Header
-      $("workoutTitle").textContent = curSession?.name || "Séance";
-      $("workoutSubtitle").textContent = cur.type === "warmup" ? "Échauffement" : (cur.type === "work" ? "Travail" : "Repos");
+      // Topbar (séance + exercice)
+      const bt = $("brandTitle");
+      if(bt) bt.textContent = curSession?.name || "Séance";
+      const ul = $("userLine");
+      if(ul) ul.textContent = title;
 
       onPhaseStart();
     }
@@ -849,7 +860,8 @@
       currentUser = user;
 
       if(!user){
-        $("userLine").textContent = "Non connecté";
+        topbarUserText = "Non connecté";
+        $("userLine").textContent = topbarUserText;
         $("pillStatus").textContent = "🔒";
         $("btnLogout").style.display = "none";
         showScreen("login");
