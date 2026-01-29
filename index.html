@@ -51,6 +51,8 @@
     }
     .brand .title{font-size:18px; font-weight:800; letter-spacing:.2px}
     .brand .sub{font-size:12px; color:var(--muted)}
+    .workoutTopExo{font-size:14px;font-weight:950;text-align:center;line-height:1.2}
+
     
     .coachSwitch{ display:flex; align-items:center; gap:10px; margin-right:10px; }
     .coachLabel{ font-size:13px; color:var(--text); opacity:.9; }
@@ -194,6 +196,103 @@
     .overlayTitle{font-size:16px; font-weight:950}
     .hr{height:1px; background: rgba(255,255,255,.08); margin:10px 0}
     [data-theme="light"] .hr{background: rgba(10,20,40,.08)}
+  
+    /* Workout redesign (header + cards) */
+    .srOnly{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+    body.inWorkout .topbar{ display:none; }
+
+    #screenWorkout{ gap:12px; padding-top: calc(14px + var(--safe-top)); padding-bottom: calc(14px + var(--safe-bot)); }
+    .workoutHeader{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px; padding: 6px 2px;
+    }
+    .workoutBack{ width:54px; height:54px; border-radius:18px; }
+    .workoutHeaderCenter{ flex:1; text-align:center; line-height:1.05; }
+    .workoutTitle{ font-size:34px; font-weight:950; letter-spacing:-.4px; }
+    .workoutSub{ margin-top:6px; font-size:18px; color:var(--muted); }
+
+    .workoutHeaderRight{ width:64px; display:flex; justify-content:flex-end; }
+
+    .workoutChips{ display:flex; justify-content:center; gap:10px; margin-top:4px; margin-bottom:2px; }
+    .chip{
+      padding:10px 16px; border-radius:999px;
+      background: rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text); font-size:16px;
+    }
+    [data-theme="light"] .chip{ background: rgba(10,20,40,.06); border-color: rgba(10,20,40,.10); }
+    .chipPhase{ color: #bfe3ff; border-color: rgba(120,210,255,.35); }
+    .chipCoach{ color: #bfffd0; border-color: rgba(90,240,140,.35); }
+    .chipSoft{ opacity:.95; }
+
+    .cardTight{ padding:12px; border-radius: 26px; }
+    .previewCard{
+      position:relative;
+      border-radius:22px;
+      overflow:hidden;
+      background: rgba(0,0,0,.15);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    [data-theme="light"] .previewCard{ background: rgba(10,20,40,.04); border-color: rgba(10,20,40,.10); }
+    .previewCard img{ width:100%; height:320px; object-fit:contain; background:#fff; display:block; }
+
+    .infoBtn{
+      position:absolute; right:12px; bottom:12px;
+      width:44px; height:44px; border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.35);
+      color:#fff; font-weight:900; font-size:18px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .infoBtn:active{ transform: scale(.98); }
+
+    .setDots{
+      position:absolute; right:70px; bottom:22px;
+      display:flex; gap:10px; align-items:center;
+      padding: 0;
+      pointer-events:none;
+    }
+    .dot{
+      width:12px; height:12px; border-radius:999px;
+      background: rgba(255,255,255,.20);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .dot.current{ background: rgba(80,170,255,.95); border-color: rgba(80,170,255,.65); }
+    .dot.done{ background: rgba(80,240,140,.95); border-color: rgba(80,240,140,.55); }
+
+    .infoOverlay{
+      position:absolute; inset:0;
+      background: rgba(0,0,0,.70);
+      display:none;
+      padding: 14px;
+    }
+    .infoOverlay.active{ display:flex; }
+    .infoInner{
+      width:100%;
+      border-radius:20px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(15,20,30,.85);
+      padding: 12px;
+      display:flex; flex-direction:column;
+      gap:10px;
+    }
+    .infoHdr{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+    .infoTitle{ font-size:16px; font-weight:950; }
+    .infoBody{ color: rgba(255,255,255,.92); font-size:14px; line-height:1.35; white-space:pre-line; }
+    .infoClose{ padding: 8px 12px; border-radius: 14px; }
+
+    .todoCard{ }
+    .todoHdr{ display:flex; align-items:center; justify-content:space-between; }
+    .todoLabel{ font-size:18px; font-weight:950; }
+    .todoMain{ margin-top:8px; font-size:40px; font-weight:950; letter-spacing:-.4px; }
+    .todoDesc{ margin-top:6px; font-size:15px; }
+    .todoChips{ margin-top:10px; display:flex; gap:10px; flex-wrap:wrap; }
+
+    .timerCard .timerBox{ padding: 10px 6px; }
+    .timerBoxFlat{ background: transparent; box-shadow:none; padding: 10px 6px; }
+    .timerBoxFlat .time{ font-size:86px; }
+    .timerBoxFlat .subline{ text-align:center; margin-top: 6px; }
+
   </style>
 </head>
 
@@ -265,51 +364,73 @@
     </section>
 
     <!-- WORKOUT -->
+    
     <section class="screen" id="screenWorkout">
-      <div class="card">
-        <div class="row">
-          <button class="btn secondary" id="btnBackHome">←</button>
-          <div class="grow"></div>
-          <span class="badge" id="setBadge">Série 1/1</span>
+      <!-- Header workout (remplace la topbar) -->
+      <div class="workoutHeader">
+        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour">←</button>
+
+        <div class="workoutHeaderCenter">
+          <div class="workoutTitle" id="workoutTitle">—</div>
+          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
         </div>
 
-        <div style="height:12px"></div>
+        <div class="workoutHeaderRight">
+          <label class="switch" aria-label="Mode coach">
+            <input type="checkbox" id="coachSwitch2" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
 
-        <div class="preview">
+      <div class="workoutChips">
+        <div class="chip chipPhase" id="chipPhase">Travail</div>
+        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
+        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
+      </div>
+
+      <div class="card cardTight">
+        <div class="previewCard" id="previewCard">
           <img id="exoImg" alt="Exercice" />
-        </div>
+          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
+          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
 
-        <div style="height:12px"></div>
-
-        <div class="row">
-          <div class="grow">
-            <div class="muted" id="exoDesc">—</div>
+          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
+            <div class="infoInner">
+              <div class="infoHdr">
+                <div class="infoTitle">Conseils</div>
+                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
+              </div>
+              <div class="infoBody" id="infoBody">—</div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div style="height:10px"></div>
+      <div class="card cardTight todoCard">
+        <div class="todoHdr">
+          <div class="todoLabel">À faire</div>
+          <div class="todoDotsGhost"></div>
+        </div>
+        <div class="todoMain" id="todoMain">—</div>
+        <div class="todoDesc muted" id="todoDesc">—</div>
 
-        <div class="kpiRow">
-          <div class="kpi">
-            <div class="v" id="kpiReps">—</div>
-            <div class="l">Répétitions</div>
-          </div>
-          <div class="kpi">
-            <div class="v" id="kpiRest">—</div>
-            <div class="l">Repos</div>
-          </div>
-          <div class="kpi">
-            <div class="v" id="kpiLast">—</div>
-            <div class="l">Dernière charge</div>
-          </div>
+        <div class="todoChips">
+          <div class="chip chipSoft" id="chipMuscle">—</div>
+          <div class="chip chipSoft" id="chipRest">Repos: —</div>
         </div>
 
-        <div style="height:12px"></div>
+        <!-- valeurs conservées pour compat (logique inchangée) -->
+        <span class="srOnly" id="kpiReps">—</span>
+        <span class="srOnly" id="kpiRest">—</span>
+        <span class="srOnly" id="kpiLast">—</span>
+        <span class="srOnly" id="exoDesc">—</span>
+      </div>
 
-        <div class="timerBox">
-          <div class="phase" id="phasePill">PRÊT</div>
+      <div class="card cardTight timerCard">
+        <div class="timerBox timerBoxFlat">
           <div class="time" id="timeText">00:00</div>
-          <div class="subline muted small" id="phaseHint">Appuie sur ▶︎ pour démarrer</div>
+          <div class="subline muted small" id="phaseHint">—</div>
         </div>
       </div>
 
@@ -319,7 +440,7 @@
         <button class="btn icon big secondary" id="btnNext" title="Suivant">⏩</button>
       </div>
     </section>
-  </div>
+</div>
 
   <!-- Overlay "EXERCICE SUIVANT" -->
   <div class="overlayNext" id="overlayNext">
@@ -388,9 +509,11 @@
       const ul = $("userLine");
       if(ul && name !== "workout") ul.textContent = topbarUserText;
 
-      // Topbar: sur la page exercice, on remplace Déconnexion par un switch Coach
+      document.body.classList.toggle("inWorkout", name === "workout");
+
+      // Topbar: sur la page exercice, on masque toujours (header custom)
       const wrap = $("coachSwitchWrap");
-      if(wrap) wrap.style.display = (name === "workout") ? "flex" : "none";
+      if(wrap) wrap.style.display = "none";
       const lo = $("btnLogout");
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
     }
@@ -454,20 +577,34 @@
       const v = localStorage.getItem(ukey("coach_mode"));
       coachMode = (v === null) ? true : (v === "1");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
+      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
       $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
     function toggleCoachMode(){
       coachMode = !coachMode;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
+      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
       $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
     $("btnCoachToggle").addEventListener("click", toggleCoachMode);
 
     $("coachSwitch")?.addEventListener("change", (e)=>{
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
+      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
       $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
+    });
+
+    $("coachSwitch2")?.addEventListener("change", (e)=>{
+      coachMode = !!e.target.checked;
+      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
+      const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
     /***********************
@@ -585,7 +722,8 @@
     }
 
     function setPhaseUI(phase, hint){
-      $("phasePill").textContent = phase;
+      const cp = $("chipPhase");
+      if(cp) cp.textContent = (phase || "").toString();
       $("phaseHint").textContent = hint || "";
     }
 
@@ -634,19 +772,19 @@
       $("timeText").textContent = mmss(remaining);
 
       if(cur.type === "work"){
-        setPhaseUI("EXERCICE", "Début de l'exercice");
+        setPhaseUI("Travail", "Début de l'exercice");
         speak("Début de l'exercice");
         beep(880, 80);
       }else if(cur.type === "rest"){
-        setPhaseUI("REPOS", "Début du repos");
+        setPhaseUI("Repos", "Début du repos");
         speak("Début du repos");
         beep(660, 80);
       }else if(cur.type === "warmup"){
-        setPhaseUI("ÉCHAUFFEMENT", "Début de l'échauffement");
+        setPhaseUI("Échauffement", "Début de l'échauffement");
         speak("Début de l'échauffement");
         beep(740, 80);
       }else{
-        setPhaseUI("PRÊT", "Appuie sur ▶︎ pour démarrer");
+        setPhaseUI("Prêt", "Appuie sur ▶︎ pour démarrer");
       }
     }
 
@@ -676,7 +814,54 @@
       imgEl.src = path;
     }
 
-    function buildSequence(session){
+    
+    function updateInfoOverlayContent(cur){
+      const body = $("infoBody");
+      if(!body) return;
+
+      if(cur?.type === "work" || cur?.type === "rest"){
+        const e = cur.exo || {};
+        const parts = [];
+
+        // Essaye de lire des champs éventuels (sans casser si absent)
+        const doTxt = e.do || e.todo || e.cues || "";
+        const dontTxt = e.dont || e.avoid || e.warnings || "";
+
+        if(doTxt){
+          parts.push("À faire\n" + String(doTxt).trim());
+        }
+        if(dontTxt){
+          parts.push("À éviter\n" + String(dontTxt).trim());
+        }
+
+        // Fallback : description
+        if(parts.length === 0){
+          const fallback = e.desc || e.muscle || "—";
+          parts.push(String(fallback).trim());
+        }
+
+        body.textContent = parts.join("\n\n");
+      }else if(cur?.type === "warmup"){
+        body.textContent = String(cur.desc || "—");
+      }else{
+        body.textContent = "—";
+      }
+    }
+
+    function openInfo(){
+      const ov = $("infoOverlay");
+      if(!ov) return;
+      ov.classList.add("active");
+      ov.setAttribute("aria-hidden", "false");
+    }
+    function closeInfo(){
+      const ov = $("infoOverlay");
+      if(!ov) return;
+      ov.classList.remove("active");
+      ov.setAttribute("aria-hidden", "true");
+    }
+
+function buildSequence(session){
       const out = [];
 
       // warmup as timed blocks
@@ -728,48 +913,104 @@
         return;
       }
 
-      // Determine displayed content:
+      // Determine displayed content
       let title = "";
       let desc  = "";
       let reps  = "—";
       let rest  = "—";
       let last  = "—";
       let imgKey = "";
+      let muscle = "—";
+      let todoLine = "—";
 
       if(cur.type === "warmup"){
         title = cur.title || "Échauffement";
         desc = cur.desc || "";
-        reps = "—";
-        rest = "—";
-        last = "—";
         imgKey = cur.icon || "";
-        $("setBadge").textContent = "Échauff.";
+        $("chipSeries").textContent = "Échauff.";
+        todoLine = "—";
+        muscle = "Échauffement";
+        rest = "—";
       }else if(cur.type === "work" || cur.type === "rest"){
         const e = cur.exo || {};
         title = e.name || "Exercice";
-        desc  = e.desc || e.muscle || "";
+        desc  = e.todo || e.desc || "";
         reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
         rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
         last  = getLastLoad(e.id || e.name || title) || "—";
         imgKey = e.icon || "";
+        muscle = e.muscle || e.group || e.target || "—";
 
-        $("setBadge").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
+        const sets = Number(e.sets || cur.setTotal || 1);
+        // todoLine: "4 × 6–8" style
+        todoLine = `${sets} × ${reps}`;
+
+        $("chipSeries").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
       }
 
-      const exoNameEl = $("exoName");
-      if(exoNameEl) exoNameEl.textContent = title;
+      // Header title/subtitle
+      $("workoutTitle").textContent = title;
+      $("workoutSubtitle").textContent =
+        (cur.type === "warmup") ? "Échauffement" :
+        (cur.type === "rest") ? "Repos" : "Exercice";
+
+      // Chips
+      const phaseTxt =
+        (cur.type === "work") ? "Travail" :
+        (cur.type === "rest") ? "Repos" :
+        (cur.type === "warmup") ? "Échauffement" : "Prêt";
+      $("chipPhase").textContent = phaseTxt;
+      $("chipCoach").textContent = coachMode ? "Coach : ON" : "Coach : OFF";
+
+      // Image
+      setImg($("exoImg"), imgKey);
+
+      // Todo card
+      $("todoMain").textContent = todoLine;
+      $("todoDesc").textContent = desc || "—";
+      $("chipMuscle").textContent = muscle || "—";
+      $("chipRest").textContent = (rest && rest !== "—") ? `Repos: ${rest}` : "Repos: —";
+
+      // Hidden legacy values (compat)
       $("exoDesc").textContent = desc || "—";
       $("kpiReps").textContent = reps;
       $("kpiRest").textContent = rest;
       $("kpiLast").textContent = last;
 
-      setImg($("exoImg"), imgKey);
+      // Dots (progression séries) — uniquement sur work/rest
+      const dots = $("setDots");
+      if(dots){
+        dots.innerHTML = "";
+        if(cur.type === "work" || cur.type === "rest"){
+          const total = Number(cur.setTotal || 1);
+          const current = Number(cur.setIndex || 1);
 
-      // Topbar (séance + exercice)
-      const bt = $("brandTitle");
-      if(bt) bt.textContent = curSession?.name || "Séance";
-      const ul = $("userLine");
-      if(ul) ul.textContent = title;
+          for(let s=1; s<=total; s++){
+            const d = document.createElement("div");
+            d.className = "dot";
+
+            // Bleu = série en cours (pendant WORK)
+            if(cur.type === "work" && s === current){
+              d.classList.add("current");
+            }
+
+            // Vert = série terminée
+            const done = (s < current) || (cur.type === "rest" && s <= current);
+            if(done){
+              d.classList.add("done");
+              d.classList.remove("current");
+            }
+
+            dots.appendChild(d);
+          }
+          dots.style.display = "flex";
+        }else{
+          dots.style.display = "none";
+        }
+      }
+
+      // Info overlay content (si présent dans la data)
+      updateInfoOverlayContent(cur);
 
       onPhaseStart();
     }
@@ -812,6 +1053,12 @@
       stopTimer();
       showScreen("home");
     });
+
+    // Info overlay (sur la carte GIF)
+    $("btnInfo")?.addEventListener("click", openInfo);
+    $("btnInfoClose")?.addEventListener("click", closeInfo);
+    $("infoOverlay")?.addEventListener("click", (e)=>{ if(e.target?.id === "infoOverlay") closeInfo(); });
+
 
     /***********************
      * 10) Next overlay
