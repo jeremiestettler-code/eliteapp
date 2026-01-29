@@ -570,15 +570,19 @@ function mountHomeControls(){
   act(themeBtn, toggleTheme);
 
   act(userBtn, ()=>{
+    // If Firebase user switching is available, use it (logout then prompt login).
+    // This keeps the UI identical while enabling account switching.
+    if(window.pfAuthSwitch){
+      window.pfAuthSwitch();
+      return;
+    }
+    // Fallback: previous local toggle (moi/femme)
     const cur = getActiveUser();
     const next = (cur === "moi") ? "femme" : "moi";
-    // toggle simple Moi/Femme (tu peux renommer si tu veux)
     setActiveUser(next);
-    // petit feedback
     beep(next === "moi" ? 660 : 520, 120);
   });
-
-  wrap.appendChild(userBtn);
+wrap.appendChild(userBtn);
   wrap.appendChild(themeBtn);
   document.body.appendChild(wrap);
 }
@@ -1210,7 +1214,7 @@ const d = $("debug");
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -1261,6 +1265,19 @@ async function promptLoginOnce(){
   await signInWithEmailAndPassword(auth, email.trim(), pass);
   return true;
 }
+
+// Expose a global helper so the existing UI can trigger logout/login without adding any new UI
+window.pfAuthSwitch = async function pfAuthSwitch(){
+  try{
+    await signOut(auth);
+  }catch(e){}
+  try{
+    await promptLoginOnce();
+  }catch(e){
+    alert("Connexion impossible:\n" + (e?.message || e));
+  }
+};
+
 
 onAuthStateChanged(auth, async (user)=>{
   try{
