@@ -5,7 +5,7 @@
 */
 
 (function () {
-  window.SESSIONS_YS = window.SESSIONS_YS || {};
+  window.SESSIONS_TU = window.SESSIONS_TU || {};
 
   // Helpers (optionnels) : pour garder les formats homogènes
   const wu = (id, name, icon, todo, seconds, desc, steps = [], mistakes = []) => ({
@@ -25,7 +25,7 @@
   // =========================
   // SÉANCE W1 — Haut du corps + fessiers (knee-friendly)
   // =========================
-  window.SESSIONS_YS["W1"] = {
+  window.SESSIONS_TU["W1"] = {
     name: "W1 — Full body doux (focus fessiers + gainage)",
     warmup: [
       wu(
@@ -196,7 +196,7 @@
   // =========================
   // SÉANCE W2 — Dos/épaules + fessiers + abdos (knee-friendly)
   // =========================
-  window.SESSIONS_YS["W2"] = {
+  window.SESSIONS_TU["W2"] = {
     name: "W2 — Full body (dos/épaules + fessiers/abdos)",
     warmup: [
       wu("WU-W2-1", "Mobilité épaules", "wu_shoulder_mob", "1–2 min", 90,
@@ -311,7 +311,7 @@
   // =========================
   // SÉANCE W3 — Haut du corps + fessiers + core (circuit doux)
   // =========================
-  window.SESSIONS_YS["W3"] = {
+  window.SESSIONS_TU["W3"] = {
     name: "W3 — Circuit doux (haut du corps + fessiers + core)",
     warmup: [
       wu("WU-W3-1", "Cardio doux sans impact", "wu_cardio_lowimpact", "2 min", 120,
@@ -436,7 +436,7 @@
   // =========================
   // SÉANCE W4 — Bras + haut du corps + fessiers/abdos (sans stress genou)
   // =========================
-  window.SESSIONS_YS["W4"] = {
+  window.SESSIONS_TU["W4"] = {
     name: "W4 — Haut du corps + bras (focus fessiers/abdos)",
     warmup: [
       wu("WU-W4-1", "Mobilité poignets/épaules", "wu_wrist_shoulder", "1–2 min", 90,
@@ -553,5 +553,5 @@
 
 })();
 
-// Expose aussi la variable globale `SESSIONS_YS` pour compatibilité
-var SESSIONS_YS = window.SESSIONS_YS;
+// Expose aussi la variable globale `SESSIONS_TU` pour compatibilité
+var SESSIONS_TU = window.SESSIONS_TU;
