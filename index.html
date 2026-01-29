@@ -5,12 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Programme Force</title>
 
-  <!-- PWA -->
   <link rel="manifest" href="manifest.json" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
   <style>
+    :root{color-scheme: dark;}
     body{
       margin:0;
       font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -19,59 +19,100 @@
       padding-top:env(safe-area-inset-top);
     }
     .hidden{display:none}
-    .center{display:flex;align-items:center;justify-content:center;height:100vh}
-    button{
-      padding:14px 18px;
-      font-size:16px;
-      border:none;
-      border-radius:10px;
-      background:#2563eb;
-      color:white;
-      cursor:pointer;
-    }
+    .center{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box}
+    .card{width:min(360px, 100%);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    h2{margin:0 0 12px 0;font-size:22px}
+    label{display:block;font-size:13px;opacity:.85;margin:10px 0 6px}
     input{
       padding:12px;
       font-size:16px;
       width:100%;
-      margin-bottom:12px;
-      border-radius:8px;
-      border:none;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.2);
+      color:white;
+      outline:none;
+      box-sizing:border-box;
     }
+    button{
+      width:100%;
+      padding:14px 16px;
+      font-size:16px;
+      border:none;
+      border-radius:12px;
+      background:#2563eb;
+      color:white;
+      cursor:pointer;
+      margin-top:12px;
+    }
+    button:disabled{opacity:.6;cursor:not-allowed}
+    .msg{margin-top:12px;font-size:14px;line-height:1.35}
+    .msg.ok{color:#86efac}
+    .msg.err{color:#fca5a5}
+    header{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+    main{padding:16px}
+    ul{margin:10px 0 0 0;padding:0;list-style:none}
+    li{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.04)}
+    .tiny{font-size:12px;opacity:.75;margin-top:10px}
+    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
   </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="loginScreen" class="center">
-  <div style="width:280px">
+  <div class="card">
     <h2>Connexion</h2>
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Mot de passe" />
-    <button id="loginBtn">Se connecter</button>
+
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" type="email" inputmode="email" autocomplete="email" placeholder="ex: toi@email.com" required />
+
+      <label for="password">Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
+
+      <button id="loginBtn" type="submit">Se connecter</button>
+    </form>
+
+    <div id="loginMsg" class="msg"></div>
+
+    <div class="tiny">
+      Si rien ne se passe :<br/>
+      1) active <b>Email/Password</b> dans Firebase Auth<br/>
+      2) ajoute ton domaine GitHub Pages dans <b>Authorized domains</b><br/>
+      3) crée l'utilisateur dans <b>Authentication → Users</b>
+    </div>
   </div>
 </div>
 
 <!-- APP -->
 <div id="appScreen" class="hidden">
-  <header style="padding:16px;display:flex;justify-content:space-between;align-items:center">
+  <header>
     <strong>Programme Force</strong>
-    <button id="logoutBtn">Logout</button>
+    <button id="logoutBtn" style="width:auto;margin-top:0;padding:10px 14px;border-radius:12px;background:#334155">Logout</button>
   </header>
 
-  <main style="padding:16px">
-    <h3>Mes séances</h3>
+  <main>
+    <div id="appMsg" class="msg"></div>
+    <h3 style="margin:14px 0 10px">Mes séances</h3>
     <ul id="sessionsList"></ul>
   </main>
 </div>
 
 <!-- FIREBASE + APP LOGIC -->
 <script type="module">
-  // Firebase SDKs (CDN)
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    setPersistence,
+    browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // 🔥 Firebase configuration (fourni par toi)
+  // ✅ Ton bloc Firebase
   const firebaseConfig = {
     apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
     authDomain: "programme-force.firebaseapp.com",
@@ -81,36 +122,85 @@
     appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
   };
 
-  // Init Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // UI refs
   const loginScreen = document.getElementById("loginScreen");
   const appScreen = document.getElementById("appScreen");
+  const loginForm = document.getElementById("loginForm");
   const loginBtn = document.getElementById("loginBtn");
   const logoutBtn = document.getElementById("logoutBtn");
+  const loginMsg = document.getElementById("loginMsg");
+  const appMsg = document.getElementById("appMsg");
 
-  // Login
-  loginBtn.onclick = async () => {
-    const email = document.getElementById("email").value;
+  function setMsg(el, text, kind){
+    el.textContent = text || "";
+    el.classList.remove("ok","err");
+    if(kind) el.classList.add(kind);
+  }
+
+  // Persistance (évite "connexion qui disparaît" au refresh)
+  try{
+    await setPersistence(auth, browserLocalPersistence);
+  }catch(e){
+    console.warn("setPersistence failed:", e);
+  }
+
+  // Login (avec feedback + alert en cas d'erreur)
+  loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    setMsg(loginMsg, "", null);
+
+    const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
-    await signInWithEmailAndPassword(auth, email, password);
-  };
+
+    loginBtn.disabled = true;
+    loginBtn.textContent = "Connexion…";
+
+    try{
+      await signInWithEmailAndPassword(auth, email, password);
+      setMsg(loginMsg, "Connecté ✅", "ok");
+    }catch(err){
+      console.error("Login error:", err);
+      const code = err?.code || "";
+      let human = "Erreur de connexion.";
+
+      if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+      else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable (crée-le dans Firebase Auth).";
+      else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+      else if(code.includes("auth/network-request-failed")) human = "Problème réseau (ou domaine bloqué). Vérifie Authorized domains.";
+      else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+      else if(code.includes("auth/too-many-requests")) human = "Trop de tentatives. Réessaie plus tard.";
+      else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé. Ajoute ton domaine GitHub Pages dans Authorized domains.";
+
+      setMsg(loginMsg, `${human} (${code || "no-code"})`, "err");
+      alert(`${human}
+
+Code: ${code || "no-code"}`);
+    }finally{
+      loginBtn.disabled = false;
+      loginBtn.textContent = "Se connecter";
+    }
+  });
 
   // Logout
-  logoutBtn.onclick = () => signOut(auth);
+  logoutBtn.addEventListener("click", async () => {
+    try{ await signOut(auth); }catch(e){ console.error(e); }
+  });
 
   // Auth state
   onAuthStateChanged(auth, async (user) => {
     if(user){
       loginScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
-      loadSessions(user.uid);
+      setMsg(appMsg, `Connecté en tant que ${user.email}`, "ok");
+      await loadSessions(user.uid);
     }else{
       appScreen.classList.add("hidden");
       loginScreen.classList.remove("hidden");
+      setMsg(appMsg, "", null);
+      document.getElementById("sessionsList").innerHTML = "";
     }
   });
 
@@ -119,12 +209,29 @@
     const list = document.getElementById("sessionsList");
     list.innerHTML = "";
 
-    const snap = await getDocs(collection(db, `users/${uid}/sessions`));
-    snap.forEach(doc => {
+    try{
+      const snap = await getDocs(collection(db, `users/${uid}/sessions`));
+      if(snap.empty){
+        const li = document.createElement("li");
+        li.innerHTML = `Aucune séance trouvée dans <code>users/${uid}/sessions</code>.<br/><span style="opacity:.8;font-size:13px">Ajoute un document dans Firestore pour tester.</span>`;
+        list.appendChild(li);
+        return;
+      }
+      snap.forEach(doc => {
+        const li = document.createElement("li");
+        li.textContent = doc.id;
+        list.appendChild(li);
+      });
+    }catch(err){
+      console.error("Firestore loadSessions error:", err);
+      const code = err?.code || "";
+      let human = "Impossible de charger les séances depuis Firestore.";
+      if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore / uid).";
+      setMsg(appMsg, `${human} (${code || "no-code"})`, "err");
       const li = document.createElement("li");
-      li.textContent = doc.id;
+      li.textContent = `${human}`;
       list.appendChild(li);
-    });
+    }
   }
 </script>
 </body>
