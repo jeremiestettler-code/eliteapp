@@ -137,6 +137,12 @@ body.inWorkout .btnbar .ctrlBtn.primary{
   border-color: rgba(120,200,255,.18);
 }
 
+body.inWorkout .btnbar #btnPrev,
+body.inWorkout .btnbar #btnNext{
+  font-weight: 800;
+  letter-spacing: -4px;
+}
+
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
     .sessionItem{display:flex; gap:12px; align-items:center}
     .badge{
@@ -468,9 +474,9 @@ body.inWorkout .btnbar .ctrlBtn.primary{
 
       
   <div class="btnbar">
-    <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">⏪</button>
+    <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">◀◀</button>
     <button class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause" aria-label="Start / Pause">▶︎</button>
-    <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">⏩</button>
+    <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">▶▶</button>
   </div>
 </section>
 </div>
