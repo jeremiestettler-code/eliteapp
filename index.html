@@ -373,10 +373,7 @@ th{color:var(--muted);font-weight:900}
 
 <!-- Local session sources (for Firestore import only) -->
 <script src="sessions.js"></script>
-<script>window.__PF_SESSIONS_JS = window.SESSIONS; </script>
 <script src="sessions_femme.js"></script>
-<script>window.__PF_SESSIONS_YS = window.SESSIONS; window.SESSIONS = {}; </script>
-
 
 <!-- FIREBASE LOGIN OVERLAY -->
 <div id="loginOverlay" class="pf-login-overlay hidden" aria-hidden="true">
@@ -604,8 +601,8 @@ function getInitialsForUid(uid, email){
 
 function getLocalSessionsForUid(uid){
   const p = PROFILE_BY_UID[uid];
-  if(p === "JS") return window.__PF_SESSIONS_JS;
-  if(p === "YS") return window.__PF_SESSIONS_YS;
+  if(p === "JS") return (window.SESSIONS_JS || null);
+  if(p === "YS") return (window.SESSIONS_YS || null);
   return null;
 }
 
@@ -667,6 +664,9 @@ function setActiveUser(u){
     try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
     renderSessions();
   }
+
+  // Expose for non-module code
+  window.loadSessionsFromFirestore = loadSessionsFromFirestore;
 
   // Login click
   if(loginBtn){
