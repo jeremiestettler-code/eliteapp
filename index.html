@@ -729,7 +729,7 @@ function setActiveUser(u){
       localStorage.setItem("coach_active_user", initials);
       refreshUserUI();
 
-      await loadSessionsFromFirestore(user.uid);
+      await window.loadSessionsFromFirestore(user.uid);
     }else{
       window.__pfUserInitials = "—";
       refreshUserUI();
@@ -934,7 +934,7 @@ Continuer ?`)) return;
         if(window.pfClearSessions) await window.pfClearSessions(u.uid);
         const n = window.pfWriteSessions ? await window.pfWriteSessions(u.uid, srcSessions) : 0;
         alert(`OK ✅ Réimport terminé (${n} séances).`);
-        await loadSessionsFromFirestore(u.uid);
+        await window.loadSessionsFromFirestore(u.uid);
       }catch(e){
         console.error(e);
         alert("Erreur pendant la réimport. Ouvre la console pour le détail.");
@@ -967,6 +967,41 @@ function applyUserSessions(){
   // (On garde cette fonction pour compat avec l'ancien code.)
 }
 
+
+/* ========= FIRESTORE SESSIONS LOADER (GLOBAL) =========
+   Fix: évite `ReferenceError: loadSessionsFromFirestore is not defined`
+   -> On expose une seule fonction globale, utilisée partout (menu 👤, auth, etc.)
+*/
+window.loadSessionsFromFirestore = async function(uid){
+  if(!uid) return;
+  const cacheKey = `pf_sessions_cache_${uid}`;
+
+  // 1) Cache local (démarrage rapide/offline)
+  try{
+    const cached = localStorage.getItem(cacheKey);
+    if(cached){
+      const obj = JSON.parse(cached);
+      if(obj && typeof obj === "object"){
+        window.SESSIONS = obj;
+        renderSessions();
+      }
+    }
+  }catch(_){}
+
+  // 2) Firestore (source de vérité)
+  try{
+    if(!window.pfFetchSessions){
+      console.warn("pfFetchSessions indisponible (Firebase pas prêt ?)"); 
+      return;
+    }
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }catch(e){
+    console.error("loadSessionsFromFirestore failed:", e);
+  }
+};
 /* ========= STATE ========= */
 let sessionKey = null;
 let session = null;
@@ -1367,7 +1402,7 @@ function showHome(){
       localStorage.setItem("coach_active_user", initials);
       refreshUserUI();
 
-      await loadSessionsFromFirestore(user.uid);
+      await window.loadSessionsFromFirestore(user.uid);
     }else{
       window.__pfUserInitials = "—";
       refreshUserUI();
@@ -1483,7 +1518,7 @@ function showWorkout(){
       localStorage.setItem("coach_active_user", initials);
       refreshUserUI();
 
-      await loadSessionsFromFirestore(user.uid);
+      await window.loadSessionsFromFirestore(user.uid);
     }else{
       window.__pfUserInitials = "—";
       refreshUserUI();
@@ -1867,7 +1902,7 @@ window.addEventListener("DOMContentLoaded", ()=>{
       localStorage.setItem("coach_active_user", initials);
       refreshUserUI();
 
-      await loadSessionsFromFirestore(user.uid);
+      await window.loadSessionsFromFirestore(user.uid);
     }else{
       window.__pfUserInitials = "—";
       refreshUserUI();
