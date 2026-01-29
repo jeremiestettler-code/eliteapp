@@ -1,1127 +1,860 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>Programme Force — App</title>
-<meta name="theme-color" content="#020617">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta charset="utf-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0f17" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./images/icon-192.png" />
+  <title>Programme Force</title>
 
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-192.png">
-<link rel="apple-touch-icon-precomposed" href="icons/icon-192.png">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<meta name="apple-mobile-web-app-title" content="Force">
-
-</head>
-<body>
-
-<div id="debug"></div>
-
-<!-- small auth pill (doesn't change session list layout) -->
-
-  <span id="loginUser">—</span>
-  <button id="logoutBtn" type="button">Déconnexion</button>
-</div>
-
-<!-- HOME -->
-<section id="home" class="view show home">
-  <h1>Programme Force</h1>
-  <p>Choisis ta séance. Ensuite : échauffement → travail → repos (mode coach possible).</p>
-  <div id="sessionsList" class="grid"></div>
-</section>
-
-<!-- WORKOUT -->
-<section id="workout" class="view">
-  <div class="app">
-    <div class="topRow">
-      <button class="backBtn" id="backBtn" type="button" aria-label="Retour">←</button>
-      <div class="h1" id="title">—</div>
-      <label class="coachSwitch" title="Mode coach">
-        <input type="checkbox" id="coachToggle" />
-        <span></span>
-      </label>
-    </div>
-    <div class="meta" id="meta">—</div>
-
-    <div class="pills">
-      <span class="pill accent" id="phasePill">—</span>
-      <span class="pill" id="setPill">—</span>
-      <span class="pill ok" id="coachPill">Coach : OFF</span>
-    </div>
-
-    <div id="media" class="media one">
-      <img id="gifA" alt="Exercice" />
-      <img id="gifB" alt="Superset" style="display:none" />
-      <div id="nextOverlay" class="nextOverlay">
-        <div class="box">
-          <div class="label">EXERCICE SUIVANT</div>
-          <div class="name" id="nextName">—</div>
-        </div>
-      </div>
-
-      <!-- Bouton infos (Comment faire / Erreurs) -->
-      <button id="infoBtn" class="infoBtn" type="button" aria-label="Infos exercice">i</button>
-
-      <!-- Overlay infos exercice -->
-      <div id="infoOverlay" class="infoOverlay" role="dialog" aria-modal="true" aria-label="Infos exercice">
-      <div class="infoPanel">
-      <div class="infoHeader">
-      <div class="infoTitle">Infos exercice</div>
-      <button id="infoClose" class="infoClose" type="button" aria-label="Fermer">✕</button>
-      </div>
-      <div class="infoBody">
-      <div class="section" id="howtoBox">
-      <h3>Comment faire</h3>
-      <ul id="steps"></ul>
-      </div>
-      <div class="section" id="mistakesBox">
-      <h3>Erreurs à éviter</h3>
-      <ul id="mistakes"></ul>
-      </div>
-      </div>
-    </div></div>
-    </div>
-
-    <div class="section">
-      <div class="row">
-        <h3 style="margin:0">À faire</h3>
-        <div class="dots" id="dots"></div>
-      </div>
-      <div id="todo" style="font-weight:900;margin-top:6px">—</div>
-      <div class="small" id="desc" style="margin-top:6px">—</div>
-      <div class="pills" style="justify-content:flex-start;margin-top:10px">
-        <span class="pill accent" id="muscle">—</span>
-        <span class="pill" id="restPill">Repos: —</span>
-      </div>
-    </div>
-
-    <div class="timerBox">
-      <div class="clock" id="clock">00:45</div>
-</div>
-
-    <div class="section" id="historyBox">
-      <div class="historyTop">
-        <div>
-          <div style="font-weight:900">Historique de charge</div>
-          <div class="small">Ex : <b>22</b> ou <b>2×22</b> • sauvegardé sur cet appareil</div>
-        </div>
-        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-          <input id="weightInput" type="text" placeholder="Charge" />
-          <button class="btnOk" id="saveWeightBtn">OK</button>
-          <button class="btnDanger" id="clearWeightBtn">Effacer</button>
-        </div>
-      </div>
-      <div style="overflow:auto;max-height:180px">
-        <table>
-          <thead><tr><th>Date</th><th>Charge</th></tr></thead>
-          <tbody id="historyBody"></tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="footer">
-    <div class="transport">
-      <button class="tbtn" id="prevBtn" type="button" aria-label="Précédent"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5L3 12l8 7V5zm10 0L13 12l8 7V5z"/></svg></button>
-      <button class="tbtn primary" id="startPause" type="button" aria-label="Start / Pause"><span id="startPauseIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></span></button>
-      <button class="tbtn" id="nextBtn" type="button" aria-label="Suivant"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5v14l8-7-8-7zm10 0v14l8-7-8-7z"/></svg></button>
-    </div>
-  </div>
-</section>
-
-<!-- Login overlay -->
-
-  <div id="loginCard">
-    <h2>Connexion</h2>
-    <p>Connecte-toi pour charger ton pack de séances (Firestore → users/{uid}/profile/config).</p>
-    <div class="row">
-      <input id="loginEmail" type="email" autocomplete="username" placeholder="Email">
-      <input id="loginPass" type="password" autocomplete="current-password" placeholder="Mot de passe">
-    </div>
-    <div class="row">
-      <button id="loginBtn" type="button">Se connecter</button>
-    </div>
-    <div class="msg" id="loginMsg"></div>
-  </div>
-</div>
-
-<!-- KEEP: images mapping -->
-<script src="images.js"></script>
-
-<!-- NEW: Firebase Option B loader (doesn't change sessions UI/cards) -->
-{
-      if(document.querySelector(\`script[data-dyn="\${src}"]\`)) return resolve();
-      const s = document.createElement("script");
-      s.src = src;
-      s.async = true;
-      s.setAttribute("data-dyn", src);
-      s.onload = ()=>resolve();
-      s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
-      document.head.appendChild(s);
-    });
-  }
-
-  async function loadUserSessions(uid){
-    const ref = doc(db, \`users/\${uid}/profile/config\`);
-    const snap = await getDoc(ref);
-    if(!snap.exists()) throw new Error("Config manquante: users/{uid}/profile/config");
-
-    const cfg = snap.data() || {};
-    const file = cfg.sessionsFile;
-    const varName = cfg.sessionsVar;
-
-    if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar");
-
-    await loadScriptOnce(file);
-
-    const obj = window[varName];
-    if(!obj) throw new Error(\`window["\${varName}"] introuvable (sessionsVar incorrect ou fichier).\`);
-
-    // Normalise: ton app lit window.SESSIONS
-    window.SESSIONS = obj;
-
-    // Notify the non-module script
-    window.dispatchEvent(new Event("pf:sessionsReady"));
-  }
-
-  $("loginBtn")?.addEventListener("click", async ()=>{
-    const email = $("loginEmail")?.value?.trim();
-    const pass  = $("loginPass")?.value || "";
-    if(!email || !pass){
-      showLogin(true, "Entre email + mot de passe.");
-      return;
+  <style>
+    :root{
+      --bg:#0b0f17; --card:#121a29; --muted:#9fb0c7; --text:#eaf1ff;
+      --accent:#4ea1ff; --accent2:#00d4ff; --danger:#ff4e6a;
+      --btn:#1a2740; --btn2:#223454;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 20px;
+      --safe-top: env(safe-area-inset-top);
+      --safe-bot: env(safe-area-inset-bottom);
     }
-    try{
-      await signInWithEmailAndPassword(auth, email, pass);
-    }catch(e){
-      showLogin(true, "Connexion impossible: " + (e?.message || e));
+    [data-theme="light"]{
+      --bg:#f5f7fb; --card:#ffffff; --muted:#4f6076; --text:#0b1526;
+      --accent:#1976ff; --accent2:#0aa3c2;
+      --btn:#e9eef9; --btn2:#dde7fb;
+      --shadow: 0 10px 30px rgba(10,20,40,.12);
     }
-  });
-
-  $("logoutBtn")?.addEventListener("click", async ()=>{
-    try{ await signOut(auth); }catch(e){}
-  });
-
-  onAuthStateChanged(auth, async (user)=>{
-    setTopPill(user);
-
-    if(!user){
-      showLogin(true, "");
-      // ensure sessions cleared
-      window.SESSIONS = window.SESSIONS || null;
-      return;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:var(--bg);
+      color:var(--text);
+      -webkit-tap-highlight-color: transparent;
+      padding-top: var(--safe-top);
+      padding-bottom: var(--safe-bot);
+      overscroll-behavior: none;
+      touch-action: manipulation;
+    }
+    a{color:inherit}
+    .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:10px; margin-bottom:12px;
+    }
+    .brand{
+      display:flex; flex-direction:column; gap:2px;
+    }
+    .brand .title{font-size:18px; font-weight:800; letter-spacing:.2px}
+    .brand .sub{font-size:12px; color:var(--muted)}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:10px 12px; border-radius:999px;
+      background:var(--card); box-shadow: var(--shadow);
+      font-size:13px; color:var(--muted);
+    }
+    .pill button{
+      border:0; background:transparent; color:var(--text);
+      font-size:14px; font-weight:700;
     }
 
-    try{
-      showLogin(false, "");
-      await loadUserSessions(user.uid);
-    }catch(e){
-      console.error(e);
-      // show login overlay as an error surface (still same home layout under it)
-      showLogin(true, "Erreur chargement séances:\n" + (e?.message || e));
+    .card{
+      background:var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:14px;
     }
-  });
-
-  // PWA SW (if present)
-  if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
-  }
-</script>
-
-<script>
-/* ========= SAFE REFERENCES ========= */
-const IMG = window.IMG || {};
-const $ = (id)=>document.getElementById(id);
-
-const PLAY_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
-const PAUSE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
-function setStartPauseUI(running){
-  const icon = $("startPauseIcon");
-  if(icon) icon.innerHTML = running ? PAUSE_ICON : PLAY_ICON;
-  $("startPause").setAttribute("aria-label", running ? "Pause" : "Start");
-}
-
-
-
-/* ========= PREVENT ZOOM (iOS Safari) ========= */
-(function preventZoom(){
-  // Disable pinch-to-zoom gestures (iOS)
-  document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive:false });
-  document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive:false });
-  document.addEventListener('gestureend', (e) => e.preventDefault(), { passive:false });
-
-  // Disable double-tap to zoom (common accidental zoom)
-  let lastTouchEnd = 0;
-  document.addEventListener('touchend', (e) => {
-    const now = Date.now();
-    if(now - lastTouchEnd <= 300){
-      e.preventDefault();
+    .stack{display:flex; flex-direction:column; gap:12px}
+    .row{display:flex; gap:10px; align-items:center}
+    .grow{flex:1}
+    .muted{color:var(--muted)}
+    .h1{font-size:22px; font-weight:900; margin:0 0 4px}
+    .h2{font-size:16px; font-weight:900; margin:0}
+    .small{font-size:12px}
+    .btn{
+      border:0; border-radius: 16px;
+      background:var(--btn);
+      color:var(--text);
+      padding:12px 14px;
+      font-weight:800;
+      box-shadow: var(--shadow);
+      display:inline-flex; align-items:center; justify-content:center; gap:10px;
     }
-    lastTouchEnd = now;
-  }, { passive:false });
-})();
-
-
-
-
-/* ========= USER + THEME (Light/Dark) — compact, HOME only ========= */
-const USER_KEY = "coach_active_user";         // e.g. "moi" / "femme"
-const THEME_KEY_PREFIX = "coach_theme_";      // final key: coach_theme_<user>
-
-function getActiveUser(){
-  return localStorage.getItem(USER_KEY) || "moi";
-}
-function setActiveUser(u){
-  localStorage.setItem(USER_KEY, u);
-  // re-apply theme for that user
-  applyTheme(getSavedOrPreferredTheme());
-  // refresh small label (if any)
-  refreshThemeUIVisibility();
-}
-
-function injectThemeCSS(){
-  let st = document.getElementById("themeStyle");
-  if(!st){
-    st = document.createElement("style");
-    st.id = "themeStyle";
-    document.head.appendChild(st);
-  }
-  // we only add overrides; your base CSS stays untouched
-  st.textContent = `
-    :root[data-theme="light"]{
-      --bg:#f3f5f8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --accent:#2563eb;
-      --line:#e2e8f0;
-      --ok:#16a34a;
-      --warn:#d97706;
-      --danger:#dc2626;
+    .btn:active{transform: translateY(1px)}
+    .btn.primary{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#061224}
+    .btn.danger{background:var(--danger)}
+    .btn.secondary{background:var(--btn2)}
+    .btn.wide{width:100%}
+    .btn.icon{width:54px; height:54px; padding:0; border-radius:18px}
+    .btn.icon.big{width:64px; height:64px; border-radius:22px}
+    .btnbar{
+      position: sticky;
+      bottom: 0;
+      padding: 12px 0 calc(12px + var(--safe-bot));
+      background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
+      display:flex; justify-content:center; gap:14px;
     }
-    :root[data-theme="light"] .timerBox{ background:#f1f5f9 !important; }
-    :root[data-theme="light"] .media img{ background:#f8fafc !important; }
-    :root[data-theme="light"] .historyTop input{ background:#fff !important; color: var(--text) !important; }
 
-    /* Compact controls (HOME only) */
-    .homeControls{
-      position:fixed;
-      top: calc(8px + env(safe-area-inset-top));
-      right: 8px;
-      z-index: 9999;
-      display:flex;
-      gap:6px;
-      align-items:center;
-      pointer-events:auto;
+    .grid{display:grid; grid-template-columns:1fr; gap:12px}
+    .sessionItem{display:flex; gap:12px; align-items:center}
+    .badge{
+      font-size:12px; color:var(--muted);
+      background: rgba(255,255,255,.06);
+      padding:6px 10px; border-radius:999px;
     }
-    .hcBtn{
-      width: 30px; height: 30px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,.22);
-      background: rgba(2,6,23,.55);
+    [data-theme="light"] .badge{background: rgba(10,20,40,.06)}
+
+    .screen{display:none}
+    .screen.active{display:block}
+
+    .loginBox{margin-top:14px}
+    input{
+      width:100%;
+      border:0; outline:none;
+      background:var(--btn2);
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:16px;
+      font-size:15px;
+    }
+    .timerBox{
+      display:flex; flex-direction:column; gap:10px;
+      align-items:center; justify-content:center;
+      padding: 14px;
+    }
+    .phase{
+      font-weight:900; letter-spacing:.3px;
+      padding:8px 12px; border-radius:999px;
+      background: rgba(255,255,255,.08);
       color: var(--text);
-      display:grid;
-      place-items:center;
-      font-size: 14px;
-      font-weight: 900;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 10px 24px rgba(0,0,0,.22);
-      user-select:none;
-      cursor:pointer;
+      font-size:12px;
     }
-    :root[data-theme="light"] .hcBtn{
-      background: rgba(255,255,255,.88);
-      color: #0f172a;
-      border-color: rgba(15,23,42,.14);
-      box-shadow: 0 10px 24px rgba(15,23,42,.10);
+    [data-theme="light"] .phase{background: rgba(10,20,40,.06)}
+    .time{
+      font-variant-numeric: tabular-nums;
+      font-size: 62px;
+      font-weight: 950;
+      line-height: 1;
+      margin: 2px 0 0;
     }
-    :root[data-theme="light"] .primary{ color: #ffffff !important; }
-    :root[data-theme="light"] .card button{ color: #ffffff !important; }
-  `;
-}
+    .subline{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
+    .preview{
+      width:100%;
+      border-radius: var(--radius);
+      overflow:hidden;
+      background: rgba(255,255,255,.06);
+      box-shadow: var(--shadow);
+    }
+    [data-theme="light"] .preview{background: rgba(10,20,40,.06)}
+    .preview img{
+      width:100%; height:auto; display:block;
+      background:transparent;
+    }
+    .kpiRow{display:flex; gap:10px; width:100%}
+    .kpi{flex:1; padding:10px 12px; border-radius:16px; background: rgba(255,255,255,.06)}
+    [data-theme="light"] .kpi{background: rgba(10,20,40,.06)}
+    .kpi .v{font-weight:950; font-size:16px}
+    .kpi .l{font-size:12px; color:var(--muted)}
 
-function themeKey(){
-  return THEME_KEY_PREFIX + getActiveUser();
-}
+    .overlayNext{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:flex-end;
+      padding: 16px 16px calc(16px + var(--safe-bot));
+      z-index: 50;
+    }
+    .overlayNext.active{display:flex}
+    .overlayCard{
+      width:100%;
+      max-width:520px;
+      margin:0 auto;
+      background:var(--card);
+      border-radius: 26px;
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+    .overlayCard .hdr{display:flex; align-items:center; justify-content:space-between; gap:12px}
+    .overlayTitle{font-size:16px; font-weight:950}
+    .hr{height:1px; background: rgba(255,255,255,.08); margin:10px 0}
+    [data-theme="light"] .hr{background: rgba(10,20,40,.08)}
+  </style>
+</head>
 
-function getSavedOrPreferredTheme(){
-  const saved = localStorage.getItem(themeKey());
-  if(saved === "dark" || saved === "light") return saved;
+<body>
+  <div class="app">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="title">Programme Force</div>
+        <div class="sub" id="userLine">Non connecté</div>
+      </div>
+      <div class="pill" id="pillAuth">
+        <span id="pillStatus">🔒</span>
+        <button id="btnLogout" style="display:none">Déconnexion</button>
+      </div>
+    </div>
 
-  const prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-  return prefersDark ? "dark" : "light";
-}
+    <!-- LOGIN -->
+    <section class="screen active" id="screenLogin">
+      <div class="card loginBox">
+        <div class="h1">Connexion</div>
+        <div class="muted small">Charge automatiquement le pack de séances via Firestore (Option B).</div>
+        <div style="height:12px"></div>
+        <div class="stack">
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" />
+          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Mot de passe" />
+          <button class="btn primary wide" id="btnLogin">Se connecter</button>
+          <div class="muted small" id="loginMsg"></div>
+        </div>
+      </div>
+    </section>
 
-function applyTheme(theme){
-  injectThemeCSS();
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem(themeKey(), theme);
+    <!-- HOME -->
+    <section class="screen" id="screenHome">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h1">Séances</div>
+            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
+          </div>
+          <button class="btn secondary" id="btnTheme" title="Thème">🌓</button>
+        </div>
 
-  const meta = document.querySelector('meta[name="theme-color"]');
-  if(meta){
-    meta.setAttribute("content", theme === "light" ? "#f3f5f8" : "#020617");
-  }
+        <div style="height:12px"></div>
+        <div class="grid" id="sessionList"></div>
+      </div>
 
-  // update button icon if present
-  const t = document.getElementById("themeBtn");
-  if(t){
-    t.textContent = (theme === "light") ? "☀︎" : "☾";
-    t.setAttribute("aria-label", theme === "light" ? "Thème clair" : "Thème sombre");
-  }
-}
+      <div style="height:12px"></div>
 
-function toggleTheme(){
-  const cur = document.documentElement.getAttribute("data-theme") || "dark";
-  applyTheme(cur === "dark" ? "light" : "dark");
-}
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h2">Réglages</div>
+            <div class="muted small">Sauvegardés par utilisateur.</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
+        </div>
+      </div>
+    </section>
 
-function mountHomeControls(){
-  // create once
-  if(document.getElementById("homeControls")) return;
+    <!-- WORKOUT -->
+    <section class="screen" id="screenWorkout">
+      <div class="card">
+        <div class="row">
+          <button class="btn secondary" id="btnBackHome">←</button>
+          <div class="grow">
+            <div class="h2" id="workoutTitle">Séance</div>
+            <div class="muted small" id="workoutSubtitle">—</div>
+          </div>
+          <span class="badge" id="setBadge">Série 1/1</span>
+        </div>
 
-  const wrap = document.createElement("div");
-  wrap.id = "homeControls";
-  wrap.className = "homeControls";
+        <div style="height:12px"></div>
 
-  const userBtn = document.createElement("div");
-  userBtn.id = "userBtn";
-  userBtn.className = "hcBtn";
-  userBtn.textContent = "👤";
-  userBtn.title = "Utilisateur";
-  userBtn.setAttribute("role","button");
-  userBtn.setAttribute("tabindex","0");
+        <div class="preview">
+          <img id="exoImg" alt="Exercice" />
+        </div>
 
-  const themeBtn = document.createElement("div");
-  themeBtn.id = "themeBtn";
-  themeBtn.className = "hcBtn";
-  themeBtn.textContent = "☾";
-  themeBtn.title = "Thème";
-  themeBtn.setAttribute("role","button");
-  themeBtn.setAttribute("tabindex","0");
+        <div style="height:12px"></div>
 
-  const act = (el, fn) => {
-    el.addEventListener("click", (e)=>{ e.preventDefault(); fn(); });
-    el.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter" || e.key === " "){
-        e.preventDefault(); fn();
-      }
+        <div class="row">
+          <div class="grow">
+            <div class="h1" id="exoName">—</div>
+            <div class="muted small" id="exoDesc">—</div>
+          </div>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="kpiRow">
+          <div class="kpi">
+            <div class="v" id="kpiReps">—</div>
+            <div class="l">Répétitions</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiRest">—</div>
+            <div class="l">Repos</div>
+          </div>
+          <div class="kpi">
+            <div class="v" id="kpiLast">—</div>
+            <div class="l">Dernière charge</div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="timerBox">
+          <div class="phase" id="phasePill">PRÊT</div>
+          <div class="time" id="timeText">00:00</div>
+          <div class="subline muted small" id="phaseHint">Appuie sur ▶︎ pour démarrer</div>
+        </div>
+      </div>
+
+      <div class="btnbar">
+        <button class="btn icon big secondary" id="btnPrev" title="Précédent">⏪</button>
+        <button class="btn icon big primary" id="btnPlayPause" title="Start / Pause">▶︎</button>
+        <button class="btn icon big secondary" id="btnNext" title="Suivant">⏩</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Overlay "EXERCICE SUIVANT" -->
+  <div class="overlayNext" id="overlayNext">
+    <div class="overlayCard">
+      <div class="hdr">
+        <div class="overlayTitle">EXERCICE SUIVANT</div>
+        <button class="btn secondary" id="btnCloseOverlay">OK</button>
+      </div>
+      <div class="hr"></div>
+      <div class="row">
+        <div class="grow">
+          <div class="h2" id="nextName">—</div>
+          <div class="muted small" id="nextLast">Dernière charge : —</div>
+        </div>
+        <span class="badge" id="nextBadge">—</span>
+      </div>
+      <div style="height:10px"></div>
+      <div class="preview">
+        <img id="nextImg" alt="Prochain exercice" />
+      </div>
+    </div>
+  </div>
+
+  <!-- images.js reste "en dur" -->
+  <script src="./images.js"></script>
+
+  <script type="module">
+    /***********************
+     * 1) Firebase imports
+     ***********************/
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    /*******************************************************
+     * 2) Firebase config (FOURNIE PAR TOI)
+     *******************************************************/
+    const firebaseConfig = {
+      apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
+      authDomain: "programme-force.firebaseapp.com",
+      projectId: "programme-force",
+      storageBucket: "programme-force.firebasestorage.app",
+      messagingSenderId: "1070910165788",
+      appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    /***********************
+     * 3) Helpers UI
+     ***********************/
+    const $ = (id)=>document.getElementById(id);
+    const screens = { login:$("screenLogin"), home:$("screenHome"), workout:$("screenWorkout") };
+    function showScreen(name){
+      Object.values(screens).forEach(s=>s.classList.remove("active"));
+      screens[name].classList.add("active");
+    }
+    function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
+
+    /***********************
+     * 4) Theme (home only)
+     ***********************/
+    const THEME_KEY = "coach_theme";
+    function applyTheme(t){
+      document.documentElement.setAttribute("data-theme", t);
+      localStorage.setItem(THEME_KEY, t);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if(meta) meta.setAttribute("content", t==="light" ? "#f5f7fb" : "#0b0f17");
+    }
+    applyTheme(localStorage.getItem(THEME_KEY) || "dark");
+    $("btnTheme").addEventListener("click", ()=>{
+      const cur = document.documentElement.getAttribute("data-theme") || "dark";
+      applyTheme(cur === "dark" ? "light" : "dark");
     });
-  };
 
-  act(themeBtn, toggleTheme);
+    /***********************
+     * 5) Per-user storage
+     ***********************/
+    let currentUser = null;
+    function ukey(suffix){
+      const uid = currentUser?.uid || "anon";
+      return `${uid}__${suffix}`;
+    }
 
-  act(userBtn, ()=>{
-    const cur = getActiveUser();
-    const next = (cur === "moi") ? "femme" : "moi";
-    // toggle simple Moi/Femme (tu peux renommer si tu veux)
-    setActiveUser(next);
-    // petit feedback
-    beep(next === "moi" ? 660 : 520, 120);
-  });
+    /***********************
+     * 6) Coach audio
+     ***********************/
+    let coachMode = true;
 
-  wrap.appendChild(userBtn);
-  wrap.appendChild(themeBtn);
-  document.body.appendChild(wrap);
-}
+    function speak(text){
+      try{
+        if(!coachMode) return;
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "fr-FR";
+        u.rate = 1.0;
+        speechSynthesis.speak(u);
+      }catch(e){}
+    }
+    function beep(freq=880, ms=90){
+      try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const o = ctx.createOscillator();
+        const g = ctx.createGain();
+        o.type = "sine";
+        o.frequency.value = freq;
+        o.connect(g); g.connect(ctx.destination);
+        g.gain.value = 0.06;
+        o.start();
+        setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
+      }catch(e){}
+    }
 
-function refreshThemeUIVisibility(){
-  const controls = document.getElementById("homeControls");
-  if(!controls) return;
+    function loadCoachMode(){
+      const v = localStorage.getItem(ukey("coach_mode"));
+      coachMode = (v === null) ? true : (v === "1");
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+    }
+    function toggleCoachMode(){
+      coachMode = !coachMode;
+      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+    }
+    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
 
-  // show only when HOME is visible
-  const homeVisible = $("home").classList.contains("show");
-  controls.style.display = homeVisible ? "flex" : "none";
-}
-/* ========= STATE ========= */
-let sessionKey = null;
-let session = null;
-let warmup = [];
-let work = [];
+    /***********************
+     * 7) Dynamic sessions loader (Option B)
+     ***********************/
+    function loadScriptOnce(src){
+      return new Promise((resolve, reject)=>{
+        if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
+        const s = document.createElement("script");
+        s.src = src;
+        s.async = true;
+        s.setAttribute("data-dyn", src);
+        s.onload = ()=>resolve();
+        s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
+        document.head.appendChild(s);
+      });
+    }
 
-let phase = "warmup";   // warmup | work | rest
-let wIndex = 0;         // warmup index
-let exIndex = 0;        // exercise index
-let setIndex = 1;       // 1..sets
+    async function getUserConfig(uid){
+      const ref = doc(db, `users/${uid}/profile/config`);
+      const snap = await getDoc(ref);
+      if(!snap.exists()){
+        throw new Error("Config Firestore manquante : users/{uid}/profile/config");
+      }
+      return snap.data();
+    }
 
-let remaining = 45;
-let timer = null;
-let running = false;
+    // Normalisation: toute l'app lit window.SESSIONS
+    window.SESSIONS = null;
 
-let coachMode = true;
-let coachHold = false;  // quand on a cliqué "Pause" (coach), on n'auto-redémarre plus
+    async function loadUserSessions(uid){
+      const cfg = await getUserConfig(uid);
+      const file = cfg.sessionsFile;
+      const varName = cfg.sessionsVar;
 
-// Overlay infos exercice
-/* ========= AUDIO / VOICE ========= */
-function beep(freq=880, ms=220){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type='sine';
-    o.frequency.value=freq;
-    o.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.001, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + ms/1000);
-    o.start(); o.stop(ctx.currentTime + ms/1000 + 0.02);
-  }catch(e){}
-}
-function speak(text){
-  try{
-    if(!('speechSynthesis' in window)) return;
-    window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang='fr-FR';
-    u.rate=1.02;
-    u.pitch=1.0;
-    window.speechSynthesis.speak(u);
-  }catch(e){}
-}
-function announcePhaseStart(p){
-  if(!coachMode) return;
-  if(p === "work") speak("Début de l'exercice");
-  else if(p === "rest") speak("Début du repos");
-  else if(p === "warmup") speak("Échauffement");
-}
+      if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar.");
+      await loadScriptOnce(file);
 
-function openInfo(){
-  const ov = $("infoOverlay");
-  if(!ov) return;
-  if(ov.classList.contains("show")) return;
-  ov.classList.add("show");
-}
+      const obj = window[varName];
+      if(!obj) throw new Error(`Variable sessions introuvable: window["${varName}"]`);
 
-function closeInfo(){
-  const ov = $("infoOverlay");
-  if(!ov) return;
-  ov.classList.remove("show");
-}
+      window.SESSIONS = obj;
+      $("userLine").textContent = cfg.displayName || currentUser?.email || "Connecté";
+    }
 
-/* ========= HISTORY (localStorage) ========= */
-function keyFor(exId){ return `coach_force_log_${exId}`; }
-function loadLog(exId){
-  try{ const raw = localStorage.getItem(keyFor(exId)); return raw ? (JSON.parse(raw) || []) : []; }
-  catch(e){ return []; }
-}
-function saveLog(exId, arr){ localStorage.setItem(keyFor(exId), JSON.stringify(arr.slice(0,200))); }
-function addEntry(exId, weight){
-  const arr = loadLog(exId);
-  arr.unshift({ ts: Date.now(), weight: String(weight).trim() });
-  saveLog(exId, arr);
-  return arr;
-}
-function lastWeightFor(exId){ const l = loadLog(exId); return l.length ? l[0].weight : null; }
-function fmtDate(ts){
-  const d = new Date(ts);
-  const dd = String(d.getDate()).padStart(2,'0');
-  const mm = String(d.getMonth()+1).padStart(2,'0');
-  const yy = d.getFullYear();
-  return `${dd}.${mm}.${yy}`;
-}
-function renderHistory(exId){
-  const body = $("historyBody");
-  const log = loadLog(exId).slice(0,10);
-  body.innerHTML = "";
-  if(!log.length){
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td style="color:var(--muted)">Aucune entrée</td><td></td>`;
-    body.appendChild(tr);
-    return;
-  }
-  log.forEach(r=>{
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${fmtDate(r.ts)}</td><td><b>${r.weight}</b></td>`;
-    body.appendChild(tr);
-  });
-}
+    /***********************
+     * 8) Sessions UI (Home)
+     ***********************/
+    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
 
-/* ========= HELPERS ========= */
-function clamp0(n){ return Math.max(0, Math.round(n||0)); }
-function fmtClock(sec){
-  sec = clamp0(sec);
-  const mm = String(Math.floor(sec/60)).padStart(2,'0');
-  const ss = String(sec%60).padStart(2,'0');
-  return `${mm}:${ss}`;
-}
-function setClock(sec){
-  remaining = clamp0(sec);
-  $("clock").textContent = fmtClock(remaining);
-}
-function resolveImage(valueOrKey){
-  if(!valueOrKey) return "";
-  const v = String(valueOrKey);
-  // si on te donne déjà un chemin
-  if(v.startsWith("images/") || v.startsWith("./images/") || v.startsWith("../images/")) return v;
-  // sinon c'est une clé de mapping
-  return IMG[v] || "";
-}
-function currentWarmup(){ return warmup[wIndex] || null; }
-function currentExercise(){ return work[exIndex] || null; }
+    function renderHome(){
+      const sessions = window.SESSIONS || {};
+      const keys = Object.keys(sessions);
 
-function shouldShowNextPreview(){
-  // dernier repos de l'exercice courant => setIndex === sets ET il existe un exercice suivant
-  if(phase !== "rest") return false;
-  const ex = currentExercise();
-  if(!ex) return false;
-  const sets = Number(ex.sets || 1);
-  return (setIndex === sets) && (exIndex < work.length - 1);
-}
-function nextExercise(){ return (exIndex < work.length - 1) ? work[exIndex+1] : null; }
+      const host = $("sessionList");
+      host.innerHTML = "";
 
-function renderDots(sets){
-  const box = $("dots");
-  box.innerHTML = "";
-  for(let i=1;i<=sets;i++){
-    const s = document.createElement('span');
-    s.className = "dot" + (i < setIndex ? " on" : (i === setIndex ? " cur" : ""));
-    box.appendChild(s);
-  }
-}
+      if(keys.length === 0){
+        host.innerHTML = `<div class="muted small">Aucune séance trouvée dans ton pack.</div>`;
+        return;
+      }
 
-/* ========= TIMER ========= */
-function stopTimer(){
-  running = false;
-  if(timer){ clearInterval(timer); timer = null; }
-  setStartPauseUI(false);
-}
-function startTimer(){
-  if(running) return;
-  running = true;
-  setStartPauseUI(true);
-  timer = setInterval(()=>{
-    remaining -= 1;
-    $("clock").textContent = fmtClock(remaining);
+      keys.forEach((k)=>{
+        const s = sessions[k];
+        const name = s?.name || k;
+        const nWarmup = (s?.warmup||[]).length;
+        const nItems = (s?.items||[]).length;
 
-    // Décompte vocal UNIQUEMENT en fin de phase
-    if(coachMode && remaining === 3) speak("3");
-    if(coachMode && remaining === 2) speak("2");
-    if(coachMode && remaining === 1) speak("1");
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="sessionItem">
+            <div class="grow">
+              <div class="h2">${escapeHtml(name)}</div>
+              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
+            </div>
+            <button class="btn primary">Démarrer</button>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", ()=>startSession(k));
+        host.appendChild(card);
+      });
+    }
 
-    if(remaining <= 0){
+    /***********************
+     * 9) Workout engine
+     ***********************/
+    // History (localStorage per user)
+    function histKey(exoId){ return ukey(`hist__${exoId}`); }
+    function getLastLoad(exoId){
+      return localStorage.getItem(histKey(exoId)) || "";
+    }
+    function setLastLoad(exoId, val){
+      if(val === null || val === undefined) return;
+      localStorage.setItem(histKey(exoId), String(val));
+    }
+
+    // Workout state
+    let curSessionId = null;
+    let curSession = null;
+    let seq = []; // flattened
+    let idx = 0;
+
+    let running = false;
+    let timer = null;
+    let remaining = 0;
+
+    function mmss(sec){
+      const s = Math.max(0, Math.floor(sec));
+      const m = Math.floor(s/60);
+      const r = s%60;
+      return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
+    }
+
+    function setPhaseUI(phase, hint){
+      $("phasePill").textContent = phase;
+      $("phaseHint").textContent = hint || "";
+    }
+
+    function stopTimer(){
+      running = false;
+      if(timer){ clearInterval(timer); timer=null; }
+      $("btnPlayPause").textContent = "▶︎";
+    }
+
+    function startTimer(){
+      if(running) return;
+      running = true;
+      $("btnPlayPause").textContent = "⏸";
+      let lastTick = Date.now();
+
+      timer = setInterval(()=>{
+        const now = Date.now();
+        const dt = (now - lastTick) / 1000;
+        lastTick = now;
+        remaining -= dt;
+
+        // 3-2-1 only at end of WORK (not rest)
+        const cur = seq[idx];
+        if(cur?.type === "work"){
+          if(Math.ceil(remaining) === 3) speak("3");
+          if(Math.ceil(remaining) === 2) speak("2");
+          if(Math.ceil(remaining) === 1) speak("1");
+        }
+
+        if(remaining <= 0){
+          clearInterval(timer); timer=null;
+          running = false;
+          $("btnPlayPause").textContent = "▶︎";
+          onPhaseEnd();
+          return;
+        }
+        $("timeText").textContent = mmss(remaining);
+      }, 120);
+    }
+
+    function onPhaseStart(){
+      const cur = seq[idx];
+      if(!cur) return;
+
+      remaining = cur.seconds || 0;
+      $("timeText").textContent = mmss(remaining);
+
+      if(cur.type === "work"){
+        setPhaseUI("EXERCICE", "Début de l'exercice");
+        speak("Début de l'exercice");
+        beep(880, 80);
+      }else if(cur.type === "rest"){
+        setPhaseUI("REPOS", "Début du repos");
+        speak("Début du repos");
+        beep(660, 80);
+      }else if(cur.type === "warmup"){
+        setPhaseUI("ÉCHAUFFEMENT", "Début de l'échauffement");
+        speak("Début de l'échauffement");
+        beep(740, 80);
+      }else{
+        setPhaseUI("PRÊT", "Appuie sur ▶︎ pour démarrer");
+      }
+    }
+
+    function onPhaseEnd(){
+      const cur = seq[idx];
+      if(!cur) return;
+
+      // If last rest of an exercise -> show overlay next exercise
+      if(cur.type === "rest" && cur.isLastRestOfExercise){
+        showNextOverlay();
+      }
+
+      // Auto-advance if coachMode
+      if(coachMode){
+        idx = Math.min(seq.length-1, idx+1);
+        renderWorkoutStep();
+        startTimer();
+      }else{
+        idx = Math.min(seq.length-1, idx+1);
+        renderWorkoutStep();
+      }
+    }
+
+    function setImg(imgEl, iconKey){
+      const map = window.IMG || {};
+      const path = map[iconKey] || iconKey || "";
+      imgEl.src = path;
+    }
+
+    function buildSequence(session){
+      const out = [];
+
+      // warmup as timed blocks
+      (session.warmup || []).forEach((w)=>{
+        out.push({
+          type:"warmup",
+          title: w.name || "Échauffement",
+          desc: w.desc || w.todo || "",
+          seconds: w.seconds || 60,
+          icon: w.icon || ""
+        });
+      });
+
+      // each exercise expands to work/rest repeated by sets
+      (session.items || []).forEach((e)=>{
+        const sets = Number(e.sets || 1);
+        const work = Number(e.work || (e.type==="time" ? e.seconds : 45) || 45);
+        const rest = Number(e.rest || 60);
+
+        for(let s=1; s<=sets; s++){
+          out.push({
+            type:"work",
+            exo: e,
+            setIndex: s,
+            setTotal: sets,
+            seconds: work
+          });
+          // rest after each set, last rest marked for overlay
+          out.push({
+            type:"rest",
+            exo: e,
+            setIndex: s,
+            setTotal: sets,
+            seconds: rest,
+            isLastRestOfExercise: (s === sets)
+          });
+        }
+      });
+
+      return out;
+    }
+
+    function renderWorkoutStep(){
       stopTimer();
-      onTimerDone();
-    }
-  }, 1000);
-}
-function autoStartIfCoach(){
-  if(coachMode && !coachHold){
-    startTimer();
-  }
-}
 
-/* ========= FLOW (NEXT/PREV) ========= */
-function goWarmup(){
-  phase = "warmup";
-  announcePhaseStart("warmup");
-  render();
-}
-function goWork(){
-  phase = "work";
-  announcePhaseStart("work");
-  const ex = currentExercise();
-  if(coachMode && ex && Number(ex.sets||1) === setIndex) speak("Dernière série");
-  render();
-}
-function goRest(){
-  phase = "rest";
-  announcePhaseStart("rest");
-  render();
-}
-
-function onTimerDone(){
-  // warmup -> next warmup or work
-  if(phase === "warmup"){
-    if(wIndex < warmup.length - 1){
-      wIndex++;
-      goWarmup();
-      autoStartIfCoach();
-      return;
-    }
-    // warmup fini -> premier exercice
-    phase = "work";
-    exIndex = 0;
-    setIndex = 1;
-    goWork();
-    autoStartIfCoach();
-    return;
-  }
-
-  // work timer done -> rest (si besoin) ou exercice suivant / fin
-  if(phase === "work"){
-    const ex = currentExercise();
-    const sets = Number(ex?.sets || 1);
-    const hasNextExercise = exIndex < work.length - 1;
-
-    // on met du repos si :
-    // - pas dernière série, ou
-    // - dernière série mais il reste un exercice après (repos de transition)
-    const needsRest = (setIndex < sets) || (setIndex === sets && hasNextExercise);
-
-    if(needsRest){
-      goRest();
-      autoStartIfCoach();
-      return;
-    }
-
-    // fin du dernier exo (dernier set) -> retour menu
-    showHome();
-    return;
-  }
-
-  // rest done -> soit prochaine série du même exo, soit exercice suivant
-  if(phase === "rest"){
-    const ex = currentExercise();
-    const sets = Number(ex?.sets || 1);
-
-    if(setIndex < sets){
-      setIndex++;
-      goWork();
-      autoStartIfCoach();
-      return;
-    }
-
-    // fin de l'exo -> next exo
-    if(exIndex < work.length - 1){
-      exIndex++;
-      setIndex = 1;
-      goWork();
-      autoStartIfCoach();
-      return;
-    }
-
-    // fin de séance
-    showHome();
-  }
-}
-
-function nextManual(){
-  // "Suivant (série)" : avance selon phase et logique de séance (comme un coach)
-  stopTimer(); // on stoppe net, puis on avance
-  if(coachMode) coachHold = true; // en mode coach, un clic manuel = on met hold
-  onTimerDone();
-}
-function prevManual(){
-  stopTimer();
-  if(phase === "warmup"){
-    wIndex = Math.max(0, wIndex - 1);
-    render();
-    return;
-  }
-  if(phase === "rest"){
-    // revenir au work du même set
-    phase = "work";
-    render();
-    return;
-  }
-  // phase work
-  if(setIndex > 1){
-    setIndex--;
-    render();
-    return;
-  }
-  if(exIndex > 0){
-    exIndex--;
-    const ex = currentExercise();
-    setIndex = Number(ex?.sets || 1);
-    render();
-    return;
-  }
-}
-
-/* ========= UI ========= */
-function showHome(){
-  stopTimer();
-  coachHold = false;
-  phase = "warmup";
-  wIndex = 0; exIndex = 0; setIndex = 1;
-  $("home").classList.add("show");
-  $("workout").classList.remove("show");
-  refreshThemeUIVisibility();
-}
-function showWorkout(){
-  $("home").classList.remove("show");
-  $("workout").classList.add("show");
-  refreshThemeUIVisibility();
-}
-
-function render(){
-  const overlay = $("nextOverlay");
-  overlay.classList.remove("show");
-  $("nextName").textContent = "—";
-
-  // Coach pill
-  $("coachPill").textContent = `Coach : ${coachMode ? "ON" : "OFF"}`;
-  $("coachPill").className = "pill " + (coachMode ? "ok" : "ok");
-
-  // Phase pill
-  if(phase === "warmup") $("phasePill").textContent = "Échauffement";
-  if(phase === "work") $("phasePill").textContent = "Travail";
-  if(phase === "rest") $("phasePill").textContent = "Repos";
-
-  // Hide top controls during work (keep title visible)
-  document.documentElement.classList.toggle("phase-work", phase === "work");
-
-  // Content
-  let title = "—";
-  let meta = "—";
-  let todo = "—";
-  let desc = "—";
-  let muscle = "—";
-  let restSec = 60;
-  let workSec = 45;
-  let sets = 0;
-
-  // Images
-  let imgA = "";
-  let imgB = "";
-
-  if(phase === "warmup"){
-    const w = currentWarmup();
-    if(typeof w === "string"){
-      title = w;
-      meta = "Échauffement";
-      todo = "45 s";
-      desc = "Prépare le mouvement, amplitude contrôlée, respiration."
-      muscle = "—";
-      sets = 0;
-      workSec = 45;
-      restSec = 0;
-      imgA = "";
-    } else if(w){
-      title = w.name || "Échauffement";
-      meta = "Échauffement";
-      todo = w.todo || (w.seconds ? `${w.seconds}s` : "45 s");
-      desc = w.desc || "";
-      muscle = w.muscle || "—";
-      sets = 0;
-      workSec = w.seconds || w.work || 45;
-      restSec = 0;
-      imgA = resolveImage(w.icon);
-    }
-    $("setPill").textContent = `Échauffement ${wIndex+1}/${warmup.length || 1}`;
-    renderDots(0);
-  }
-
-  if(phase === "work" || phase === "rest"){
-    const ex = currentExercise();
-    if(ex){
-      title = ex.name || "Exercice";
-      meta = phase === "rest" ? "Repos" : "Exercice";
-      muscle = ex.muscle || "—";
-      sets = Number(ex.sets || 1);
-      restSec = Number(ex.rest || 60);
-      workSec = (ex.type === "time") ? Number(ex.seconds || 40) : 40;
-
-      todo = (phase === "rest")
-        ? `Repos ${restSec}s`
-        : `${sets} × ${ex.reps || "—"}`;
-
-      desc = ex.desc || "—";
-
-      // images
-      if(ex.images && (ex.images.a || ex.images.b)){
-        imgA = resolveImage(ex.images.a);
-        imgB = resolveImage(ex.images.b) || imgA;
-      } else {
-        imgA = resolveImage(ex.icon);
-        imgB = "";
+      const cur = seq[idx];
+      if(!cur){
+        showScreen("home");
+        return;
       }
 
-      $("setPill").textContent = `Série ${setIndex}/${sets}`;
-      renderDots(sets);
+      // Determine displayed content:
+      let title = "";
+      let desc  = "";
+      let reps  = "—";
+      let rest  = "—";
+      let last  = "—";
+      let imgKey = "";
 
-      // Historique
-      const last = lastWeightFor(ex.id);
-      $("weightInput").value = last || "";
-      renderHistory(ex.id);
-    } else {
-      $("setPill").textContent = "—";
-      renderDots(0);
+      if(cur.type === "warmup"){
+        title = cur.title || "Échauffement";
+        desc = cur.desc || "";
+        reps = "—";
+        rest = "—";
+        last = "—";
+        imgKey = cur.icon || "";
+        $("setBadge").textContent = "Échauff.";
+      }else if(cur.type === "work" || cur.type === "rest"){
+        const e = cur.exo || {};
+        title = e.name || "Exercice";
+        desc  = e.desc || e.muscle || "";
+        reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
+        rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
+        last  = getLastLoad(e.id || e.name || title) || "—";
+        imgKey = e.icon || "";
+
+        $("setBadge").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
+      }
+
+      $("exoName").textContent = title;
+      $("exoDesc").textContent = desc || "—";
+      $("kpiReps").textContent = reps;
+      $("kpiRest").textContent = rest;
+      $("kpiLast").textContent = last;
+
+      setImg($("exoImg"), imgKey);
+
+      // Header
+      $("workoutTitle").textContent = curSession?.name || "Séance";
+      $("workoutSubtitle").textContent = cur.type === "warmup" ? "Échauffement" : (cur.type === "work" ? "Travail" : "Repos");
+
+      onPhaseStart();
     }
-  }
 
-  // Preview sur le DERNIER repos avant le prochain exo
-  if(shouldShowNextPreview()){
-    const nx = nextExercise();
-    if(nx){
-      overlay.classList.add("show");
-      const lw = (nx && nx.id) ? lastWeightFor(nx.id) : null;
-      $("nextName").innerHTML = `${(nx.name || "—")}${lw ? `<div style="margin-top:6px;font-size:12px;color:#cbd5e1;font-weight:800">Dernière charge : <span style="color:#fff">${lw}</span></div>` : ""}`;
-      const previewImg = (nx.images && nx.images.a) ? resolveImage(nx.images.a) : resolveImage(nx.icon);
-      if(previewImg) imgA = previewImg;
+    function startSession(sessionId){
+      curSessionId = sessionId;
+      curSession = (window.SESSIONS || {})[sessionId];
+      if(!curSession) return;
+
+      seq = buildSequence(curSession);
+      idx = 0;
+
+      showScreen("workout");
+      renderWorkoutStep();
     }
-  }
 
-  // Write UI
-  $("title").textContent = title;
-  $("meta").textContent = meta;
-  $("todo").textContent = todo;
-  $("desc").textContent = desc;
-  $("muscle").textContent = muscle;
-  $("restPill").textContent = `Repos: ${phase==="warmup" ? "—" : (restSec + "s")}`;
-
-  // Steps / mistakes
-  const ex = currentExercise();
-  if(phase === "warmup"){
-    $("steps").innerHTML = "";
-    $("mistakes").innerHTML = "";
-    // pas d'infos en échauffement
-    $("infoBtn").classList.remove("show");
-    closeInfo();
-  } else {
-    $("steps").innerHTML = (ex?.steps || []).map(s=>`<li>${s}</li>`).join("");
-    $("mistakes").innerHTML = (ex?.mistakes || []).map(s=>`<li>${s}</li>`).join("");
-
-    const hasInfo = ((ex?.steps || []).length + (ex?.mistakes || []).length) > 0;
-    $("infoBtn").classList.toggle("show", hasInfo);
-    if(!hasInfo) closeInfo();
-  }
-
-  // Images display
-  $("gifA").src = imgA || "";
-  if(imgB){
-    $("gifB").src = imgB;
-    $("gifB").style.display = "block";
-    $("media").classList.remove("one");
-  } else {
-    $("gifB").style.display = "none";
-    $("media").classList.add("one");
-  }
-
-  // Set timer for current phase
-  if(phase === "warmup" || phase === "work"){
-    setClock(workSec);
-  } else {
-    setClock(restSec);
-  }
-
-  updateTransportButtons();
-}
-
-/* ========= SESSION LIST ========= */
-function renderSessions(){
-  const box = $("sessionsList");
-  box.innerHTML = "";
-  const S = window.SESSIONS || {};
-  const keys = Object.keys(S);
-  if(!keys.length){
-    box.innerHTML = `<div class="card"><h2>Aucune séance</h2><div class="meta">sessions.js n'est pas chargé ou vide.</div></div>`;
-    return;
-  }
-  keys.forEach(k=>{
-    const s = S[k];
-    const name = s.name || `Séance ${k}`;
-    const wlen = (s.warmup || []).length;
-    const ilen = (s.items || s.exercises || []).length;
-    const c = document.createElement("div");
-    c.className = "card";
-    c.innerHTML = `<h2>${name}</h2><div class="meta">${wlen} échauffements • ${ilen} exercices</div>`;
-    const b = document.createElement("button");
-    b.textContent = "Démarrer";
-    b.onclick = ()=>startSession(k);
-    c.appendChild(b);
-    box.appendChild(c);
-  });
-}
-
-function startSession(k){
-  sessionKey = k;
-  session = window.SESSIONS[k];
-  warmup = session.warmup || [];
-  work = session.items || session.exercises || [];
-
-  phase = warmup.length ? "warmup" : "work";
-  wIndex = 0;
-  exIndex = 0;
-  setIndex = 1;
-  coachHold = false;
-
-  showWorkout();
-  render();
-  autoStartIfCoach();
-}
-
-function haptic(ms=10){
-  try{
-    if(navigator.vibrate) navigator.vibrate(ms);
-  }catch(e){}
-}
-function canPrev(){
-  if(phase === "warmup") return wIndex > 0;
-  if(phase === "rest") return true;
-  if(setIndex > 1) return true;
-  if(exIndex > 0) return true;
-  return false;
-}
-function updateTransportButtons(){
-  const prev = $("prevBtn");
-  if(prev) prev.disabled = !canPrev();
-}
-
-/* ========= EVENTS ========= */
-$("startPause").onclick = ()=>{
-  haptic();
-  if(running){
-    coachHold = true;
-    stopTimer();
-  }else{
-    coachHold = false;
-    startTimer();
-  }
-};
-$("nextBtn").onclick = ()=>{ haptic(); nextManual(); };
-$("prevBtn").onclick = ()=>{ haptic(); prevManual(); };
-// Switch Mode coach (en haut à droite)
-const coachToggle = $("coachToggle");
-function syncCoachUI(){
-  if(coachToggle) coachToggle.checked = !!coachMode;
-  $("coachPill").textContent = `Coach : ${coachMode ? "ON" : "OFF"}`;
-}
-if(coachToggle){
-  coachToggle.addEventListener("change", ()=>{
-  haptic(8);
-    coachMode = !!coachToggle.checked;
-    coachHold = false;
-    syncCoachUI();
-    beep(coachMode ? 880 : 440, 160);
-    if(coachMode && !running){
-      // au basculement, on démarre si on est dans workout
-      if($("workout").classList.contains("show")) autoStartIfCoach();
+    function stepPrev(){
+      stopTimer();
+      idx = Math.max(0, idx-1);
+      renderWorkoutStep();
     }
-  });
-}
-syncCoachUI();
-$("backBtn").onclick = showHome;
+    function stepNext(){
+      stopTimer();
+      idx = Math.min(seq.length-1, idx+1);
+      renderWorkoutStep();
+    }
 
-$("saveWeightBtn").onclick = ()=>{
-  const ex = currentExercise();
-  if(!ex || !ex.id) return;
-  const v = $("weightInput").value.trim();
-  if(!v) return;
-  addEntry(ex.id, v);
-  renderHistory(ex.id);
-  beep(880, 140);
-};
-$("clearWeightBtn").onclick = ()=>{
-  const ex = currentExercise();
-  if(!ex || !ex.id) return;
-  localStorage.removeItem(keyFor(ex.id));
-  renderHistory(ex.id);
-  beep(440, 140);
-};
+    $("btnPrev").addEventListener("click", stepPrev);
+    $("btnNext").addEventListener("click", stepNext);
 
-window.addEventListener("DOMContentLoaded", ()=>{
-  // Theme + user
-  mountHomeControls();
-  applyTheme(getSavedOrPreferredTheme());
-  refreshThemeUIVisibility();
-
-  // Infos exercice overlay
-  const infoBtn = $("infoBtn");
-  const infoOverlay = $("infoOverlay");
-  const infoClose = $("infoClose");
-  if(infoBtn) infoBtn.addEventListener("click", (e)=>{ e.preventDefault(); openInfo(); });
-  if(infoClose) infoClose.addEventListener("click", (e)=>{ e.preventDefault(); closeInfo(); });
-  if(infoOverlay){
-    // click sur le fond = fermer
-    infoOverlay.addEventListener("click", (e)=>{
-      if(e.target === infoOverlay) closeInfo();
+    $("btnPlayPause").addEventListener("click", ()=>{
+      if(running){
+        stopTimer();
+      }else{
+        startTimer();
+      }
     });
-  }
 
-  const d = $("debug");
-  d.style.display = "none";
-  const hasSessions = !!window.SESSIONS;
-  const hasImages = !!window.IMG;
-  d.textContent = `✅ init\nSESSIONS: ${hasSessions ? Object.keys(window.SESSIONS).length : "absent"}\nIMG keys: ${hasImages ? Object.keys(window.IMG).length : "absent"}`;
+    $("btnBackHome").addEventListener("click", ()=>{
+      stopTimer();
+      showScreen("home");
+    });
 
-  // NEW: wait for sessions loaded via Firebase (Option B)
-  const tryRender = ()=>{
-    renderSessions();
-  };
-  if(window.SESSIONS && Object.keys(window.SESSIONS||{}).length){
-    tryRender();
-  }else{
-    // Render after loader dispatches event
-    window.addEventListener("pf:sessionsReady", ()=>{
-      tryRender();
-    }, { once:true });
+    /***********************
+     * 10) Next overlay
+     ***********************/
+    function showNextOverlay(){
+      const next = seq.slice(idx+1).find(x=>x.type==="work");
+      if(!next || !next.exo) return;
 
-    // fallback: show empty state after 2s if no event (keeps same UI)
-    setTimeout(()=>{
-      if(!(window.SESSIONS && Object.keys(window.SESSIONS||{}).length)){
-        tryRender();
-      }
-    }, 2000);
-  }
-});
-</script>
+      const e = next.exo;
+      $("nextName").textContent = e.name || "Exercice";
+      const last = getLastLoad(e.id || e.name) || "—";
+      $("nextLast").textContent = `Dernière charge : ${last}`;
+      $("nextBadge").textContent = `Série 1/${e.sets || 1}`;
+      setImg($("nextImg"), e.icon || "");
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
-  authDomain: "programme-force.firebaseapp.com",
-  projectId: "programme-force",
-  storageBucket: "programme-force.firebasestorage.app",
-  messagingSenderId: "1070910165788",
-  appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-function loadScriptOnce(src){
-  return new Promise((resolve, reject)=>{
-    if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    s.setAttribute("data-dyn", src);
-    s.onload = resolve;
-    s.onerror = ()=>reject(new Error("Impossible de charger " + src));
-    document.head.appendChild(s);
-  });
-}
-
-async function loadUserSessions(uid){
-  const snap = await getDoc(doc(db, `users/${uid}/profile/config`));
-  if(!snap.exists()) throw new Error("Config Firestore manquante");
-  const { sessionsFile, sessionsVar } = snap.data();
-  await loadScriptOnce(sessionsFile);
-  if(!window[sessionsVar]) throw new Error("sessionsVar invalide");
-  window.SESSIONS = window[sessionsVar];
-  window.dispatchEvent(new Event("pf:sessionsReady"));
-}
-
-async function promptLogin(){
-  const email = prompt("Email Firebase :");
-  if(!email) return;
-  const pass = prompt("Mot de passe :");
-  if(!pass) return;
-  await signInWithEmailAndPassword(auth, email, pass);
-}
-
-onAuthStateChanged(auth, async (user)=>{
-  try{
-    if(!user){
-      await promptLogin();
-      return;
+      $("overlayNext").classList.add("active");
     }
-    await loadUserSessions(user.uid);
-  }catch(e){
-    alert("Erreur chargement séances:\n" + e.message);
-  }
-});
-</script>
+    $("btnCloseOverlay").addEventListener("click", ()=> $("overlayNext").classList.remove("active"));
+    $("overlayNext").addEventListener("click", (ev)=>{
+      if(ev.target === $("overlayNext")) $("overlayNext").classList.remove("active");
+    });
 
+    /***********************
+     * 11) Auth UI
+     ***********************/
+    $("btnLogin").addEventListener("click", async ()=>{
+      setMsg("");
+      const email = $("loginEmail").value.trim();
+      const pass  = $("loginPass").value;
+      if(!email || !pass){
+        setMsg("Entre email + mot de passe.");
+        return;
+      }
+      try{
+        await signInWithEmailAndPassword(auth, email, pass);
+      }catch(e){
+        setMsg("Connexion impossible : " + (e?.message || e));
+      }
+    });
+
+    $("btnLogout").addEventListener("click", async ()=>{
+      try{ await signOut(auth); }catch(e){}
+    });
+
+    onAuthStateChanged(auth, async (user)=>{
+      currentUser = user;
+
+      if(!user){
+        $("userLine").textContent = "Non connecté";
+        $("pillStatus").textContent = "🔒";
+        $("btnLogout").style.display = "none";
+        showScreen("login");
+        return;
+      }
+
+      $("pillStatus").textContent = "✅";
+      $("btnLogout").style.display = "inline-flex";
+
+      try{
+        await loadUserSessions(user.uid);
+        loadCoachMode();
+        renderHome();
+        showScreen("home");
+      }catch(e){
+        showScreen("login");
+        setMsg("Erreur chargement config/séances : " + (e?.message || e));
+      }
+    });
+
+    /***********************
+     * 12) PWA service worker (si présent)
+     ***********************/
+    if("serviceWorker" in navigator){
+      navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+    }
+
+    /***********************
+     * 13) iOS double-tap zoom guard
+     ***********************/
+    let lastTouchEnd = 0;
+    document.addEventListener("touchend", function (event) {
+      const now = Date.now();
+      if (now - lastTouchEnd <= 300) event.preventDefault();
+      lastTouchEnd = now;
+    }, { passive:false });
+
+  </script>
 </body>
 </html>
