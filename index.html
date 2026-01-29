@@ -20,7 +20,7 @@
     }
     .hidden{display:none}
     .center{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px;box-sizing:border-box}
-    .card{width:min(360px, 100%);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+    .card{width:min(380px, 100%);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.35)}
     h2{margin:0 0 12px 0;font-size:22px}
     label{display:block;font-size:13px;opacity:.85;margin:10px 0 6px}
     input{
@@ -35,7 +35,6 @@
       box-sizing:border-box;
     }
     button{
-      width:100%;
       padding:14px 16px;
       font-size:16px;
       border:none;
@@ -43,18 +42,36 @@
       background:#2563eb;
       color:white;
       cursor:pointer;
-      margin-top:12px;
     }
+    button.secondary{background:#334155}
+    button.danger{background:#b91c1c}
     button:disabled{opacity:.6;cursor:not-allowed}
     .msg{margin-top:12px;font-size:14px;line-height:1.35}
     .msg.ok{color:#86efac}
     .msg.err{color:#fca5a5}
-    header{padding:16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,.08)}
+    header{
+      padding:16px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      gap:10px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:8px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      font-size:13px;
+      white-space:nowrap;
+    }
     main{padding:16px}
     ul{margin:10px 0 0 0;padding:0;list-style:none}
-    li{padding:10px 12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.04)}
+    li{padding:12px;border:1px solid rgba(255,255,255,.12);border-radius:12px;margin-bottom:10px;background:rgba(255,255,255,.04)}
     .tiny{font-size:12px;opacity:.75;margin-top:10px}
     code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    .row > button{flex:1;min-width:160px}
   </style>
 </head>
 <body>
@@ -71,16 +88,13 @@
       <label for="password">Mot de passe</label>
       <input id="password" type="password" autocomplete="current-password" placeholder="••••••••" required />
 
-      <button id="loginBtn" type="submit">Se connecter</button>
+      <button id="loginBtn" type="submit" style="width:100%;margin-top:12px">Se connecter</button>
     </form>
 
     <div id="loginMsg" class="msg"></div>
 
     <div class="tiny">
-      Si rien ne se passe :<br/>
-      1) active <b>Email/Password</b> dans Firebase Auth<br/>
-      2) ajoute ton domaine GitHub Pages dans <b>Authorized domains</b><br/>
-      3) crée l'utilisateur dans <b>Authentication → Users</b>
+      Si tu as <code>auth/unauthorized-domain</code> : Firebase → Authentication → Settings → Authorized domains → ajoute <b>tonpseudo.github.io</b>.
     </div>
   </div>
 </div>
@@ -89,15 +103,40 @@
 <div id="appScreen" class="hidden">
   <header>
     <strong>Programme Force</strong>
-    <button id="logoutBtn" style="width:auto;margin-top:0;padding:10px 14px;border-radius:12px;background:#334155">Logout</button>
+    <div class="row" style="justify-content:flex-end;flex:1">
+      <span id="userPill" class="pill">—</span>
+      <button id="logoutBtn" class="secondary">Logout</button>
+    </div>
   </header>
 
   <main>
     <div id="appMsg" class="msg"></div>
-    <h3 style="margin:14px 0 10px">Mes séances</h3>
+
+    <div id="emptyBox" class="hidden" style="margin-top:14px">
+      <div class="pill" style="display:block;border-radius:14px;padding:12px 14px">
+        <div style="font-weight:600;margin-bottom:6px">Aucune séance dans Firestore</div>
+        <div style="opacity:.85;font-size:13px;line-height:1.35">
+          Tu es connecté, mais ta collection est vide :<br/>
+          <code>users/&lt;uid&gt;/sessions</code><br/><br/>
+          👉 Clique sur <b>Importer mes séances</b> pour copier tes séances locales (sessions.js) dans Firestore.
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button id="importBtn">Importer mes séances</button>
+          <button id="refreshBtn" class="secondary">Rafraîchir</button>
+        </div>
+        <div class="tiny" style="margin-top:10px">
+          Note : l'import utilise <code>window.SESSIONS</code>. Donc garde ton <code>sessions.js</code> dans le projet.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin:18px 0 10px">Mes séances</h3>
     <ul id="sessionsList"></ul>
   </main>
 </div>
+
+<!-- Tes séances locales (à conserver dans ton repo) -->
+<script src="sessions.js"></script>
 
 <!-- FIREBASE + APP LOGIC -->
 <script type="module">
@@ -110,7 +149,14 @@
     setPersistence,
     browserLocalPersistence
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   // ✅ Ton bloc Firebase
   const firebaseConfig = {
@@ -126,6 +172,7 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
+  // UI refs
   const loginScreen = document.getElementById("loginScreen");
   const appScreen = document.getElementById("appScreen");
   const loginForm = document.getElementById("loginForm");
@@ -133,6 +180,11 @@
   const logoutBtn = document.getElementById("logoutBtn");
   const loginMsg = document.getElementById("loginMsg");
   const appMsg = document.getElementById("appMsg");
+  const sessionsList = document.getElementById("sessionsList");
+  const emptyBox = document.getElementById("emptyBox");
+  const importBtn = document.getElementById("importBtn");
+  const refreshBtn = document.getElementById("refreshBtn");
+  const userPill = document.getElementById("userPill");
 
   function setMsg(el, text, kind){
     el.textContent = text || "";
@@ -140,14 +192,14 @@
     if(kind) el.classList.add(kind);
   }
 
-  // Persistance (évite "connexion qui disparaît" au refresh)
+  // Persistance
   try{
     await setPersistence(auth, browserLocalPersistence);
   }catch(e){
     console.warn("setPersistence failed:", e);
   }
 
-  // Login (avec feedback + alert en cas d'erreur)
+  // Login
   loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     setMsg(loginMsg, "", null);
@@ -175,9 +227,7 @@
       else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé. Ajoute ton domaine GitHub Pages dans Authorized domains.";
 
       setMsg(loginMsg, `${human} (${code || "no-code"})`, "err");
-      alert(`${human}
-
-Code: ${code || "no-code"}`);
+      alert(`${human}\n\nCode: ${code || "no-code"}`);
     }finally{
       loginBtn.disabled = false;
       loginBtn.textContent = "Se connecter";
@@ -189,38 +239,98 @@ Code: ${code || "no-code"}`);
     try{ await signOut(auth); }catch(e){ console.error(e); }
   });
 
+  // Refresh
+  refreshBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if(!user) return;
+    await loadSessions(user.uid);
+  });
+
+  // Import local sessions.js -> Firestore
+  importBtn.addEventListener("click", async () => {
+    const user = auth.currentUser;
+    if(!user) return;
+
+    // Your existing sessions.js must define window.SESSIONS
+    const localSessions = window.SESSIONS;
+    if(!localSessions || typeof localSessions !== "object" || Object.keys(localSessions).length === 0){
+      alert("sessions.js n'est pas chargé ou vide. Vérifie que sessions.js est bien présent à la racine et qu'il fait window.SESSIONS = {...}.");
+      return;
+    }
+
+    importBtn.disabled = true;
+    importBtn.textContent = "Import…";
+    setMsg(appMsg, "Import en cours…", null);
+
+    try{
+      const entries = Object.entries(localSessions);
+      for(const [sessionId, sessionData] of entries){
+        // Store under users/{uid}/sessions/{sessionId}
+        await setDoc(
+          doc(db, `users/${user.uid}/sessions/${sessionId}`),
+          {
+            title: sessionData?.title || sessionData?.name || sessionId,
+            data: sessionData,
+            updatedAt: serverTimestamp()
+          },
+          { merge: true }
+        );
+      }
+      setMsg(appMsg, `Import terminé ✅ (${entries.length} séances)`, "ok");
+      await loadSessions(user.uid);
+    }catch(err){
+      console.error("Import error:", err);
+      const code = err?.code || "";
+      let human = "Échec de l'import vers Firestore.";
+      if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore).";
+      setMsg(appMsg, `${human} (${code || "no-code"})`, "err");
+      alert(`${human}\n\nCode: ${code || "no-code"}`);
+    }finally{
+      importBtn.disabled = false;
+      importBtn.textContent = "Importer mes séances";
+    }
+  });
+
   // Auth state
   onAuthStateChanged(auth, async (user) => {
     if(user){
       loginScreen.classList.add("hidden");
       appScreen.classList.remove("hidden");
+      userPill.textContent = user.email || user.uid;
       setMsg(appMsg, `Connecté en tant que ${user.email}`, "ok");
       await loadSessions(user.uid);
     }else{
       appScreen.classList.add("hidden");
       loginScreen.classList.remove("hidden");
       setMsg(appMsg, "", null);
-      document.getElementById("sessionsList").innerHTML = "";
+      sessionsList.innerHTML = "";
+      emptyBox.classList.add("hidden");
+      userPill.textContent = "—";
     }
   });
 
   // Load sessions
   async function loadSessions(uid){
-    const list = document.getElementById("sessionsList");
-    list.innerHTML = "";
+    sessionsList.innerHTML = "";
+    emptyBox.classList.add("hidden");
 
     try{
       const snap = await getDocs(collection(db, `users/${uid}/sessions`));
       if(snap.empty){
+        emptyBox.classList.remove("hidden");
         const li = document.createElement("li");
-        li.innerHTML = `Aucune séance trouvée dans <code>users/${uid}/sessions</code>.<br/><span style="opacity:.8;font-size:13px">Ajoute un document dans Firestore pour tester.</span>`;
-        list.appendChild(li);
+        li.innerHTML = `Aucune séance trouvée dans <code>users/${uid}/sessions</code>.`;
+        sessionsList.appendChild(li);
         return;
       }
-      snap.forEach(doc => {
+
+      snap.forEach(d => {
+        const v = d.data() || {};
         const li = document.createElement("li");
-        li.textContent = doc.id;
-        list.appendChild(li);
+        const title = v.title || d.id;
+        li.innerHTML = `<div style="font-weight:650">${escapeHtml(title)}</div>
+                        <div class="tiny">docId: <code>${escapeHtml(d.id)}</code></div>`;
+        sessionsList.appendChild(li);
       });
     }catch(err){
       console.error("Firestore loadSessions error:", err);
@@ -230,8 +340,14 @@ Code: ${code || "no-code"}`);
       setMsg(appMsg, `${human} (${code || "no-code"})`, "err");
       const li = document.createElement("li");
       li.textContent = `${human}`;
-      list.appendChild(li);
+      sessionsList.appendChild(li);
     }
+  }
+
+  function escapeHtml(str){
+    return String(str).replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",""":"&quot;","'":"&#039;"
+    }[m]));
   }
 </script>
 </body>
