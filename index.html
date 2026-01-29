@@ -906,14 +906,14 @@ Entre 1 ou 2 :`, "1");
     if(choice === "2"){
       const srcSessions = getLocalSessionsForUid(u.uid);
       if(!srcSessions){
-        alert("Aucune source locale associée à ce compte.
+        alert(`Aucune source locale associée à ce compte.
 
-➡️ Renseigne PROFILE_BY_UID dans index.html avec les UID Firebase de JS/YS.");
+➡️ Renseigne PROFILE_BY_UID dans index.html avec les UID Firebase de JS/YS.`);
         return;
       }
-      if(!confirm("⚠️ Ça va supprimer toutes les séances Firestore de ce compte, puis réimporter depuis le fichier local.
+      if(!confirm(`⚠️ Ça va supprimer toutes les séances Firestore de ce compte, puis réimporter depuis le fichier local.
 
-Continuer ?")) return;
+Continuer ?`)) return;
       try{
         if(window.pfClearSessions) await window.pfClearSessions(u.uid);
         const n = window.pfWriteSessions ? await window.pfWriteSessions(u.uid, srcSessions) : 0;
