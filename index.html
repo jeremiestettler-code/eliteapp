@@ -271,18 +271,14 @@ body.inWorkout .btnbar .ctrlBtn.primary{
     .infoBtn:active{ transform: scale(.98); }
 
     .setDots{
-      position:absolute; right:58px; bottom:18px;
-      display:flex; gap:10px; align-items:center;
+      display:flex;
+      gap:10px;
+      align-items:center;
       padding: 0;
       pointer-events:none;
     }
 
-.setDotsRow{
-  display:flex;
-  justify-content:flex-end;
-  padding: 6px 10px 0;
-}
-    .dot{
+.dot{
       width:10px; height:10px; border-radius:999px;
       background: rgba(255,255,255,.20);
       border:1px solid rgba(255,255,255,.10);
@@ -441,14 +437,12 @@ body.inWorkout .btnbar .ctrlBtn.primary{
         </div>
       </div>
 
-      <div class="setDotsRow">
-        <div class="setDots" id="setDots" aria-label="Progression séries"></div>
-      </div>
+</div>
 
       <div class="card cardTight todoCard">
         <div class="todoHdr">
           <div class="todoLabel">À faire</div>
-          <div class="todoDotsGhost"></div>
+          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
         </div>
         <div class="todoMain" id="todoMain">—</div>
         <div class="todoDesc muted" id="todoDesc">—</div>
