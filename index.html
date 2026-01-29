@@ -113,6 +113,30 @@
       display:flex; justify-content:center; gap:14px;
     }
 
+/* Simplified bottom controls (uniform like mock) */
+body.inWorkout .btnbar{
+  gap: 14px;
+  padding: 16px 16px calc(16px + var(--safe-bot));
+}
+body.inWorkout .btnbar .ctrlBtn{
+  flex: 1;
+  height: 72px;
+  border-radius: 22px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(255,255,255,0.06);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size: 28px;
+  color: rgba(255,255,255,.92);
+  box-shadow: 0 10px 26px rgba(0,0,0,.22);
+}
+body.inWorkout .btnbar .ctrlBtn:active{ transform: scale(.97); }
+body.inWorkout .btnbar .ctrlBtn.primary{
+  background: linear-gradient(180deg, rgba(22,92,140,.55), rgba(10,42,64,.72));
+  border-color: rgba(120,200,255,.18);
+}
+
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
     .sessionItem{display:flex; gap:12px; align-items:center}
     .badge{
@@ -252,6 +276,12 @@
       padding: 0;
       pointer-events:none;
     }
+
+.setDotsRow{
+  display:flex;
+  justify-content:flex-end;
+  padding: 6px 10px 0;
+}
     .dot{
       width:10px; height:10px; border-radius:999px;
       background: rgba(255,255,255,.20);
@@ -398,8 +428,7 @@
         <div class="previewCard" id="previewCard">
           <img id="exoImg" alt="Exercice" />
           <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
-          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
-
+          
           <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
             <div class="infoInner">
               <div class="infoHdr">
@@ -410,6 +439,10 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="setDotsRow">
+        <div class="setDots" id="setDots" aria-label="Progression séries"></div>
       </div>
 
       <div class="card cardTight todoCard">
@@ -439,12 +472,13 @@
         </div>
       </div>
 
-      <div class="btnbar">
-        <button class="btn icon big secondary" id="btnPrev" title="Précédent">⏪</button>
-        <button class="btn icon big primary" id="btnPlayPause" title="Start / Pause">▶︎</button>
-        <button class="btn icon big secondary" id="btnNext" title="Suivant">⏩</button>
-      </div>
-    </section>
+      
+  <div class="btnbar">
+    <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">⏪</button>
+    <button class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause" aria-label="Start / Pause">▶︎</button>
+    <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">⏩</button>
+  </div>
+</section>
 </div>
 
   <!-- Overlay "EXERCICE SUIVANT" -->
