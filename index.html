@@ -269,24 +269,23 @@ th{color:var(--muted);font-weight:900}
 
 <div id="debug"></div>
 
-<!-- LOGIN OVERLAY (n'affecte pas l'UI des séances) -->
-<div id="pfLoginOverlay" style="display:none; position:fixed; inset:0; z-index:99999; padding:16px; background:rgba(2,6,23,.66); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
-  <div style="width:min(520px, 100%); margin:0 auto; border-radius:16px; border:1px solid rgba(148,163,184,.22); background:rgba(2,6,23,.90); box-shadow: 0 18px 50px rgba(0,0,0,.42); padding:14px;">
-    <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-      <div style="font-weight:950; font-size:16px;">Connexion</div>
-      <button id="pfLoginClose" type="button" style="width:36px; height:36px; border-radius:999px; border:1px solid rgba(148,163,184,.22); background:rgba(148,163,184,.10); color:var(--text); font-weight:950; cursor:pointer;">✕</button>
+<!-- LOGIN OVERLAY (ne change pas l'UI des séances, juste superposé) -->
+<div id="pfLoginOverlay" style="display:none; position:fixed; inset:0; z-index:99999; align-items:center; justify-content:center; padding:16px; background:rgba(2,6,23,.66); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);">
+  <div style="width:min(520px, 100%); border-radius:16px; border:1px solid rgba(148,163,184,.22); background:rgba(2,6,23,.90); box-shadow: 0 18px 50px rgba(0,0,0,.42); padding:14px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; gap:10px;">
+      <div style="font-weight:950;">Connexion</div>
+      <button id="pfLoginClose" type="button" style="width:34px;height:34px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(148,163,184,.10);color:inherit;font-weight:950;cursor:pointer;">✕</button>
     </div>
-    <div style="margin-top:8px; color:var(--muted); font-size:12px; line-height:1.35;">
-      Connecte-toi pour charger tes séances (Firestore → users/{uid}/profile/config).
+    <div id="pfLoginCurrent" style="margin-top:8px; color:var(--muted); font-size:12px;"></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
+      <input id="pfEmail" type="email" autocomplete="username" placeholder="Email" style="flex:1; min-width:170px; padding:12px 12px; border-radius:14px; border:1px solid rgba(148,163,184,.22); background:#020617; color:var(--text); outline:none;">
+      <input id="pfPass" type="password" autocomplete="current-password" placeholder="Mot de passe" style="flex:1; min-width:170px; padding:12px 12px; border-radius:14px; border:1px solid rgba(148,163,184,.22); background:#020617; color:var(--text); outline:none;">
     </div>
-
-    <div style="margin-top:12px; display:grid; gap:10px;">
-      <input id="pfEmail" type="email" autocomplete="username" placeholder="Email" style="width:100%; padding:12px 12px; border-radius:14px; border:1px solid rgba(148,163,184,.22); background:#020617; color:var(--text); outline:none;">
-      <input id="pfPass" type="password" autocomplete="current-password" placeholder="Mot de passe" style="width:100%; padding:12px 12px; border-radius:14px; border:1px solid rgba(148,163,184,.22); background:#020617; color:var(--text); outline:none;">
-      <button id="pfLoginBtn" type="button" style="width:100%; padding:14px; border-radius:14px; border:0; font-weight:950; background:var(--accent); color:#020617; cursor:pointer;">Se connecter</button>
-      <button id="pfLogoutBtn" type="button" style="display:none; width:100%; padding:14px; border-radius:14px; border:1px solid rgba(239,68,68,.35); font-weight:950; background:rgba(239,68,68,.18); color:#fecaca; cursor:pointer;">Se déconnecter</button>
-      <div id="pfLoginMsg" style="margin-top:4px; color:var(--muted); font-size:12px; white-space:pre-wrap;"></div>
+    <div style="display:grid; gap:10px; margin-top:12px;">
+      <button id="pfLoginBtn" type="button" style="width:100%; padding:14px; border-radius:14px; border:0; font-weight:900; background:var(--accent); color:#020617; cursor:pointer;">Se connecter</button>
+      <button id="pfLogoutBtn" type="button" style="width:100%; padding:14px; border-radius:14px; border:1px solid rgba(148,163,184,.22); font-weight:900; background:rgba(148,163,184,.10); color:var(--text); cursor:pointer;">Se déconnecter</button>
     </div>
+    <div id="pfLoginMsg" style="margin-top:10px; color:var(--muted); font-size:12px; white-space:pre-wrap;"></div>
   </div>
 </div>
 
@@ -592,8 +591,12 @@ function mountHomeControls(){
   act(themeBtn, toggleTheme);
 
   act(userBtn, ()=>{
-    // Ouvre la page de login (Firebase) pour changer d\'utilisateur
-    if(typeof window.pfShowLogin === "function") window.pfShowLogin();
+    const cur = getActiveUser();
+    const next = (cur === "moi") ? "femme" : "moi";
+    // toggle simple Moi/Femme (tu peux renommer si tu veux)
+    setActiveUser(next);
+    // petit feedback
+    beep(next === "moi" ? 660 : 520, 120);
   });
 
   wrap.appendChild(userBtn);
@@ -1221,7 +1224,6 @@ const d = $("debug");
     tryRender();
   }else{
     window.addEventListener("pf:sessionsReady", ()=>tryRender(), { once:true });
-    // fallback: render empty state after 2s (keeps same UI)
     setTimeout(()=>{ if(!(window.SESSIONS && Object.keys(window.SESSIONS||{}).length)) tryRender(); }, 2000);
   }
 });
@@ -1247,15 +1249,31 @@ const db   = getFirestore(app);
 
 const $ = (id)=>document.getElementById(id);
 
-function showOverlay(show){
+function showLogin(msg=""){
   const ov = $("pfLoginOverlay");
   if(!ov) return;
-  ov.style.display = show ? "block" : "none";
+  ov.style.display = "flex";
+  if($("pfLoginMsg")) $("pfLoginMsg").textContent = msg || "";
 }
-
-function setMsg(txt=""){
-  const m = $("pfLoginMsg");
-  if(m) m.textContent = txt || "";
+function hideLogin(){
+  const ov = $("pfLoginOverlay");
+  if(!ov) return;
+  ov.style.display = "none";
+  if($("pfLoginMsg")) $("pfLoginMsg").textContent = "";
+}
+function setCurrentUserText(user){
+  const el = $("pfLoginCurrent");
+  if(!el) return;
+  if(user){
+    el.textContent = `Connecté : ${user.email || user.uid}`;
+  }else{
+    el.textContent = "Non connecté";
+  }
+}
+function setLogoutVisible(user){
+  const b = $("pfLogoutBtn");
+  if(!b) return;
+  b.style.display = user ? "block" : "none";
 }
 
 function loadScriptOnce(src){
@@ -1278,89 +1296,71 @@ async function loadUserSessions(uid){
   const file = cfg.sessionsFile;
   const varName = cfg.sessionsVar;
   if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar");
+
   await loadScriptOnce(file);
+
   const obj = window[varName];
   if(!obj) throw new Error(`sessionsVar introuvable: ${varName}`);
+
   window.SESSIONS = obj;
   window.dispatchEvent(new Event("pf:sessionsReady"));
 }
 
-async function doLogin(){
-  const email = ($("pfEmail")?.value || "").trim();
-  const pass = ($("pfPass")?.value || "");
+// Exposé pour le bouton 👤 (UI)
+window.pfShowLogin = ()=>{
+  showLogin("");
+};
+
+$("pfLoginClose")?.addEventListener("click", ()=>{
+  hideLogin();
+});
+
+$("pfLoginBtn")?.addEventListener("click", async ()=>{
+  const email = $("pfEmail")?.value?.trim();
+  const pass  = $("pfPass")?.value || "";
   if(!email || !pass){
-    setMsg("Entre email + mot de passe.");
+    showLogin("Entre email + mot de passe.");
     return;
   }
-  setMsg("Connexion...");
   try{
     await signInWithEmailAndPassword(auth, email, pass);
-    localStorage.setItem("pf_last_email", email);
   }catch(e){
-    setMsg("Connexion impossible:\n" + (e?.message || e));
+    showLogin("Connexion impossible : " + (e?.message || e));
   }
-}
+});
 
-async function doLogout(){
-  setMsg("Déconnexion...");
+$("pfLogoutBtn")?.addEventListener("click", async ()=>{
   try{
     await signOut(auth);
+    // Clear sessions immediately in UI
+    window.SESSIONS = {};
+    window.dispatchEvent(new Event("pf:sessionsReady"));
+    showLogin("Déconnecté. Connecte-toi avec un autre compte.");
   }catch(e){
-    setMsg("Déconnexion impossible:\n" + (e?.message || e));
+    showLogin("Erreur déconnexion : " + (e?.message || e));
   }
-}
-
-// Expose to non-module code (icône user)
-window.pfShowLogin = ()=>{ showOverlay(true); setMsg(""); };
-window.pfHideLogin = ()=>{ showOverlay(false); setMsg(""); };
-
-function syncOverlayForUser(user){
-  const logoutBtn = $("pfLogoutBtn");
-  const loginBtn  = $("pfLoginBtn");
-  if(!logoutBtn || !loginBtn) return;
-
-  if(user){
-    logoutBtn.style.display = "block";
-    loginBtn.textContent = "Recharger / Se connecter";
-    // on peut masquer le mot de passe si déjà connecté, mais on garde simple
-  }else{
-    logoutBtn.style.display = "none";
-    loginBtn.textContent = "Se connecter";
-  }
-}
+});
 
 onAuthStateChanged(auth, async (user)=>{
-  syncOverlayForUser(user);
-
+  setCurrentUserText(user);
+  setLogoutVisible(user);
   if(!user){
-    // si pas connecté, on affiche la page login
-    showOverlay(true);
-    const last = localStorage.getItem("pf_last_email");
-    if(last && $("pfEmail")) $("pfEmail").value = last;
-    setMsg("");
+    showLogin("");
     return;
   }
-
-  // connecté => on masque le login et charge les séances
-  showOverlay(false);
-  setMsg("");
   try{
     await loadUserSessions(user.uid);
+    hideLogin();
   }catch(e){
     console.error(e);
-    // si config/session échoue, on ré-ouvre le login pour permettre de changer de compte
-    showOverlay(true);
-    setMsg("Erreur chargement séances:\n" + (e?.message || e));
+    showLogin("Erreur chargement séances :\n" + (e?.message || e));
   }
 });
 
-window.addEventListener("DOMContentLoaded", ()=>{
-  $("pfLoginBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); doLogin(); });
-  $("pfLogoutBtn")?.addEventListener("click", (e)=>{ e.preventDefault(); doLogout(); });
-  $("pfLoginClose")?.addEventListener("click", (e)=>{ e.preventDefault(); showOverlay(false); });
-  // clic hors carte => fermer
-  $("pfLoginOverlay")?.addEventListener("click", (e)=>{ if(e.target === $("pfLoginOverlay")) showOverlay(false); });
-});
+// PWA SW (si présent)
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
+}
 </script>
 
 </body>
