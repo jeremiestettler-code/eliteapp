@@ -1,419 +1,947 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>Programme Force</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Programme Force — App</title>
+<meta name="theme-color" content="#020617">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon-precomposed" href="icons/icon-192.png">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Force">
+<style>
+:root{
+  --bg:#020617;--card:#0b1220;--text:#f8fafc;--muted:#94a3b8;--accent:#38bdf8;
+  --line:#1e293b;--ok:#22c55e;--warn:#f59e0b;--danger:#ef4444;
+  --mono: ui-monospace, Menlo, Consolas, monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto;background:var(--bg);color:var(--text);padding-top: env(safe-area-inset-top);}
+.view{display:none;min-height:100vh;padding:16px}
+.view.show{display:block}
+#debug{display:none;padding:10px 12px;background:rgba(34,197,94,.12);border-bottom:1px solid rgba(34,197,94,.25);color:#bbf7d0;font-family:var(--mono);font-size:12px;white-space:pre-wrap}
 
-  <style>
-    :root{color-scheme: dark;}
-    body{
-      margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-      background:#0f172a;
-      color:#fff;
-      padding-top:env(safe-area-inset-top);
-    }
-    .hidden{display:none!important}
-    .topbar{
-      position:sticky; top:0; z-index:10;
-      padding:14px 16px;
-      display:flex; justify-content:space-between; align-items:center; gap:12px;
-      background:rgba(15,23,42,.92);
-      backdrop-filter:saturate(1.2) blur(10px);
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:8px 10px; border-radius:999px;
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.12);
-      font-size:13px; white-space:nowrap;
-    }
-    .btn{
-      border:0; border-radius:12px;
-      padding:10px 14px;
-      font-size:14px;
-      color:#fff;
-      background:#334155;
-      cursor:pointer;
-    }
-    .btn.primary{ background:#2563eb; }
-    .btn:disabled{opacity:.6; cursor:not-allowed}
+/* HOME */
+.home h1{margin:0;font-size:26px;font-weight:950}
+.home p{color:var(--muted);margin:8px 0 14px}
+.grid{display:grid;grid-template-columns:1fr;gap:12px}
+.card{border:1px solid var(--line);border-radius:16px;padding:14px;background:var(--card)}
+.card h2{margin:0;font-size:16px;font-weight:900}
+.card .meta{color:var(--muted);font-size:12px;margin-top:6px}
+.card button{margin-top:12px;width:100%;padding:14px;border-radius:14px;border:0;font-weight:900;background:var(--accent);color:#020617;cursor:pointer}
 
-    main{padding:16px}
-    h2{margin:10px 0 8px;font-size:20px}
-    .list{display:flex;flex-direction:column;gap:10px;margin-top:10px}
-    .card{
-      padding:12px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.04);
-    }
-    .cardTitle{font-weight:700}
-    .muted{opacity:.8;font-size:13px;line-height:1.35}
-    code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+/* WORKOUT */
+.app{padding-bottom:250px}
+.h1{font-size:20px;font-weight:950;margin:6px 0;text-align:center}
+.meta{color:var(--muted);font-size:13px;text-align:center}
 
-    /* Login overlay */
-    .overlay{
-      position:fixed; inset:0; z-index:100;
-      display:flex; align-items:center; justify-content:center;
-      padding:24px;
-      background:rgba(2,6,23,.72);
-      backdrop-filter: blur(10px);
+.topRow{position:relative;display:flex;align-items:center;justify-content:center;margin-top:6px}
+.topRow .h1{flex:1;margin:0;text-align:center;padding:0 58px} /* reserve space for back+switch */
+.coachSwitch{position:absolute;right:0;top:50%;transform:translateY(-50%);width:44px;height:26px;display:inline-block;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.coachSwitch input{display:none}
+.coachSwitch span{position:absolute;inset:0;border-radius:999px;background:rgba(148,163,184,.25);border:1px solid rgba(148,163,184,.28);transition:all .18s ease}
+.coachSwitch span:before{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:999px;background:rgba(248,250,252,.92);box-shadow:0 8px 18px rgba(0,0,0,.25);transition:all .18s ease}
+.coachSwitch input:checked + span{background:rgba(34,197,94,.35);border-color:rgba(34,197,94,.45)}
+.coachSwitch input:checked + span:before{transform:translateX(18px);background:rgba(240,253,244,.98)}
+:root[data-theme="light"] .coachSwitch span{background:rgba(15,23,42,.12);border-color:rgba(15,23,42,.14)}
+:root[data-theme="light"] .coachSwitch span:before{background:#ffffff;box-shadow:0 8px 18px rgba(15,23,42,.14)}
+.backBtn{position:absolute;left:0;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:12px;border:1px solid rgba(148,163,184,.22);background:rgba(15,23,42,.35);color:inherit;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+:root[data-theme="light"] .backBtn{background:rgba(255,255,255,.82);border-color:rgba(15,23,42,.12)}
+.coachSwitch,.backBtn{transition:opacity .18s ease}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.grid1{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
+
+.pills{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.pill{padding:6px 10px;border-radius:999px;border:1px solid rgba(148,163,184,.22);background:rgba(148,163,184,.08);color:var(--muted);font-size:12px}
+.pill.accent{border-color:rgba(56,189,248,.35);color:#bae6fd;background:rgba(56,189,248,.08)}
+.pill.ok{border-color:rgba(34,197,94,.35);color:#bbf7d0;background:rgba(34,197,94,.08)}
+.pill.warn{border-color:rgba(245,158,11,.35);color:#fde68a;background:rgba(245,158,11,.08)}
+
+.media{margin-top:12px;display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative}
+.media.one{grid-template-columns:1fr}
+.media img{width:100%;max-height:34vh;object-fit:contain;border-radius:16px;border:1px solid var(--line);background:#01040b}
+
+/* Petit bouton "i" superposé sur le GIF */
+.infoBtn{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  width:34px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(2,6,23,.62);
+  color:var(--text);
+  font-weight:950;
+  display:none;
+  place-items:center;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 10px 24px rgba(0,0,0,.22);
+}
+.infoBtn.show{display:grid}
+:root[data-theme="light"] .infoBtn{
+  background: rgba(255,255,255,.88);
+  color:#0f172a;
+  border-color: rgba(15,23,42,.14);
+  box-shadow: 0 10px 24px rgba(15,23,42,.10);
+}
+
+/* Overlay d'infos (Comment faire / Erreurs) */
+.infoOverlay{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+  background:rgba(2,6,23,.58);
+  border-radius:16px;
+  z-index:60;
+}
+.infoOverlay.show{display:flex}
+.infoPanel{
+  width:100%;
+  max-height:100%;
+  overflow:auto;
+  border-radius:14px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(2,6,23,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 18px 50px rgba(0,0,0,.42);
+}
+:root[data-theme="light"] .infoPanel{ background:rgba(255,255,255,.96); }
+.infoHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:12px 12px 10px;
+  border-bottom:1px solid rgba(148,163,184,.14);
+}
+.infoTitle{font-weight:950}
+.infoClose{
+  width:34px;height:34px;
+  border-radius:999px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(148,163,184,.10);
+  color:var(--text);
+  font-weight:950;
+  display:grid;
+  place-items:center;
+  cursor:pointer;
+  user-select:none;
+  -webkit-tap-highlight-color: transparent;
+}
+:root[data-theme="light"] .infoClose{ background: rgba(15,23,42,.06); color:#0f172a; }
+.infoBody{ padding:12px; }
+.infoBody .section{ margin-top:10px; }
+.infoBody .section:first-child{ margin-top:0; }
+
+/* Overlay "exercice suivant" */
+.nextOverlay{
+  position:absolute; inset:0;
+  display:none; align-items:center; justify-content:center; text-align:center;
+  border-radius:16px;
+  background:linear-gradient(180deg, rgba(2,6,23,.12), rgba(2,6,23,.72));
+  pointer-events:none;
+}
+.nextOverlay.show{display:flex}
+.nextOverlay .box{
+  border:1px solid rgba(56,189,248,.35);
+  background:rgba(2,6,23,.78);
+  padding:14px 16px;border-radius:14px;
+  max-width:92%;
+}
+.nextOverlay .label{
+  font-size:12px;letter-spacing:.14em;
+  color:#7dd3fc;font-weight:950;
+}
+.nextOverlay .name{
+  font-size:18px;font-weight:950;margin-top:6px;line-height:1.2
+}
+
+.section{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:var(--card);padding:12px}
+.section h3{margin:0 0 8px;font-size:14px;font-weight:900}
+.section ul{margin:0;padding-left:18px;font-size:13px;color:#cbd5e1}
+.section .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.small{color:var(--muted);font-size:12px;line-height:1.3}
+
+.dots{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+.dot{width:10px;height:10px;border-radius:999px;background:rgba(148,163,184,.25);border:1px solid rgba(148,163,184,.25)}
+.dot.on{background:rgba(34,197,94,.9);border-color:rgba(34,197,94,.9)}
+.dot.cur{background:rgba(56,189,248,.9);border-color:rgba(56,189,248,.9)}
+
+.timerBox{margin-top:12px;border:1px solid var(--line);border-radius:16px;background:#060c18;padding:12px;text-align:center}
+.clock{font-family:var(--mono);font-size:52px;font-weight:950}
+.mode{color:var(--muted);font-size:13px;margin-top:4px}
+
+.historyTop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.historyTop input{
+  width:160px;padding:10px 12px;border-radius:14px;border:1px solid rgba(148,163,184,.22);
+  background:#020617;color:var(--text);outline:none;
+}
+.historyTop button{padding:10px 12px;border-radius:14px;border:0;font-weight:900}
+.btnOk{background:rgba(56,189,248,.18);color:#bae6fd}
+.btnDanger{background:rgba(239,68,68,.18);color:#fecaca}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
+th,td{padding:8px 6px;border-bottom:1px solid rgba(148,163,184,.14);text-align:left}
+th{color:var(--muted);font-weight:900}
+
+
+/* Transport controls (Prev / Play-Pause / Next) */
+.footer{position:fixed;left:0;right:0;bottom:0;padding:12px;background:rgba(2,6,23,.92);/* border-top supprimée (Option A) */backdrop-filter: blur(10px)}
+.transport{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:10px}
+.tbtn{
+  width:100%;
+  height:56px;
+  border-radius:16px;
+  border:1px solid rgba(148,163,184,.22);
+  background:rgba(148,163,184,.10);
+  color:var(--text);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.tbtn.primary{
+  background:rgba(56,189,248,.20);
+  border-color:rgba(56,189,248,.35);
+  color:#bae6fd;
+}
+.tbtn svg{width:26px;height:26px;display:block}
+.tbtn:disabled{opacity:.35;cursor:default;}
+.tbtn:disabled svg{opacity:.9}
+:root[data-theme="light"] .footer{ background: rgba(243,245,248,.92) !important; }
+:root[data-theme="light"] .tbtn{
+  background:#f1f5f9;
+  border-color:rgba(15,23,42,.12);
+  color:#0f172a;
+}
+:root[data-theme="light"] .tbtn.primary{
+  background:rgba(56,189,248,.18);
+  border-color:rgba(56,189,248,.30);
+  color:#0f172a;
+}
+
+
+    :root[data-theme="light"] .card button{
+      background: var(--accent);
+      color: #ffffff;
     }
-    .loginBox{
-      width:min(380px, 100%);
-      border-radius:18px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      padding:18px;
-      box-shadow:0 18px 60px rgba(0,0,0,.55);
+    :root[data-theme="light"] .secondary{
+      background: #e5e7eb;
+      color: #0f172a;
     }
-    .loginBox h1{font-size:20px;margin:0 0 12px}
-    label{display:block;font-size:13px;opacity:.85;margin:10px 0 6px}
-    input{
-      width:100%;
-      box-sizing:border-box;
-      padding:12px;
-      font-size:16px;
-      border-radius:12px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(0,0,0,.2);
-      color:#fff;
-      outline:none;
+    :root[data-theme="light"] .tertiary{
+      background: #f1f5f9;
+      color: #0f172a;
     }
-    .msg{margin-top:10px;font-size:14px}
-    .msg.ok{color:#86efac}
-    .msg.err{color:#fca5a5}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .row .btn{flex:1;min-width:150px}
-  </style>
+    :root[data-theme="light"] .themeSwitch label{
+      background: #e2e8f0;
+    }
+    :root[data-theme="light"] .themeSwitch span{
+      background: #0f172a;
+    }
+
+</style>
 </head>
 <body>
 
-  <div class="topbar">
-    <strong>Programme Force</strong>
-    <div style="display:flex;gap:10px;align-items:center;">
-      <span id="userPill" class="pill">Non connecté</span>
-      <button id="logoutBtn" class="btn">Logout</button>
+<div id="debug"></div>
+
+<!-- HOME -->
+<section id="home" class="view show home">
+  <h1>Programme Force</h1>
+  <p>Choisis ta séance. Ensuite : échauffement → travail → repos (mode coach possible).</p>
+  <div id="sessionsList" class="grid"></div>
+</section>
+
+<!-- WORKOUT -->
+<section id="workout" class="view">
+  <div class="app">
+    <div class="topRow">
+      <button class="backBtn" id="backBtn" type="button" aria-label="Retour">←</button>
+      <div class="h1" id="title">—</div>
+      <label class="coachSwitch" title="Mode coach">
+        <input type="checkbox" id="coachToggle" />
+        <span></span>
+      </label>
     </div>
-  </div>
+    <div class="meta" id="meta">—</div>
 
-  <main>
-    <div id="statusMsg" class="msg"></div>
+    <div class="pills">
+      <span class="pill accent" id="phasePill">—</span>
+      <span class="pill" id="setPill">—</span>
+      <span class="pill ok" id="coachPill">Coach : OFF</span>
+    </div>
 
-    <div id="emptyBox" class="card hidden" style="margin-top:12px">
-      <div class="cardTitle">Aucune séance pour ce compte</div>
-      <div class="muted" style="margin-top:6px">
-        Collection vide : <code>users/&lt;uid&gt;/sessions</code>.<br/>
-        Tu peux importer les séances locales (sessions.js) dans Firestore pour ce compte.
+    <div id="media" class="media one">
+      <img id="gifA" alt="Exercice" />
+      <img id="gifB" alt="Superset" style="display:none" />
+      <div id="nextOverlay" class="nextOverlay">
+        <div class="box">
+          <div class="label">EXERCICE SUIVANT</div>
+          <div class="name" id="nextName">—</div>
+        </div>
       </div>
+
+      <!-- Bouton infos (Comment faire / Erreurs) -->
+      <button id="infoBtn" class="infoBtn" type="button" aria-label="Infos exercice">i</button>
+
+      <!-- Overlay infos exercice -->
+      <div id="infoOverlay" class="infoOverlay" role="dialog" aria-modal="true" aria-label="Infos exercice">
+      <div class="infoPanel">
+      <div class="infoHeader">
+      <div class="infoTitle">Infos exercice</div>
+      <button id="infoClose" class="infoClose" type="button" aria-label="Fermer">✕</button>
+      </div>
+      <div class="infoBody">
+      <div class="section" id="howtoBox">
+      <h3>Comment faire</h3>
+      <ul id="steps"></ul>
+      </div>
+      <div class="section" id="mistakesBox">
+      <h3>Erreurs à éviter</h3>
+      <ul id="mistakes"></ul>
+      </div>
+      </div>
+    </div></div>
+    </div>
+
+    <div class="section">
       <div class="row">
-        <button id="importBtn" class="btn primary">Importer depuis sessions.js</button>
-        <button id="refreshBtn" class="btn">Rafraîchir</button>
+        <h3 style="margin:0">À faire</h3>
+        <div class="dots" id="dots"></div>
       </div>
-      <div class="muted" style="margin-top:10px">
-        Note : l'import utilise <code>window.SESSIONS</code> défini par <code>sessions.js</code>.
+      <div id="todo" style="font-weight:900;margin-top:6px">—</div>
+      <div class="small" id="desc" style="margin-top:6px">—</div>
+      <div class="pills" style="justify-content:flex-start;margin-top:10px">
+        <span class="pill accent" id="muscle">—</span>
+        <span class="pill" id="restPill">Repos: —</span>
+      </div>
+    </div>
+
+    <div class="timerBox">
+      <div class="clock" id="clock">00:45</div>
+</div>
+
+    <div class="section" id="historyBox">
+      <div class="historyTop">
+        <div>
+          <div style="font-weight:900">Historique de charge</div>
+          <div class="small">Ex : <b>22</b> ou <b>2×22</b> • sauvegardé sur cet appareil</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input id="weightInput" type="text" placeholder="Charge" />
+          <button class="btnOk" id="saveWeightBtn">OK</button>
+          <button class="btnDanger" id="clearWeightBtn">Effacer</button>
+        </div>
+      </div>
+      <div style="overflow:auto;max-height:180px">
+        <table>
+          <thead><tr><th>Date</th><th>Charge</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
       </div>
     </div>
 
-    <h2 style="margin-top:16px">Mes séances</h2>
-    <div id="sessionsList" class="list"></div>
-  </main>
-
-  <!-- Données locales (utilisées uniquement pour importer) -->
-  <script src="sessions.js"></script>
-
-  <!-- LOGIN OVERLAY -->
-  <div id="loginOverlay" class="overlay hidden" aria-hidden="true">
-    <div class="loginBox">
-      <h1>Connexion</h1>
-      <form id="loginForm">
-        <label for="email">Email</label>
-        <input id="email" type="email" inputmode="email" autocomplete="email" required />
-        <label for="password">Mot de passe</label>
-        <input id="password" type="password" autocomplete="current-password" required />
-        <button id="loginBtn" class="btn primary" type="submit" style="width:100%;margin-top:14px">Se connecter</button>
-      </form>
-      <div id="loginMsg" class="msg"></div>
-      <div class="muted" style="margin-top:10px">
-        Si erreur <code>auth/unauthorized-domain</code> : Firebase → Authentication → Settings → Authorized domains.
-      </div>
-    </div>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import {
-      getAuth,
-      signInWithEmailAndPassword,
-      onAuthStateChanged,
-      signOut,
-      setPersistence,
-      browserLocalPersistence
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import {
-      getFirestore,
-      collection,
-      getDocs,
-      doc,
-      setDoc,
-      serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  <div class="footer">
+    <div class="transport">
+      <button class="tbtn" id="prevBtn" type="button" aria-label="Précédent"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M11 5L3 12l8 7V5zm10 0L13 12l8 7V5z"/></svg></button>
+      <button class="tbtn primary" id="startPause" type="button" aria-label="Start / Pause"><span id="startPauseIcon"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg></span></button>
+      <button class="tbtn" id="nextBtn" type="button" aria-label="Suivant"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M3 5v14l8-7-8-7zm10 0v14l8-7-8-7z"/></svg></button>
+    </div>
+  </div>
+</section>
 
-    // ✅ Ton bloc Firebase
-    const firebaseConfig = {
-      apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
-      authDomain: "programme-force.firebaseapp.com",
-      projectId: "programme-force",
-      storageBucket: "programme-force.firebasestorage.app",
-      messagingSenderId: "1070910165788",
-      appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
-    };
+<!-- Sessions maintenant chargées depuis Firestore (Firebase) -->
+<script src="images.js"></script>
+<script src="sessions.js"></script>
+<script src="sessions_femme.js"></script>
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+<!-- FIREBASE LOGIN OVERLAY -->
+<div id="loginOverlay" class="pf-login-overlay hidden" aria-hidden="true">
+  <div class="pf-login-card" role="dialog" aria-modal="true" aria-labelledby="pfLoginTitle">
+    <div class="pf-login-title" id="pfLoginTitle">Connexion</div>
+    <div class="pf-login-row">
+      <label class="pf-login-label" for="pfEmail">Email</label>
+      <input id="pfEmail" class="pf-login-input" type="email" inputmode="email" autocomplete="email" placeholder="ex: toi@email.com" />
+    </div>
+    <div class="pf-login-row">
+      <label class="pf-login-label" for="pfPassword">Mot de passe</label>
+      <input id="pfPassword" class="pf-login-input" type="password" autocomplete="current-password" placeholder="••••••••" />
+    </div>
+    <button id="pfLoginBtn" class="pf-login-btn">Se connecter</button>
+    <div id="pfLoginMsg" class="pf-login-msg"></div>
+    <div class="pf-login-hint">
+      Astuce : si tu vois <code>auth/unauthorized-domain</code>, ajoute ton domaine GitHub Pages dans Firebase → Authentication → Settings → Authorized domains.
+    </div>
+  </div>
+</div>
 
-    // UI
-    const userPill = document.getElementById("userPill");
-    const logoutBtn = document.getElementById("logoutBtn");
-    const statusMsg = document.getElementById("statusMsg");
-    const sessionsList = document.getElementById("sessionsList");
-    const emptyBox = document.getElementById("emptyBox");
-    const importBtn = document.getElementById("importBtn");
-    const refreshBtn = document.getElementById("refreshBtn");
+<style>
+  .pf-login-overlay{
+    position:fixed; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    padding:24px;
+    background:rgba(2,6,23,.82);
+    backdrop-filter: blur(8px);
+    z-index:9999;
+  }
+  .pf-login-overlay.hidden{display:none}
+  .pf-login-card{
+    width:min(420px, 100%);
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:18px;
+    box-shadow:0 18px 50px rgba(0,0,0,.45);
+    padding:18px 16px 14px 16px;
+  }
+  .pf-login-title{font-size:20px;font-weight:800;margin:2px 0 12px 0}
+  .pf-login-row{margin-bottom:10px}
+  .pf-login-label{display:block;font-size:12px;opacity:.85;margin:0 0 6px 2px}
+  .pf-login-input{
+    width:100%;
+    box-sizing:border-box;
+    padding:12px 12px;
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(2,6,23,.35);
+    color:#fff;
+    font-size:16px;
+    outline:none;
+  }
+  .pf-login-btn{
+    width:100%;
+    padding:13px 14px;
+    border-radius:14px;
+    border:none;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:6px;
+  }
+  .pf-login-btn:disabled{opacity:.65;cursor:not-allowed}
+  .pf-login-msg{margin-top:10px;font-size:13px;line-height:1.35}
+  .pf-login-msg.ok{color:#86efac}
+  .pf-login-msg.err{color:#fca5a5}
+  .pf-login-hint{margin-top:10px;font-size:12px;opacity:.78;line-height:1.35}
+  .pf-login-hint code{opacity:.95}
+</style>
 
-    const loginOverlay = document.getElementById("loginOverlay");
-    const loginForm = document.getElementById("loginForm");
-    const loginBtn = document.getElementById("loginBtn");
-    const loginMsg = document.getElementById("loginMsg");
 
-    function setMsg(el, text, kind){
-      el.textContent = text || "";
-      el.classList.remove("ok","err");
-      if(kind) el.classList.add(kind);
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import {
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    signOut,
+    setPersistence,
+    browserLocalPersistence
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    setDoc,
+    deleteDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // ✅ Ton projet Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
+    authDomain: "programme-force.firebaseapp.com",
+    projectId: "programme-force",
+    storageBucket: "programme-force.firebasestorage.app",
+    messagingSenderId: "1070910165788",
+    appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  try{ await setPersistence(auth, browserLocalPersistence); }catch(e){ console.warn("setPersistence failed", e); }
+
+  // Expose helpers to non-module code
+  window.pfAuth = auth;
+  window.pfDB = db;
+
+  // ==========================
+  // PROFILS (email -> source)
+  // ==========================
+  // 👉 Renseigne ici les emails EXACTS (en minuscules) et la source locale à utiliser pour l'import.
+  // - "JS"  -> sessions.js   (window.SESSIONS_JS)
+  // - "YS"  -> sessions_femme.js (window.SESSIONS_YS)
+  //
+  // Exemple :
+  // const SESSION_SOURCE_BY_EMAIL = {
+  //   "jeremie.stettler@gmail.com": "JS",
+  //   "yasmine.stettler@gmail.com": "YS",
+  // };
+  const SESSION_SOURCE_BY_EMAIL = {
+    // "jeremie.stettler@gmail.com": "JS",
+    // "yasmine.stettler@gmail.com": "YS",
+  };
+
+  function pfGetLocalSessionsForEmail(email){
+    const e = String(email || "").trim().toLowerCase();
+    const tag = SESSION_SOURCE_BY_EMAIL[e] || null;
+
+    if(tag === "JS") return window.SESSIONS_JS;
+    if(tag === "YS") return window.SESSIONS_YS;
+
+    return null;
+  }
+
+  function pfGetBadgeForEmail(email){
+    const e = String(email || "").trim().toLowerCase();
+    const tag = SESSION_SOURCE_BY_EMAIL[e] || "";
+    return tag === "JS" || tag === "YS" ? tag : "";
+  }
+
+  window.pfSignIn = async (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
+  };
+
+  window.pfSignOut = async () => {
+    return signOut(auth);
+  };
+
+  window.pfFetchSessions = async (uid) => {
+    const out = {};
+    const snap = await getDocs(collection(db, `users/${uid}/sessions`));
+    snap.forEach(d => {
+      const v = d.data() || {};
+      // on stocke la structure originale de séance dans v.data si présente, sinon v
+      out[d.id] = (v && typeof v === "object" && v.data) ? v.data : v;
+    });
+    return out;
+  };
+
+  // Importer les séances locales (sessions.js / sessions_femme.js) vers Firestore pour CE compte.
+  window.pfImportSessions = async (uid, email) => {
+    const local = pfGetLocalSessionsForEmail(email);
+    if(!local || typeof local !== "object" || Object.keys(local).length === 0){
+      throw new Error("Aucune source locale trouvée pour cet email (SESSION_SOURCE_BY_EMAIL).");
     }
 
-    function showLogin(show){
-      loginOverlay.classList.toggle("hidden", !show);
-      loginOverlay.setAttribute("aria-hidden", show ? "false" : "true");
+    const entries = Object.entries(local);
+    for(const [sessionId, sessionData] of entries){
+      await setDoc(
+        doc(db, `users/${uid}/sessions/${sessionId}`),
+        {
+          title: sessionData?.title || sessionData?.name || sessionId,
+          data: sessionData,
+          updatedAt: serverTimestamp()
+        },
+        { merge: true }
+      );
     }
+    return entries.length;
+  };
 
-    // ✅ Cache sessions par UID pour éviter "la femme voit mes séances"
-    function cacheKeyFor(uid){ return `pf_sessions_cache_${uid}`; }
+  // Supprimer toutes les séances Firestore de CE compte (utile si tu as importé les mauvaises séances).
+  window.pfDeleteAllSessions = async (uid) => {
+    const snap = await getDocs(collection(db, `users/${uid}/sessions`));
+    const ops = [];
+    snap.forEach(d => ops.push(deleteDoc(d.ref)));
+    await Promise.all(ops);
+    return ops.length;
+  };
 
-    function clearUI(){
-      sessionsList.innerHTML = "";
-      emptyBox.classList.add("hidden");
-      setMsg(statusMsg, "", null);
-    }
 
-    // Persistance auth
-    try{
-      await setPersistence(auth, browserLocalPersistence);
-    }catch(e){
-      console.warn("setPersistence failed:", e);
-    }
+  // Auth relay (module -> window callback)
+  let lastUser = null;
+  onAuthStateChanged(auth, (user) => {
+    lastUser = user || null;
+    if(typeof window.__pfOnAuth === "function") window.__pfOnAuth(lastUser);
+    else window.__pfLastUser = lastUser;
+  });
 
-    // Login
-    loginForm.addEventListener("submit", async (e) => {
+  window.pfGetLastUser = () => lastUser || window.__pfLastUser || null;
+</script>
+
+<script>
+/* ========= SAFE REFERENCES ========= */
+const IMG = window.IMG || {};
+const $ = (id)=>document.getElementById(id);
+
+const PLAY_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
+const PAUSE_ICON = `<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>`;
+function setStartPauseUI(running){
+  const icon = $("startPauseIcon");
+  if(icon) icon.innerHTML = running ? PAUSE_ICON : PLAY_ICON;
+  $("startPause").setAttribute("aria-label", running ? "Pause" : "Start");
+}
+
+
+
+/* ========= PREVENT ZOOM (iOS Safari) ========= */
+(function preventZoom(){
+  // Disable pinch-to-zoom gestures (iOS)
+  document.addEventListener('gesturestart', (e) => e.preventDefault(), { passive:false });
+  document.addEventListener('gesturechange', (e) => e.preventDefault(), { passive:false });
+  document.addEventListener('gestureend', (e) => e.preventDefault(), { passive:false });
+
+  // Disable double-tap to zoom (common accidental zoom)
+  let lastTouchEnd = 0;
+  document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if(now - lastTouchEnd <= 300){
       e.preventDefault();
-      setMsg(loginMsg, "", null);
+    }
+    lastTouchEnd = now;
+  }, { passive:false });
+})();
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
 
+
+
+/* ========= USER + THEME (Light/Dark) — compact, HOME only ========= */
+const USER_KEY = "coach_active_user";         // e.g. "JS" / "YS"
+const THEME_KEY_PREFIX = "coach_theme_";      // final key: coach_theme_<user>
+
+function getActiveUser(){
+  return (window.__pfUserInitials || "—");
+}
+function setActiveUser(u){
+  localStorage.setItem(USER_KEY, u);
+  // re-apply theme for that user
+  applyTheme(getSavedOrPreferredTheme());
+  // refresh UI
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
+    try{
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
+      }
+    }catch(_){}
+
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+    return !!(fresh && Object.keys(fresh).length);
+  }
+
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
+        return;
+      }
       loginBtn.disabled = true;
+      const old = loginBtn.textContent;
       loginBtn.textContent = "Connexion…";
-
+      setLoginMsg("", null);
       try{
-        await signInWithEmailAndPassword(auth, email, password);
-        setMsg(loginMsg, "Connecté ✅", "ok");
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
       }catch(err){
         console.error("Login error:", err);
         const code = err?.code || "";
         let human = "Erreur de connexion.";
         if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
-        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable (crée-le dans Firebase Auth).";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
         else if(code.includes("auth/invalid-email")) human = "Email invalide.";
-        else if(code.includes("auth/network-request-failed")) human = "Problème réseau (ou domaine bloqué). Vérifie Authorized domains.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
         else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
-        else if(code.includes("auth/too-many-requests")) human = "Trop de tentatives. Réessaie plus tard.";
-        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé. Ajoute ton domaine GitHub Pages dans Authorized domains.";
-
-        setMsg(loginMsg, `${human} (${code || "no-code"})`, "err");
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
         alert(`${human}\n\nCode: ${code || "no-code"}`);
       }finally{
         loginBtn.disabled = false;
-        loginBtn.textContent = "Se connecter";
+        loginBtn.textContent = old;
       }
     });
+  }
 
-    // Logout
-    logoutBtn.addEventListener("click", async () => {
-      try{ await signOut(auth); }catch(e){ console.error(e); }
-    });
+  // Auth callback from module script
+  window.__pfOnAuth = async (user) => {
+  // AUTO_IMPORT_ON_EMPTY (email -> fichier)
+  // Objectif : éviter d'afficher les séances du compte précédent quand on change d'utilisateur,
+  // et auto-importer les bonnes séances si la collection Firestore du compte est vide.
 
-    // Refresh
-    refreshBtn.addEventListener("click", async () => {
-      const u = auth.currentUser;
-      if(!u) return;
-      await loadSessionsForUser(u);
-    });
+  // 1) Reset UI state immédiatement
+  window.SESSIONS = {};
+  try{ renderSessions(); }catch(_){}
 
-    // Import local sessions.js -> Firestore (pour le compte actuellement connecté)
-    importBtn.addEventListener("click", async () => {
-      const u = auth.currentUser;
-      if(!u) return;
+  // 2) Update badge (JS / YS) si mappé
+  try{
+    const badge = document.getElementById("userBadge");
+    if(badge){
+      badge.textContent = user?.email ? pfGetBadgeForEmail(user.email) : "";
+      badge.style.display = badge.textContent ? "inline-flex" : "none";
+    }
+  }catch(_){}
 
-      const localSessions = window.SESSIONS;
-      if(!localSessions || typeof localSessions !== "object" || Object.keys(localSessions).length === 0){
-        alert("sessions.js n'est pas chargé ou vide. Vérifie que sessions.js est bien présent à la racine et qu'il fait window.SESSIONS = {...}.");
+  if(!user){
+    try{ showLogin(); }catch(_){}
+    return;
+  }
+
+  try{ hideLogin(); }catch(_){}
+
+  // 3) Charger Firestore + cache (namespacé par uid)
+  let hasAny = false;
+  try{
+    hasAny = await loadSessionsFromFirestore(user.uid);
+  }catch(e){
+    console.error(e);
+  }
+
+  // 4) Si vide, et si on a une source locale pour cet email, on auto-import (une seule fois)
+  //    ⚠️ Si tu as importé les mauvaises séances dans ce compte, utilise le menu 👤 -> Réinitialiser & réimporter.
+  if(!hasAny){
+    const local = (typeof pfGetLocalSessionsForEmail === "function") ? pfGetLocalSessionsForEmail(user.email) : null;
+    if(local && typeof local === "object" && Object.keys(local).length){
+      try{
+        const n = await window.pfImportSessions(user.uid, user.email);
+        console.log("Auto-import sessions:", n);
+        await loadSessionsFromFirestore(user.uid);
+      }catch(e){
+        console.warn("Auto-import failed:", e);
+      }
+    }
+  }
+};
+$("nextBtn").onclick = ()=>{ haptic(); nextManual(); };
+$("prevBtn").onclick = ()=>{ haptic(); prevManual(); };
+// Switch Mode coach (en haut à droite)
+const coachToggle = $("coachToggle");
+function syncCoachUI(){
+  if(coachToggle) coachToggle.checked = !!coachMode;
+  $("coachPill").textContent = `Coach : ${coachMode ? "ON" : "OFF"}`;
+}
+if(coachToggle){
+  coachToggle.addEventListener("change", ()=>{
+  haptic(8);
+    coachMode = !!coachToggle.checked;
+    coachHold = false;
+    syncCoachUI();
+    beep(coachMode ? 880 : 440, 160);
+    if(coachMode && !running){
+      // au basculement, on démarre si on est dans workout
+      if($("workout").classList.contains("show")) autoStartIfCoach();
+    }
+  });
+}
+syncCoachUI();
+$("backBtn").onclick = showHome;
+
+$("saveWeightBtn").onclick = ()=>{
+  const ex = currentExercise();
+  if(!ex || !ex.id) return;
+  const v = $("weightInput").value.trim();
+  if(!v) return;
+  addEntry(ex.id, v);
+  renderHistory(ex.id);
+  beep(880, 140);
+};
+$("clearWeightBtn").onclick = ()=>{
+  const ex = currentExercise();
+  if(!ex || !ex.id) return;
+  localStorage.removeItem(keyFor(ex.id));
+  renderHistory(ex.id);
+  beep(440, 140);
+};
+
+window.addEventListener("DOMContentLoaded", ()=>{
+  // Theme + user
+  mountHomeControls();
+  applyTheme(getSavedOrPreferredTheme());
+  refreshThemeUIVisibility();
+
+  // --- Firebase Auth + Firestore sessions ---
+  const overlay = document.getElementById("loginOverlay");
+  const emailEl = document.getElementById("pfEmail");
+  const passEl = document.getElementById("pfPassword");
+  const loginBtn = document.getElementById("pfLoginBtn");
+  const loginMsg = document.getElementById("pfLoginMsg");
+
+  const setLoginMsg = (txt, kind)=>{
+    if(!loginMsg) return;
+    loginMsg.textContent = txt || "";
+    loginMsg.classList.remove("ok","err");
+    if(kind) loginMsg.classList.add(kind);
+  };
+
+  const showLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.remove("hidden");
+    overlay.setAttribute("aria-hidden","false");
+    setLoginMsg("", null);
+    setTimeout(()=>{ try{ emailEl && emailEl.focus(); }catch(_){} }, 0);
+  };
+  const hideLogin = ()=>{
+    if(!overlay) return;
+    overlay.classList.add("hidden");
+    overlay.setAttribute("aria-hidden","true");
+  };
+
+  async function loadSessionsFromFirestore(uid){
+    // Cache local (pour démarrage rapide / offline)
+    const cacheKey = `pf_sessions_cache_${uid}`;
+    try{
+      const cached = localStorage.getItem(cacheKey);
+      if(cached){
+        const obj = JSON.parse(cached);
+        if(obj && typeof obj === "object"){
+          window.SESSIONS = obj;
+          renderSessions();
+        }
+      }
+    }catch(_){}
+
+    // Puis Firestore (source de vérité)
+    if(!window.pfFetchSessions) return;
+    const fresh = await window.pfFetchSessions(uid);
+    window.SESSIONS = fresh || {};
+    try{ localStorage.setItem(cacheKey, JSON.stringify(window.SESSIONS)); }catch(_){}
+    renderSessions();
+  }
+
+  // Login click
+  if(loginBtn){
+    loginBtn.addEventListener("click", async ()=>{
+      const email = (emailEl?.value || "").trim();
+      const password = (passEl?.value || "");
+      if(!email || !password){
+        setLoginMsg("Entre ton email et ton mot de passe.", "err");
         return;
       }
-
-      importBtn.disabled = true;
-      importBtn.textContent = "Import…";
-      setMsg(statusMsg, "Import en cours…", null);
-
+      loginBtn.disabled = true;
+      const old = loginBtn.textContent;
+      loginBtn.textContent = "Connexion…";
+      setLoginMsg("", null);
       try{
-        const entries = Object.entries(localSessions);
-        for(const [sessionId, sessionData] of entries){
-          await setDoc(
-            doc(db, `users/${u.uid}/sessions/${sessionId}`),
-            {
-              title: sessionData?.title || sessionData?.name || sessionId,
-              data: sessionData,
-              updatedAt: serverTimestamp()
-            },
-            { merge: true }
-          );
-        }
-        setMsg(statusMsg, `Import terminé ✅ (${entries.length} séances)`, "ok");
-        await loadSessionsForUser(u);
+        await window.pfSignIn(email, password);
+        setLoginMsg("Connecté ✅", "ok");
       }catch(err){
-        console.error("Import error:", err);
+        console.error("Login error:", err);
         const code = err?.code || "";
-        let human = "Échec de l'import vers Firestore.";
-        if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore).";
-        setMsg(statusMsg, `${human} (${code || "no-code"})`, "err");
+        let human = "Erreur de connexion.";
+        if(code.includes("auth/invalid-credential") || code.includes("auth/wrong-password")) human = "Email ou mot de passe incorrect.";
+        else if(code.includes("auth/user-not-found")) human = "Utilisateur introuvable.";
+        else if(code.includes("auth/invalid-email")) human = "Email invalide.";
+        else if(code.includes("auth/network-request-failed")) human = "Problème réseau / domaine bloqué.";
+        else if(code.includes("auth/operation-not-allowed")) human = "Email/Password n'est pas activé dans Firebase Auth.";
+        else if(code.includes("auth/unauthorized-domain")) human = "Domaine non autorisé (Authorized domains).";
+        setLoginMsg(`${human} (${code || "no-code"})`, "err");
         alert(`${human}\n\nCode: ${code || "no-code"}`);
       }finally{
-        importBtn.disabled = false;
-        importBtn.textContent = "Importer depuis sessions.js";
+        loginBtn.disabled = false;
+        loginBtn.textContent = old;
       }
     });
+  }
 
-    // Auth state (gère aussi le changement d'utilisateur)
-    let lastUid = null;
-    onAuthStateChanged(auth, async (user) => {
-      clearUI();
+  // Auth callback from module script
+  window.__pfOnAuth = async (user)=>{
+    if(user){
+      hideLogin();
+      // Initiales affichées en haut (👤)
+      const initials = (user.email ? user.email.split("@")[0].slice(0,2) : "OK").toUpperCase();
+      window.__pfUserInitials = initials;
+      refreshUserUI();
 
-      if(!user){
-        lastUid = null;
-        userPill.textContent = "Non connecté";
-        showLogin(true);
-        return;
-      }
+      await loadSessionsFromFirestore(user.uid);
+    }else{
+      window.__pfUserInitials = "—";
+      refreshUserUI();
+      window.SESSIONS = {};
+      renderSessions();
+      showLogin();
+    }
+  };
 
-      // Si on change de compte, on purge l'UI immédiatement (évite flash des données du cache d'un autre)
-      if(lastUid && lastUid !== user.uid){
-        clearUI();
-      }
-      lastUid = user.uid;
+  // Si l'état auth a déjà été récupéré avant que ce callback soit prêt
+  try{
+    const u = window.pfGetLastUser ? window.pfGetLastUser() : null;
+    if(u || u === null) window.__pfOnAuth(u);
+  }catch(_){}
 
-      userPill.textContent = user.email || user.uid;
-      showLogin(false);
-      await loadSessionsForUser(user);
+
+  // Infos exercice overlay
+  const infoBtn = $("infoBtn");
+  const infoOverlay = $("infoOverlay");
+  const infoClose = $("infoClose");
+  if(infoBtn) infoBtn.addEventListener("click", (e)=>{ e.preventDefault(); openInfo(); });
+  if(infoClose) infoClose.addEventListener("click", (e)=>{ e.preventDefault(); closeInfo(); });
+  if(infoOverlay){
+    // click sur le fond = fermer
+    infoOverlay.addEventListener("click", (e)=>{
+      if(e.target === infoOverlay) closeInfo();
     });
+  }
 
-    async function loadSessionsForUser(user){
-      const uid = user.uid;
-
-      // 1) Affiche d'abord le cache de CE uid (rapide)
-      const cached = readCache(uid);
-      if(cached && typeof cached === "object" && Object.keys(cached).length){
-        renderSessionsFromObject(cached);
-        setMsg(statusMsg, "Chargé depuis le cache local (sync en cours…)", null);
-      }else{
-        sessionsList.innerHTML = "";
-        setMsg(statusMsg, "Chargement…", null);
-      }
-
-      // 2) Puis charge Firestore (source de vérité)
-      try{
-        const snap = await getDocs(collection(db, `users/${uid}/sessions`));
-        if(snap.empty){
-          sessionsList.innerHTML = "";
-          emptyBox.classList.remove("hidden");
-          writeCache(uid, {}); // évite de réutiliser un vieux cache
-          setMsg(statusMsg, "Aucune séance trouvée pour ce compte.", null);
-          return;
-        }
-
-        const obj = {};
-        snap.forEach(d => {
-          const v = d.data() || {};
-          // On stocke le "data" (ton format original) si présent, sinon on garde le doc brut.
-          obj[d.id] = v.data ?? v;
-        });
-
-        writeCache(uid, obj);
-        emptyBox.classList.add("hidden");
-        renderSessionsFromObject(obj);
-        setMsg(statusMsg, "Séances synchronisées ✅", "ok");
-      }catch(err){
-        console.error("loadSessionsForUser error:", err);
-        const code = err?.code || "";
-        let human = "Impossible de charger les séances depuis Firestore.";
-        if(code.includes("permission-denied")) human = "Permission refusée (règles Firestore / uid).";
-        setMsg(statusMsg, `${human} (${code || "no-code"})`, "err");
-      }
-    }
-
-    function renderSessionsFromObject(sessionsObj){
-      sessionsList.innerHTML = "";
-      const entries = Object.entries(sessionsObj);
-
-      for(const [id, data] of entries){
-        const title = data?.title || data?.name || id;
-        const el = document.createElement("div");
-        el.className = "card";
-        el.innerHTML = `
-          <div class="cardTitle">${escapeHtml(title)}</div>
-          <div class="muted">id: <code>${escapeHtml(id)}</code></div>
-        `;
-        sessionsList.appendChild(el);
-      }
-    }
-
-    function readCache(uid){
-      try{
-        const raw = localStorage.getItem(cacheKeyFor(uid));
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){
-        return null;
-      }
-    }
-
-    function writeCache(uid, obj){
-      try{
-        localStorage.setItem(cacheKeyFor(uid), JSON.stringify(obj || {}));
-      }catch(e){}
-    }
-
-    function escapeHtml(str){
-      return String(str).replace(/[&<>"']/g, (m) => ({
-        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
-      }[m]));
-    }
-  </script>
+const d = $("debug");
+  d.style.display = "none";
+  const hasSessions = !!window.SESSIONS;
+  const hasImages = !!window.IMG;
+  d.textContent = `✅ init\\nSESSIONS: ${hasSessions ? Object.keys(window.SESSIONS).length : "absent"}\\nIMG keys: ${hasImages ? Object.keys(window.IMG).length : "absent"}`;
+  renderSessions();
+});
+</script>
 </body>
 </html>
