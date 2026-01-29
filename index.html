@@ -182,42 +182,7 @@
     .overlayTitle{font-size:16px; font-weight:950}
     .hr{height:1px; background: rgba(255,255,255,.08); margin:10px 0}
     [data-theme="light"] .hr{background: rgba(10,20,40,.08)}
-  
-/* HOME top-right icons (user + theme) */
-.homeControls{
-  position:fixed;
-  top: calc(8px + env(safe-area-inset-top));
-  right: 8px;
-  z-index: 9999;
-  display:flex;
-  gap:6px;
-  align-items:center;
-}
-.hcBtn{
-  width: 30px; height: 30px;
-  border-radius: 999px;
-  border: 1px solid rgba(148,163,184,.22);
-  background: rgba(2,6,23,.55);
-  color: var(--text);
-  display:grid;
-  place-items:center;
-  font-size: 14px;
-  font-weight: 900;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  box-shadow: 0 10px 24px rgba(0,0,0,.22);
-  user-select:none;
-  cursor:pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-:root[data-theme="light"] .hcBtn{
-  background: rgba(255,255,255,.88);
-  color: #0f172a;
-  border-color: rgba(15,23,42,.14);
-  box-shadow: 0 10px 24px rgba(15,23,42,.10);
-}
-
-</style>
+  </style>
 </head>
 
 <body>
@@ -251,16 +216,34 @@
 
     <!-- HOME -->
     <section class="screen" id="screenHome">
-  <div class="homeControls">
-    <button class="hcBtn" id="btnUser" type="button" title="Utilisateur" aria-label="Utilisateur">👤</button>
-    <button class="hcBtn" id="btnTheme" type="button" title="Thème" aria-label="Thème">🌓</button>
-  </div>
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h1">Séances</div>
+            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
+          </div>
+          <button class="btn secondary" id="btnTheme" title="Thème">🌓</button>
+        </div>
 
-  <h1 style="margin:0;font-size:26px;font-weight:950">Programme Force</h1>
-  <p style="color:var(--muted);margin:8px 0 14px">Choisis ta séance. Ensuite : échauffement → travail → repos (mode coach possible).</p>
+        <div style="height:12px"></div>
+        <div class="grid" id="sessionList"></div>
+      </div>
 
-  <div id="sessionList" class="grid"></div>
-</section>
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h2">Réglages</div>
+            <div class="muted small">Sauvegardés par utilisateur.</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
+        </div>
+      </div>
+    </section>
 
     <!-- WORKOUT -->
     <section class="screen" id="screenWorkout">
@@ -518,15 +501,14 @@
         const card = document.createElement("div");
         card.className = "card";
         card.innerHTML = `
-          <h2>${escapeHtml(name)}</h2>
-          <div class="meta">${nWarmup} échauffements • ${nItems} exercices</div>
+          <div class="sessionItem">
+            <div class="grow">
+              <div class="h2">${escapeHtml(name)}</div>
+              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
+            </div>
+            <button class="btn primary">Démarrer</button>
+          </div>
         `;
-        const b = document.createElement("button");
-        b.textContent = "Démarrer";
-        b.addEventListener("click", ()=>startSession(k));
-        card.appendChild(b);
-        
-        // legacy hook
         card.querySelector("button").addEventListener("click", ()=>startSession(k));
         host.appendChild(card);
       });
