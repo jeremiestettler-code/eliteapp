@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Programme Force</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <style>
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      background:#0f172a;
+      color:#fff;
+      padding-top:env(safe-area-inset-top);
+    }
+    .hidden{display:none}
+    .center{display:flex;align-items:center;justify-content:center;height:100vh}
+    button{
+      padding:14px 18px;
+      font-size:16px;
+      border:none;
+      border-radius:10px;
+      background:#2563eb;
+      color:white;
+      cursor:pointer;
+    }
+    input{
+      padding:12px;
+      font-size:16px;
+      width:100%;
+      margin-bottom:12px;
+      border-radius:8px;
+      border:none;
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="center">
+  <div style="width:280px">
+    <h2>Connexion</h2>
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Mot de passe" />
+    <button id="loginBtn">Se connecter</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appScreen" class="hidden">
+  <header style="padding:16px;display:flex;justify-content:space-between;align-items:center">
+    <strong>Programme Force</strong>
+    <button id="logoutBtn">Logout</button>
+  </header>
+
+  <main style="padding:16px">
+    <h3>Mes séances</h3>
+    <ul id="sessionsList"></ul>
+  </main>
+</div>
+
+<!-- FIREBASE + APP LOGIC -->
+<script type="module">
+  // Firebase SDKs (CDN)
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  // 🔥 Firebase configuration (fourni par toi)
+  const firebaseConfig = {
+    apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
+    authDomain: "programme-force.firebaseapp.com",
+    projectId: "programme-force",
+    storageBucket: "programme-force.firebasestorage.app",
+    messagingSenderId: "1070910165788",
+    appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
+  };
+
+  // Init Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // UI refs
+  const loginScreen = document.getElementById("loginScreen");
+  const appScreen = document.getElementById("appScreen");
+  const loginBtn = document.getElementById("loginBtn");
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  // Login
+  loginBtn.onclick = async () => {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    await signInWithEmailAndPassword(auth, email, password);
+  };
+
+  // Logout
+  logoutBtn.onclick = () => signOut(auth);
+
+  // Auth state
+  onAuthStateChanged(auth, async (user) => {
+    if(user){
+      loginScreen.classList.add("hidden");
+      appScreen.classList.remove("hidden");
+      loadSessions(user.uid);
+    }else{
+      appScreen.classList.add("hidden");
+      loginScreen.classList.remove("hidden");
+    }
+  });
+
+  // Load sessions
+  async function loadSessions(uid){
+    const list = document.getElementById("sessionsList");
+    list.innerHTML = "";
+
+    const snap = await getDocs(collection(db, `users/${uid}/sessions`));
+    snap.forEach(doc => {
+      const li = document.createElement("li");
+      li.textContent = doc.id;
+      list.appendChild(li);
+    });
+  }
+</script>
+</body>
+</html>
