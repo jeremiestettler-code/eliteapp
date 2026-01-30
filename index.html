@@ -387,84 +387,85 @@ body.inWorkout .btnbar #btnNext{
     body.inWorkout .btn.icon{ width:52px; height:52px; border-radius:18px; }
     body.inWorkout .btn.icon.big{ width:60px; height:60px; border-radius:20px; }
 
-    /* Last load badge on GIF (bottom-left) */
-    .loadBadge{
-      position:absolute; left:10px; bottom:10px;
-      padding:8px 10px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.35);
-      color:#fff;
-      font-weight:950;
-      font-size:14px;
-      line-height:1;
-      backdrop-filter: blur(6px);
-      display:none;
-      max-width: 55%;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .loadBadge.active{ display:inline-flex; align-items:center; gap:8px; }
-    .loadBadge .lbLabel{ font-size:11px; font-weight:900; letter-spacing:.08em; opacity:.75; }
-    .loadBadge .lbVal{ font-size:14px; font-weight:950; opacity:.98; }
+  
+/* Badge "dernière charge" sur le GIF (bas gauche) */
+.loadBadge{
+  position:absolute;
+  left:10px;
+  bottom:10px;
+  z-index:7;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.40);
+  color:#fff;
+  font-weight:900;
+  font-size:14px;
+  letter-spacing:-.2px;
+  backdrop-filter: blur(6px);
+}
+.loadBadge.hidden{ display:none; }
 
-    /* Charge + historique inside info overlay */
-    .loadPanel{
-      margin-top:10px;
-      border-top:1px solid rgba(255,255,255,.10);
-      padding-top:10px;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .loadRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .loadRow input{
-      flex:1;
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color: var(--text);
-      font-size:14px;
-    }
-    [data-theme="light"] .loadRow input{
-      background: rgba(10,20,40,.06);
-      border-color: rgba(10,20,40,.10);
-    }
-    .loadSave{
-      padding:10px 12px;
-      border-radius:14px;
-      border:0;
-      background: rgba(255,255,255,.10);
-      color: var(--text);
-      font-weight:900;
-      min-width:72px;
-    }
-    .loadSave:active{ transform: scale(.98); }
-    .loadHist{
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px;
-    }
-    .loadChip{
-      padding:8px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.92);
-      font-size:13px;
-      font-weight:850;
-    }
-    [data-theme="light"] .loadChip{
-      background: rgba(10,20,40,.06);
-      border-color: rgba(10,20,40,.10);
-      color: rgba(10,20,40,.85);
-    }
+/* Bloc charge + historique dans le "i" */
+.loadBox{
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,.10);
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.loadRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+.loadInput{
+  flex:1;
+  width:auto;
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
+  padding:10px 12px;
+  border-radius:14px;
+  color: var(--text);
+  font-size:14px;
+}
+.loadBtn{
+  padding:10px 12px;
+  border-radius:14px;
+  font-weight:900;
+}
+.loadHist{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.loadChip{
+  padding:8px 10px;
+  border-radius:999px;
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);
+  color: rgba(255,255,255,.92);
+  font-size:13px;
+  font-weight:850;
+}
+.loadChip:active{ transform: scale(.98); }
+
+[data-theme="light"] .loadBadge{
+  background: rgba(255,255,255,.72);
+  color:#0b1526;
+  border-color: rgba(10,20,40,.12);
+}
+[data-theme="light"] .loadInput{
+  background: rgba(10,20,40,.06);
+  border-color: rgba(10,20,40,.10);
+}
+[data-theme="light"] .loadChip{
+  background: rgba(10,20,40,.06);
+  border-color: rgba(10,20,40,.10);
+  color: rgba(10,20,40,.85);
+}
+
 
   </style>
 </head>
@@ -565,28 +566,25 @@ body.inWorkout .btnbar #btnNext{
       <div class="card cardTight">
         <div class="previewCard" id="previewCard">
           <img id="exoImg" alt="Exercice" />
+          <div class="loadBadge hidden" id="loadBadge">—</div>
           <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
           
-          
-          <div class="loadBadge" id="loadBadge"><span class="lbVal" id="loadBadgeVal">—</span></div>
-<div class="infoOverlay" id="infoOverlay" aria-hidden="true">
+          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
             <div class="infoInner">
               <div class="infoHdr">
                 <div class="infoTitle">Conseils</div>
                 <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
               </div>
               <div class="infoBody" id="infoBody">—</div>
-            
-              <div class="loadPanel" id="loadPanel">
-                <div class="muted small" style="font-weight:900; letter-spacing:.06em; text-transform:uppercase;">Charge</div>
+
+              <div class="loadBox">
                 <div class="loadRow">
-                  <input id="loadInput" inputmode="text" autocomplete="off" autocapitalize="none" placeholder="Ex : 2x16, 80kg, 16-16…" />
-                  <button class="loadSave" id="btnLoadSave" type="button">OK</button>
+                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
+                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
                 </div>
-                <div class="muted small" style="margin-top:2px">Historique</div>
-                <div class="loadHist" id="loadHistory"></div>
+                <div class="loadHist" id="loadHist"></div>
               </div>
-</div>
+            </div>
           </div>
           <div class="nextOverlay" id="overlayNext" aria-hidden="true">
             <img class="nextBg" id="nextImg" alt="Exercice suivant" />
@@ -868,41 +866,95 @@ body.inWorkout .btnbar #btnNext{
     /***********************
      * 9) Workout engine
      ***********************/
-    // History (localStorage per user)
+    // History (localStorage per user) — keeps a small list (JSON) with backward compat
     function histKey(exoId){ return ukey(`hist__${exoId}`); }
 
-    // Stored as JSON array of strings (new). Backward compatible with old plain string.
     function getLoadHistory(exoId){
       const raw = localStorage.getItem(histKey(exoId));
       if(!raw) return [];
+      // Backward compat: old format was a single string
+      if(raw[0] !== "["){
+        const v = String(raw).trim();
+        return v ? [v] : [];
+      }
       try{
         const arr = JSON.parse(raw);
-        if(Array.isArray(arr)) return arr.filter(Boolean).map(String);
+        return Array.isArray(arr) ? arr.filter(Boolean) : [];
       }catch(e){
-        // old format: single string
-        return [String(raw)].filter(Boolean);
+        return [];
       }
-      return [];
     }
 
-    function saveLoadHistory(exoId, arr){
-      const clean = (arr||[]).filter(Boolean).map(v=>String(v).trim()).filter(Boolean);
-      localStorage.setItem(histKey(exoId), JSON.stringify(clean.slice(0, 12)));
+    function saveLoad(exoId, value){
+      const v = String(value||"").trim();
+      if(!v) return;
+
+      const arr = getLoadHistory(exoId);
+      // move to front, remove duplicates
+      const filtered = [v, ...arr.filter(x => x !== v)];
+      const capped = filtered.slice(0, 12);
+      localStorage.setItem(histKey(exoId), JSON.stringify(capped));
     }
 
     function getLastLoad(exoId){
-      return (getLoadHistory(exoId)[0] || "");
+      const arr = getLoadHistory(exoId);
+      return arr[0] || "";
     }
 
-    function addLoadEntry(exoId, val){
-      const v = String(val||"").trim();
-      if(!v) return;
-      const hist = getLoadHistory(exoId);
-      // avoid duplicate consecutive entries
-      if(hist[0] === v) return;
-      hist.unshift(v);
-      saveLoadHistory(exoId, hist);
+    // keep signature for existing calls
+    function setLastLoad(exoId, val){
+      saveLoad(exoId, val);
     }
+
+    let currentExoIdForLoad = null;
+
+    function updateLoadBadge(){
+      const b = $("loadBadge");
+      if(!b) return;
+      const v = currentExoIdForLoad ? getLastLoad(currentExoIdForLoad) : "";
+      if(v){
+        b.textContent = v; // "juste X"
+        b.classList.remove("hidden");
+      }else{
+        b.textContent = "—";
+        b.classList.add("hidden");
+      }
+    }
+
+    function renderLoadHistory(){
+      const host = $("loadHist");
+      const input = $("loadInput");
+      if(!host) return;
+      host.innerHTML = "";
+
+      const arr = currentExoIdForLoad ? getLoadHistory(currentExoIdForLoad) : [];
+      if(arr.length === 0) return;
+
+      arr.forEach(v=>{
+        const chip = document.createElement("button");
+        chip.type = "button";
+        chip.className = "loadChip";
+        chip.textContent = v;
+        chip.addEventListener("click", ()=>{
+          if(input) input.value = v;
+        });
+        host.appendChild(chip);
+      });
+    }
+
+    function saveFromInput(){
+      if(!currentExoIdForLoad) return;
+      const input = $("loadInput");
+      const v = (input?.value || "").trim();
+      if(!v) return;
+
+      saveLoad(currentExoIdForLoad, v);
+
+      // refresh UI everywhere
+      updateLoadBadge();
+      renderLoadHistory();
+    }
+
 
     // Workout state
     let curSessionId = null;
@@ -980,8 +1032,6 @@ body.inWorkout .btnbar #btnNext{
         speak("Début du repos");
         beep(660, 80);
       }else if(cur.type === "warmup"){
-        currentExoId = null;
-        setLoadBadge("");
         setPhaseUI("Échauffement", "Début de l'échauffement");
         speak("Début de l'échauffement");
         beep(740, 80);
@@ -1057,7 +1107,6 @@ body.inWorkout .btnbar #btnNext{
       if(!ov) return;
       ov.classList.add("active");
       ov.setAttribute("aria-hidden", "false");
-      syncLoadPanelForCurrent();
     }
     function closeInfo(){
       const ov = $("infoOverlay");
@@ -1138,12 +1187,12 @@ function buildSequence(session){
         rest = "—";
       }else if(cur.type === "work" || cur.type === "rest"){
         const e = cur.exo || {};
+        const exoId = e.id || e.name || "Exercice";
+        currentExoIdForLoad = exoId;
         title = e.name || "Exercice";
         desc  = e.todo || e.desc || "";
         reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
         rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
-        const exoId = (e.id || e.name || title);
-        currentExoId = exoId;
         last  = getLastLoad(exoId) || "—";
         imgKey = e.icon || "";
         muscle = e.muscle || e.group || e.target || "—";
@@ -1184,9 +1233,6 @@ function buildSequence(session){
       $("kpiRest").textContent = rest;
       $("kpiLast").textContent = last;
 
-      // Badge charge sur le GIF (bas gauche)
-      setLoadBadge((cur.type === "work" || cur.type === "rest") ? (getLastLoad(currentExoId) || "") : "");
-
       // Dots (progression séries) — uniquement sur work/rest
       const dots = $("setDots");
       if(dots){
@@ -1218,6 +1264,14 @@ function buildSequence(session){
           dots.style.display = "none";
         }
       }
+
+      // Load UI (badge + overlay)
+      updateLoadBadge();
+      const inp = $("loadInput");
+      if(inp){
+        inp.value = getLastLoad(currentExoIdForLoad) || "";
+      }
+      renderLoadHistory();
 
       // Info overlay content (si présent dans la data)
       updateInfoOverlayContent(cur);
@@ -1268,6 +1322,16 @@ function buildSequence(session){
     $("btnInfo")?.addEventListener("click", openInfo);
     $("btnInfoClose")?.addEventListener("click", closeInfo);
     $("infoOverlay")?.addEventListener("click", (e)=>{ if(e.target?.id === "infoOverlay") closeInfo(); });
+
+    // Load (charge) UI inside info overlay
+    $("btnLoadSave")?.addEventListener("click", saveFromInput);
+    $("loadInput")?.addEventListener("keydown", (e)=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        saveFromInput();
+      }
+    });
+
 
 
     /***********************
