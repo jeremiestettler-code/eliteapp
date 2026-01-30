@@ -1,16 +1,17 @@
-<!DOCTYPE html>
-
-<html data-theme="dark" lang="fr">
+<!doctype html>
+<html lang="fr" data-theme="dark">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" name="viewport"/>
-<meta content="yes" name="apple-mobile-web-app-capable"/>
-<meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
-<meta content="#0b0f17" name="theme-color"/>
-<link href="./manifest.json" rel="manifest"/>
-<link href="./images/icon-192.png" rel="apple-touch-icon"/>
-<title>Programme Force</title>
-<style>
+  <meta charset="utf-8" />
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#0b0f17" />
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="apple-touch-icon" href="./images/icon-192.png" />
+  <title>Programme Force</title>
+
+  <style>
     :root{
       --bg:#0b0f17; --card:#121a29; --muted:#9fb0c7; --text:#eaf1ff;
       --accent:#4ea1ff; --accent2:#00d4ff; --danger:#ff4e6a;
@@ -34,7 +35,9 @@
       background:var(--bg);
       color:var(--text);
       -webkit-tap-highlight-color: transparent;
-      padding-top: var(--safe-top);
+      /* Safe-area top is handled by the sticky topbar so it stays clear of the
+         notch/status bar while scrolling (and avoids double-padding). */
+      padding-top: 0;
       padding-bottom: var(--safe-bot);
       overscroll-behavior: none;
       touch-action: manipulation;
@@ -43,31 +46,9 @@
     .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
     body.inWorkout .app{ padding-top:8px; padding-bottom:0; }
 
-    /* App logo / branding */
-    .loginBrand{
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      gap:10px; text-align:center; margin-bottom:10px;
-    }
-    .brandHeader{
-      display:flex; align-items:center; gap:12px;
-    }
-    .appLogo{
-      width:44px; height:44px; border-radius:12px; object-fit:cover;
-      box-shadow: 0 10px 22px rgba(0,0,0,.25);
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.06);
-    }
-    .appLogo.lg{
-      width:78px; height:78px; border-radius:18px;
-    }
-    .appName{
-      font-size:18px; font-weight:900; letter-spacing:.2px; line-height:1.1;
-    }
-    .appTagline{
-      font-size:12px; color:var(--muted);
-    }
-
-    
+    /* Global iOS-like topbar (logo + title + user + logout)
+       - Sticky at the top
+       - Adds safe-area padding so it never goes under the notch/status bar */
     .topbar{
       position: sticky;
       top: 0;
@@ -75,7 +56,7 @@
       display:flex; align-items:center; justify-content:space-between;
       gap:10px;
       margin: 0 0 12px;
-      padding: 10px 12px 10px;
+      padding: calc(10px + var(--safe-top)) 12px 10px;
       border-radius: 18px;
       background: rgba(18,26,41,.72);
       border: 1px solid rgba(255,255,255,.10);
@@ -83,7 +64,6 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
-
     .topbar::after{
       content:"";
       position:absolute;
@@ -98,7 +78,6 @@
       border: 1px solid rgba(10,20,40,.10);
       box-shadow: 0 10px 22px rgba(10,20,40,.10);
     }
-
     .brand{
       display:flex; flex-direction:column; gap:2px;
     }
@@ -474,191 +453,175 @@
     }
     body.inWorkout #screenWorkout{ padding-top: 0 !important; }
 
-  
-    .brand{ display:flex; flex-direction:column; gap:0; }
-    .brandHeader{ display:flex; align-items:center; gap:12px; min-width:0; }
-    .brandText{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-    .brand .title{ font-size:17px; font-weight:900; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .brand .sub{ font-size:12px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-    .appLogo{ flex:0 0 auto; }
-
-    /* iOS-like full-bleed feel on mobile */
-    @media (max-width: 520px){
-      .app{ padding:12px 12px 18px; }
-      .topbar{ border-radius: 16px; }
-    }
-
-
-    
-    /* Home header (non-sticky) */
-    .homeHeader{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:12px;
-      padding: 6px 2px 10px;
-    }
-    .homeHeaderText{ min-width:0; }
-    .homeTitle{
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: .2px;
-      line-height: 1.1;
-      margin-bottom: 6px;
-    }
-    .homeSub{
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.25;
-    }
-</style>
+  </style>
 </head>
+
 <body>
-<div class="app">
-<!-- TOPBAR -->
-<div class="topbar">
-<div class="brand"><div class="brandHeader"><img alt="Programme Force" class="appLogo" src="./images/icon-192.png"/><div class="brandText"><div class="title" id="brandTitle">Programme Force</div><div class="sub" id="userLine">Non connecté</div></div></div></div>
-<div class="pill" id="pillAuth">
-<span id="pillStatus">🔒</span>
-<div class="coachSwitch" id="coachSwitchWrap" style="display:none">
-<span class="coachLabel">Coach</span>
-<label aria-label="Mode coach" class="switch">
-<input id="coachSwitch" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
-<button id="btnLogout" style="display:none">Déconnexion</button>
-</div>
-</div>
-<!-- LOGIN -->
-<section class="screen active" id="screenLogin">
-<div class="card loginBox">
-<div class="loginBrand">
-<img alt="Programme Force" class="appLogo lg" src="./images/icon-192.png"/>
-<div class="appName">Programme Force</div>
-<div class="appTagline">Coaching musculation • Mode coach vocal</div>
-</div>
-<div class="h1">Connexion</div>
-<div class="muted small">Charge automatiquement le pack de séances via Firestore (Option B).</div>
-<div style="height:12px"></div>
-<div class="stack">
-<input autocomplete="username" id="loginEmail" placeholder="Email" type="email"/>
-<input autocomplete="current-password" id="loginPass" placeholder="Mot de passe" type="password"/>
-<button class="btn primary wide" id="btnLogin">Se connecter</button>
-<div class="muted small" id="loginMsg"></div>
-</div>
-</div>
-</section>
-<!-- HOME -->
-<section class="screen" id="screenHome">
-  <div class="homeHeader">
-    <div class="homeHeaderText">
-      <div class="homeTitle">Séances</div>
-      <div class="homeSub">Choisis une séance. Le mode coach est actif par défaut.</div>
-    </div>
-    <button class="btn navIcon" id="btnTheme" title="Thème" aria-label="Thème">🌓</button>
-  </div>
-
-  <div class="card">
-    <div class="grid" id="sessionList"></div>
-  </div>
-
-  <div style="height:12px"></div>
-  <div class="card">
-    <div class="row">
-      <div class="grow">
-        <div class="h2">Réglages</div>
-        <div class="muted small">Sauvegardés par utilisateur.</div>
+  <div class="app">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="brand">
+        <div class="title" id="brandTitle">Programme Force</div>
+        <div class="sub" id="userLine">Non connecté</div>
+      </div>
+      <div class="pill" id="pillAuth">
+        <span id="pillStatus">🔒</span>
+        <div class="coachSwitch" id="coachSwitchWrap" style="display:none">
+          <span class="coachLabel">Coach</span>
+          <label class="switch" aria-label="Mode coach">
+            <input type="checkbox" id="coachSwitch" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button id="btnLogout" style="display:none">Déconnexion</button>
       </div>
     </div>
-    <div style="height:10px"></div>
-    <div class="row">
-      <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
-    </div>
+
+    <!-- LOGIN -->
+    <section class="screen active" id="screenLogin">
+      <div class="card loginBox">
+        <div class="h1">Connexion</div>
+        <div class="muted small">Charge automatiquement le pack de séances via Firestore (Option B).</div>
+        <div style="height:12px"></div>
+        <div class="stack">
+          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" />
+          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Mot de passe" />
+          <button class="btn primary wide" id="btnLogin">Se connecter</button>
+          <div class="muted small" id="loginMsg"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOME -->
+    <section class="screen" id="screenHome">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h1">Séances</div>
+            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
+          </div>
+          <button class="btn secondary" id="btnTheme" title="Thème">🌓</button>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="grid" id="sessionList"></div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h2">Réglages</div>
+            <div class="muted small">Sauvegardés par utilisateur.</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKOUT -->
+    <section class="screen" id="screenWorkout">
+      <div class="workoutHeader">
+        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour">←</button>
+
+        <div class="workoutHeaderCenter">
+          <div class="workoutTitle" id="workoutTitle">—</div>
+          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
+        </div>
+
+        <div class="workoutHeaderRight">
+          <label class="switch" aria-label="Mode coach">
+            <input type="checkbox" id="coachSwitch2" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="workoutChips">
+        <div class="chip chipPhase" id="chipPhase">Travail</div>
+        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
+        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
+      </div>
+
+      <div class="card cardTight">
+        <div class="previewCard" id="previewCard">
+          <img id="exoImg" alt="Exercice" />
+          <div class="loadBadge hidden" id="loadBadge">—</div>
+
+          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
+
+          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
+            <div class="infoInner">
+              <div class="infoHdr">
+                <div class="infoTitle">Conseils</div>
+                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
+              </div>
+              <div class="infoBody" id="infoBody">—</div>
+
+              <div class="loadBox">
+                <div class="loadRow">
+                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
+                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
+                </div>
+                <div class="loadHist" id="loadHist"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
+            <img class="nextBg" id="nextImg" alt="Exercice suivant" />
+            <div class="nextText">
+              <div class="nextTag">EXERCICE SUIVANT</div>
+              <div class="nextName" id="nextName">—</div>
+              <div class="nextLast" id="nextLast"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card cardTight todoCard">
+        <div class="todoHdr">
+          <div class="todoLabel">À faire</div>
+          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
+        </div>
+        <div class="todoMain" id="todoMain">—</div>
+        <div class="todoDesc muted" id="todoDesc">—</div>
+
+        <div class="todoChips">
+          <div class="chip chipSoft" id="chipMuscle">—</div>
+          <div class="chip chipSoft" id="chipRest">Repos: —</div>
+        </div>
+
+        <span class="srOnly" id="kpiReps">—</span>
+        <span class="srOnly" id="kpiRest">—</span>
+        <span class="srOnly" id="kpiLast">—</span>
+        <span class="srOnly" id="exoDesc">—</span>
+      </div>
+
+      <div class="card cardTight timerCard">
+        <div class="timerBox timerBoxFlat">
+          <div class="time" id="timeText">00:00</div>
+          <!-- ✅ phaseHint supprimé (redondant) -->
+        </div>
+      </div>
+
+      <div class="btnbar">
+        <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">◀◀</button>
+        <button class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause" aria-label="Start / Pause">▶︎</button>
+        <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">▶▶</button>
+      </div>
+    </section>
   </div>
-</section>
-<!-- WORKOUT -->
-<section class="screen" id="screenWorkout">
-<div class="workoutHeader">
-<button aria-label="Retour" class="btn secondary workoutBack" id="btnBackHome">←</button>
-<div class="workoutHeaderCenter">
-<div class="workoutTitle" id="workoutTitle">—</div>
-<div class="workoutSub" id="workoutSubtitle">Exercice</div>
-</div>
-<div class="workoutHeaderRight">
-<label aria-label="Mode coach" class="switch">
-<input id="coachSwitch2" type="checkbox"/>
-<span class="slider"></span>
-</label>
-</div>
-</div>
-<div class="workoutChips">
-<div class="chip chipPhase" id="chipPhase">Travail</div>
-<div class="chip chipSeries" id="chipSeries">Série 1/1</div>
-<div class="chip chipCoach" id="chipCoach">Coach : ON</div>
-</div>
-<div class="card cardTight">
-<div class="previewCard" id="previewCard">
-<img alt="Exercice" id="exoImg"/>
-<div class="loadBadge hidden" id="loadBadge">—</div>
-<button aria-label="Infos" class="infoBtn" id="btnInfo">i</button>
-<div aria-hidden="true" class="infoOverlay" id="infoOverlay">
-<div class="infoInner">
-<div class="infoHdr">
-<div class="infoTitle">Conseils</div>
-<button aria-label="Fermer" class="btn secondary infoClose" id="btnInfoClose">✕</button>
-</div>
-<div class="infoBody" id="infoBody">—</div>
-<div class="loadBox">
-<div class="loadRow">
-<input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)"/>
-<button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
-</div>
-<div class="loadHist" id="loadHist"></div>
-</div>
-</div>
-</div>
-<div aria-hidden="true" class="nextOverlay" id="overlayNext">
-<img alt="Exercice suivant" class="nextBg" id="nextImg"/>
-<div class="nextText">
-<div class="nextTag">EXERCICE SUIVANT</div>
-<div class="nextName" id="nextName">—</div>
-<div class="nextLast" id="nextLast"></div>
-</div>
-</div>
-</div>
-</div>
-<div class="card cardTight todoCard">
-<div class="todoHdr">
-<div class="todoLabel">À faire</div>
-<div aria-label="Progression séries" class="setDots" id="setDots"></div>
-</div>
-<div class="todoMain" id="todoMain">—</div>
-<div class="todoDesc muted" id="todoDesc">—</div>
-<div class="todoChips">
-<div class="chip chipSoft" id="chipMuscle">—</div>
-<div class="chip chipSoft" id="chipRest">Repos: —</div>
-</div>
-<span class="srOnly" id="kpiReps">—</span>
-<span class="srOnly" id="kpiRest">—</span>
-<span class="srOnly" id="kpiLast">—</span>
-<span class="srOnly" id="exoDesc">—</span>
-</div>
-<div class="card cardTight timerCard">
-<div class="timerBox timerBoxFlat">
-<div class="time" id="timeText">00:00</div>
-<!-- ✅ phaseHint supprimé (redondant) -->
-</div>
-</div>
-<div class="btnbar">
-<button aria-label="Précédent" class="ctrlBtn" id="btnPrev" title="Précédent">◀◀</button>
-<button aria-label="Start / Pause" class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause">▶︎</button>
-<button aria-label="Suivant" class="ctrlBtn" id="btnNext" title="Suivant">▶▶</button>
-</div>
-</section>
-</div>
-<script src="./images.js"></script>
-<script type="module">
+
+  <script src="./images.js"></script>
+
+  <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -1361,9 +1324,6 @@
     if("serviceWorker" in navigator){
       navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
     }
-
-
-;
 
     let lastTouchEnd = 0;
     document.addEventListener("touchend", function (event) {
