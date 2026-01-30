@@ -9,7 +9,7 @@
   <meta name="theme-color" content="#0b0f17" />
   <link rel="manifest" href="./manifest.json" />
   <link rel="apple-touch-icon" href="./images/icon-192.png" />
-  <title>EliteTraining</title>
+  <title>Programme Force</title>
 
   <style>
     :root{
@@ -35,8 +35,8 @@
       background:var(--bg);
       color:var(--text);
       -webkit-tap-highlight-color: transparent;
-      /* Safe-area top is handled by the sticky topbar (so it remains correct while
-         scrolling and avoids double-padding). Workout re-enables it on body. */
+      /* Safe-area top is handled by the sticky topbar so it stays clear of the
+         notch/status bar while scrolling (and avoids double-padding). */
       padding-top: 0;
       padding-bottom: var(--safe-bot);
       overscroll-behavior: none;
@@ -44,17 +44,17 @@
     }
     a{color:inherit}
     .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
-    /* When the topbar is hidden (workout screen), restore safe-area padding at body level
-       so the workout header/title never sits under the notch/status bar. */
-    body.inWorkout{ padding-top: var(--safe-top); }
     body.inWorkout .app{ padding-top:8px; padding-bottom:0; }
 
+    /* Global iOS-like topbar (logo + title + user + logout)
+       - Sticky at the top
+       - Adds safe-area padding so it never goes under the notch/status bar */
     .topbar{
       position: sticky;
       top: 0;
       z-index: 50;
       display:flex; align-items:center; justify-content:space-between;
-      gap:12px;
+      gap:10px;
       margin: 0 0 12px;
       padding: calc(10px + var(--safe-top)) 12px 10px;
       border-radius: 18px;
@@ -64,15 +64,20 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
+    .topbar::after{
+      content:"";
+      position:absolute;
+      left:12px; right:12px;
+      bottom:-0.5px;
+      height:0.5px;
+      background: rgba(255,255,255,.10);
+      pointer-events:none;
+    }
     [data-theme="light"] .topbar{
       background: rgba(255,255,255,.78);
       border: 1px solid rgba(10,20,40,.10);
       box-shadow: 0 10px 22px rgba(10,20,40,.10);
     }
-    .topbarLeft{display:flex; align-items:center; gap:12px; min-width:0;}
-    .appLogo{width:44px; height:44px; border-radius:14px; box-shadow: 0 10px 24px rgba(0,0,0,.25); flex:0 0 auto;}
-    .brand{min-width:0;}
-    .brand .title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .brand{
       display:flex; flex-direction:column; gap:2px;
     }
@@ -250,6 +255,39 @@
       gap:10px; padding: 4px 2px;
     }
     .workoutBack{ width:48px; height:48px; border-radius:16px; }
+    /* iOS-like chevron back icon */
+    .chevronLeft{
+      position: relative;
+      width: 14px;
+      height: 24px;
+      display:block;
+    }
+    .chevronLeft::before,
+    .chevronLeft::after{
+      content:"";
+      position:absolute;
+      left:6px;
+      width:4px;
+      height:16px;
+      background: currentColor;
+      border-radius:4px;
+    }
+    .chevronLeft::before{
+      top:0;
+      transform: rotate(45deg);
+    }
+    .chevronLeft::after{
+      bottom:0;
+      transform: rotate(-45deg);
+    }
+    /* Center the chevron in the square button */
+    .workoutBack{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:0;
+    }
+
     .workoutHeaderCenter{ flex:1; text-align:center; line-height:1.05; }
     .workoutTitle{ font-size:26px; font-weight:950; letter-spacing:-.3px; }
     .workoutSub{ margin-top:4px; font-size:14px; color:var(--muted); }
@@ -455,12 +493,9 @@
   <div class="app">
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="topbarLeft">
-        <img class="appLogo" src="./images/icon-192.png" alt="Programme Force" />
-        <div class="brand">
-          <div class="title" id="brandTitle">EliteTraining</div>
-          <div class="sub" id="userLine">Non connecté</div>
-        </div>
+      <div class="brand">
+        <div class="title" id="brandTitle">Programme Force</div>
+        <div class="sub" id="userLine">Non connecté</div>
       </div>
       <div class="pill" id="pillAuth">
         <span id="pillStatus">🔒</span>
@@ -524,7 +559,7 @@
     <!-- WORKOUT -->
     <section class="screen" id="screenWorkout">
       <div class="workoutHeader">
-        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour">←</button>
+        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour"><span class="chevronLeft" aria-hidden="true"></span></button>
 
         <div class="workoutHeaderCenter">
           <div class="workoutTitle" id="workoutTitle">—</div>
@@ -1305,7 +1340,7 @@
         return;
       }
 
-      $("pillStatus").textContent = "";
+      $("pillStatus").textContent = "✅";
       $("btnLogout").style.display = "inline-flex";
 
       try{
