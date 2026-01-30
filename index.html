@@ -210,29 +210,52 @@ body.inWorkout .btnbar #btnNext{
     .kpi .v{font-weight:950; font-size:16px}
     .kpi .l{font-size:12px; color:var(--muted)}
 
-    .overlayNext{
-      position:fixed; inset:0;
-      background: rgba(0,0,0,.55);
+    
+    /* Next exercise overlay (inside GIF card) */
+    .nextOverlay{
+      position:absolute;
+      inset:0;
       display:none;
-      align-items:flex-end;
-      padding: 16px 16px calc(16px + var(--safe-bot));
-      z-index: 50;
+      align-items:center;
+      justify-content:center;
+      background: rgba(0,0,0,.55);
+      backdrop-filter: blur(2px);
+      z-index: 5;
+      padding: 12px;
     }
-    .overlayNext.active{display:flex}
-    .overlayCard{
+    .nextOverlay.active{display:flex}
+    .nextWrap{
       width:100%;
-      max-width:520px;
-      margin:0 auto;
-      background:var(--card);
-      border-radius: 26px;
-      box-shadow: var(--shadow);
-      padding: 14px;
+      height:100%;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      align-items:center;
+      justify-content:center;
     }
-    .overlayCard .hdr{display:flex; align-items:center; justify-content:space-between; gap:12px}
-    .overlayTitle{font-size:16px; font-weight:950}
-    .hr{height:1px; background: rgba(255,255,255,.08); margin:10px 0}
-    [data-theme="light"] .hr{background: rgba(10,20,40,.08)}
-  
+    .nextTag{
+      font-weight:950;
+      letter-spacing:.08em;
+      font-size:12px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(255,255,255,.10);
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .nextWrap img{
+      width:100%;
+      height: min(240px, 28vh);
+      object-fit:contain;
+      background:#fff;
+      border-radius:16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    }
+    .nextMeta{ text-align:center; }
+    .nextMeta .nm{ font-size:16px; font-weight:950; margin-top:2px; }
+    .nextMeta .nl{ font-size:12px; color: rgba(255,255,255,.78); }
+    [data-theme="light"] .nextMeta .nl{ color: rgba(10,20,40,.68); }
+
+
     /* Workout redesign (header + cards) */
     .srOnly{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
     body.inWorkout .topbar{ display:none; }
@@ -449,6 +472,17 @@ body.inWorkout .btnbar #btnNext{
               <div class="infoBody" id="infoBody">—</div>
             </div>
           </div>
+          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
+            <div class="nextWrap">
+              <div class="nextTag">EXERCICE SUIVANT</div>
+              <img id="nextImg" alt="Exercice suivant" />
+              <div class="nextMeta">
+                <div class="nm" id="nextName">—</div>
+                <div class="nl" id="nextLast">—</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -489,28 +523,8 @@ body.inWorkout .btnbar #btnNext{
 </div>
 
   <!-- Overlay "EXERCICE SUIVANT" -->
-  <div class="overlayNext" id="overlayNext">
-    <div class="overlayCard">
-      <div class="hdr">
-        <div class="overlayTitle">EXERCICE SUIVANT</div>
-        <button class="btn secondary" id="btnCloseOverlay">OK</button>
-      </div>
-      <div class="hr"></div>
-      <div class="row">
-        <div class="grow">
-          <div class="h2" id="nextName">—</div>
-          <div class="muted small" id="nextLast">Dernière charge : —</div>
-        </div>
-        <span class="badge" id="nextBadge">—</span>
-      </div>
-      <div style="height:10px"></div>
-      <div class="preview">
-        <img id="nextImg" alt="Prochain exercice" />
-      </div>
-    </div>
-  </div>
-
-  <!-- images.js reste "en dur" -->
+  
+<!-- images.js reste "en dur" -->
   <script src="./images.js"></script>
 
   <script type="module">
@@ -832,16 +846,18 @@ body.inWorkout .btnbar #btnNext{
       }else{
         setPhaseUI("Prêt", "Appuie sur ▶︎ pour démarrer");
       }
+
+      // During the last rest of an exercise, preview the next exercise
+      if(cur.type === "rest" && cur.isLastRestOfExercise) showNextOverlay();
+      else hideNextOverlay();
     }
 
     function onPhaseEnd(){
       const cur = seq[idx];
       if(!cur) return;
 
-      // If last rest of an exercise -> show overlay next exercise
-      if(cur.type === "rest" && cur.isLastRestOfExercise){
-        showNextOverlay();
-      }
+      // Leaving a phase: hide any overlay
+      hideNextOverlay();
 
       // Auto-advance if coachMode
       if(coachMode){
@@ -1116,13 +1132,21 @@ function buildSequence(session){
       const e = next.exo;
       $("nextName").textContent = e.name || "Exercice";
       const last = getLastLoad(e.id || e.name) || "—";
-      $("nextLast").textContent = `Dernière charge : ${last}`;
-      $("nextBadge").textContent = `Série 1/${e.sets || 1}`;
+      $("nextLast").textContent = last === "—" ? "Dernière charge : —" : `Dernière charge : ${last}`;
       setImg($("nextImg"), e.icon || "");
 
       $("overlayNext").classList.add("active");
+      $("overlayNext").setAttribute("aria-hidden", "false");
     }
-    $("btnCloseOverlay").addEventListener("click", ()=> $("overlayNext").classList.remove("active"));
+    function hideNextOverlay(){
+      $("overlayNext").classList.remove("active");
+      $("overlayNext").setAttribute("aria-hidden", "true");
+    }
+    $("overlayNext")?.addEventListener("click", (e)=>{
+      // tap outside the inner content closes
+      if(e.target?.id === "overlayNext") hideNextOverlay();
+    });
+
     $("overlayNext").addEventListener("click", (ev)=>{
       if(ev.target === $("overlayNext")) $("overlayNext").classList.remove("active");
     });
