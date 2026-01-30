@@ -35,8 +35,8 @@
       background:var(--bg);
       color:var(--text);
       -webkit-tap-highlight-color: transparent;
-      /* Safe-area top is handled by the sticky topbar so it stays clear of the
-         notch/status bar while scrolling (and avoids double-padding). */
+      /* Safe-area top is handled by the sticky topbar (so it remains correct while
+         scrolling and avoids double-padding). Workout re-enables it on body. */
       padding-top: 0;
       padding-bottom: var(--safe-bot);
       overscroll-behavior: none;
@@ -44,17 +44,17 @@
     }
     a{color:inherit}
     .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
+    /* When the topbar is hidden (workout screen), restore safe-area padding at body level
+       so the workout header/title never sits under the notch/status bar. */
+    body.inWorkout{ padding-top: var(--safe-top); }
     body.inWorkout .app{ padding-top:8px; padding-bottom:0; }
 
-    /* Global iOS-like topbar (logo + title + user + logout)
-       - Sticky at the top
-       - Adds safe-area padding so it never goes under the notch/status bar */
     .topbar{
       position: sticky;
       top: 0;
       z-index: 50;
       display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
+      gap:12px;
       margin: 0 0 12px;
       padding: calc(10px + var(--safe-top)) 12px 10px;
       border-radius: 18px;
@@ -64,20 +64,15 @@
       backdrop-filter: blur(18px);
       -webkit-backdrop-filter: blur(18px);
     }
-    .topbar::after{
-      content:"";
-      position:absolute;
-      left:12px; right:12px;
-      bottom:-0.5px;
-      height:0.5px;
-      background: rgba(255,255,255,.10);
-      pointer-events:none;
-    }
     [data-theme="light"] .topbar{
       background: rgba(255,255,255,.78);
       border: 1px solid rgba(10,20,40,.10);
       box-shadow: 0 10px 22px rgba(10,20,40,.10);
     }
+    .topbarLeft{display:flex; align-items:center; gap:12px; min-width:0;}
+    .appLogo{width:44px; height:44px; border-radius:14px; box-shadow: 0 10px 24px rgba(0,0,0,.25); flex:0 0 auto;}
+    .brand{min-width:0;}
+    .brand .title{white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
     .brand{
       display:flex; flex-direction:column; gap:2px;
     }
@@ -460,9 +455,12 @@
   <div class="app">
     <!-- TOPBAR -->
     <div class="topbar">
-      <div class="brand">
-        <div class="title" id="brandTitle">Programme Force</div>
-        <div class="sub" id="userLine">Non connecté</div>
+      <div class="topbarLeft">
+        <img class="appLogo" src="./images/icon-192.png" alt="Programme Force" />
+        <div class="brand">
+          <div class="title" id="brandTitle">Programme Force</div>
+          <div class="sub" id="userLine">Non connecté</div>
+        </div>
       </div>
       <div class="pill" id="pillAuth">
         <span id="pillStatus">🔒</span>
