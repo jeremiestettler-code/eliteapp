@@ -1235,9 +1235,19 @@ function buildSequence(session){
 
       // Header title/subtitle
       $("workoutTitle").textContent = title;
-      $("workoutSubtitle").textContent =
-        (cur.type === "warmup") ? "Échauffement" :
-        (cur.type === "rest") ? "Repos" : "Exercice";
+      $("workoutSubtitle").textContent = (()=> {
+        if(cur.type === "warmup") return "Échauffement";
+        if(cur.type === "work" || cur.type === "rest"){
+          const items = (curSession?.items || []);
+          const total = items.length;
+          const key = (cur?.exo?.id || cur?.exo?.name || title);
+          let pos = items.findIndex(it => (it.id || it.name) === key);
+          if(pos < 0) pos = items.findIndex(it => (it.name || "") === (cur?.exo?.name || ""));
+          if(pos < 0) pos = 0;
+          return total ? `Exercice ${pos+1}/${total}` : "Exercice";
+        }
+        return "";
+      })();
 
       // Chips
       const phaseTxt =
