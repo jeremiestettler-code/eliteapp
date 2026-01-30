@@ -216,45 +216,69 @@ body.inWorkout .btnbar #btnNext{
       position:absolute;
       inset:0;
       display:none;
-      align-items:center;
-      justify-content:center;
-      background: rgba(0,0,0,.55);
-      backdrop-filter: blur(2px);
-      z-index: 5;
-      padding: 12px;
+      z-index: 6;
+      overflow:hidden;
+      border-radius: 22px;
     }
-    .nextOverlay.active{display:flex}
-    .nextWrap{
+    .nextOverlay.active{display:block}
+    /* background next GIF, grisé */
+    .nextOverlay .nextBg{
+      position:absolute;
+      inset:0;
       width:100%;
       height:100%;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      align-items:center;
-      justify-content:flex-start;
-      padding-top:6px;
+      object-fit:cover;
+      filter: grayscale(1) brightness(.55) contrast(.95);
+      transform: scale(1.02);
     }
-    .nextTag{
+    /* léger voile pour lisibilité */
+    .nextOverlay::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,.10), rgba(0,0,0,.40));
+      pointer-events:none;
+    }
+    .nextOverlay .nextText{
+      position:absolute;
+      left:50%;
+      top:50%;
+      transform: translate(-50%,-50%);
+      width: min(86%, 520px);
+      padding: 18px 18px 16px;
+      border-radius: 24px;
+      background: rgba(10,18,30,.70);
+      border: 1px solid rgba(120,200,255,.35);
+      box-shadow: 0 16px 40px rgba(0,0,0,.45);
+      text-align:center;
+      backdrop-filter: blur(6px);
+    }
+    .nextOverlay .nextTag{
       font-weight:950;
-      letter-spacing:.08em;
+      letter-spacing:.28em;
       font-size:12px;
-      padding:8px 12px;
-      border-radius:999px;
-      background: rgba(255,255,255,.10);
-      border:1px solid rgba(255,255,255,.16);
+      color: rgba(140,215,255,.95);
+      margin-bottom: 10px;
     }
-    .nextWrap img{
-      width:100%;
-      height: min(200px, 22vh);
-      object-fit:contain;
-      background:#fff;
-      border-radius:16px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    .nextOverlay .nextName{
+      font-size:28px;
+      font-weight:950;
+      letter-spacing:-.2px;
+      line-height:1.05;
     }
-    .nextMeta{ text-align:center; }
-    .nextMeta .nm{ font-size:14px; font-weight:950; margin-top:2px; }
-    .nextMeta .nl{ font-size:11px; color: rgba(255,255,255,.78); }
-    [data-theme="light"] .nextMeta .nl{ color: rgba(10,20,40,.68); }
+    .nextOverlay .nextLast{
+      margin-top: 10px;
+      font-size:18px;
+      font-weight:850;
+      color: rgba(255,255,255,.88);
+    }
+    .nextOverlay .nextLast:empty{ display:none; }
+    [data-theme="light"] .nextOverlay .nextText{
+      background: rgba(245,248,255,.78);
+      border-color: rgba(0,120,180,.25);
+    }
+    [data-theme="light"] .nextOverlay .nextTag{ color: rgba(0,110,160,.85); }
+    [data-theme="light"] .nextOverlay .nextLast{ color: rgba(10,20,40,.70); }
 
 
     /* Workout redesign (header + cards) */
@@ -474,13 +498,11 @@ body.inWorkout .btnbar #btnNext{
             </div>
           </div>
           <div class="nextOverlay" id="overlayNext" aria-hidden="true">
-            <div class="nextWrap">
+            <img class="nextBg" id="nextImg" alt="Exercice suivant" />
+            <div class="nextText">
               <div class="nextTag">EXERCICE SUIVANT</div>
-              <img id="nextImg" alt="Exercice suivant" />
-              <div class="nextMeta">
-                <div class="nm" id="nextName">—</div>
-                <div class="nl" id="nextLast">—</div>
-              </div>
+              <div class="nextName" id="nextName">—</div>
+              <div class="nextLast" id="nextLast">—</div>
             </div>
           </div>
 
@@ -1133,7 +1155,7 @@ function buildSequence(session){
       const e = next.exo;
       $("nextName").textContent = e.name || "Exercice";
       const last = getLastLoad(e.id || e.name) || "—";
-      $("nextLast").textContent = last === "—" ? "Dernière charge : —" : `Dernière charge : ${last}`;
+      $("nextLast").textContent = (last === "—" || !last) ? "" : `Dernière charge : ${last}`;
       setImg($("nextImg"), e.icon || "");
 
       $("overlayNext").classList.add("active");
