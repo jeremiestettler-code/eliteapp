@@ -371,13 +371,6 @@ body.inWorkout .btnbar #btnNext{
     
     body.inWorkout .todoCard{ margin-top:-6px; }
     body.inWorkout .card.cardTight{ margin:0; }
-    body.inWorkout .todoCard,
-    body.inWorkout .timerCard {
-    border: 1px solid rgba(255,255,255,0.10);
-    box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,0.03),
-    0 12px 28px rgba(0,0,0,0.35);
-}
 .todoHdr{ display:flex; align-items:center; justify-content:space-between; }
     .todoLabel{ font-size:16px; font-weight:950; }
     .todoMain{ margin-top:6px; font-size:32px; font-weight:950; letter-spacing:-.35px; }
@@ -393,6 +386,85 @@ body.inWorkout .btnbar #btnNext{
     body.inWorkout .btnbar{ gap:12px; padding: 10px 0 calc(10px + var(--safe-bot)); }
     body.inWorkout .btn.icon{ width:52px; height:52px; border-radius:18px; }
     body.inWorkout .btn.icon.big{ width:60px; height:60px; border-radius:20px; }
+
+    /* Last load badge on GIF (bottom-left) */
+    .loadBadge{
+      position:absolute; left:10px; bottom:10px;
+      padding:8px 10px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.35);
+      color:#fff;
+      font-weight:950;
+      font-size:14px;
+      line-height:1;
+      backdrop-filter: blur(6px);
+      display:none;
+      max-width: 55%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .loadBadge.active{ display:inline-flex; align-items:center; gap:8px; }
+    .loadBadge .lbLabel{ font-size:11px; font-weight:900; letter-spacing:.08em; opacity:.75; }
+    .loadBadge .lbVal{ font-size:14px; font-weight:950; opacity:.98; }
+
+    /* Charge + historique inside info overlay */
+    .loadPanel{
+      margin-top:10px;
+      border-top:1px solid rgba(255,255,255,.10);
+      padding-top:10px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .loadRow{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .loadRow input{
+      flex:1;
+      padding:10px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      font-size:14px;
+    }
+    [data-theme="light"] .loadRow input{
+      background: rgba(10,20,40,.06);
+      border-color: rgba(10,20,40,.10);
+    }
+    .loadSave{
+      padding:10px 12px;
+      border-radius:14px;
+      border:0;
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      font-weight:900;
+      min-width:72px;
+    }
+    .loadSave:active{ transform: scale(.98); }
+    .loadHist{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .loadChip{
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      color: rgba(255,255,255,.92);
+      font-size:13px;
+      font-weight:850;
+    }
+    [data-theme="light"] .loadChip{
+      background: rgba(10,20,40,.06);
+      border-color: rgba(10,20,40,.10);
+      color: rgba(10,20,40,.85);
+    }
 
   </style>
 </head>
@@ -495,14 +567,26 @@ body.inWorkout .btnbar #btnNext{
           <img id="exoImg" alt="Exercice" />
           <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
           
-          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
+          
+          <div class="loadBadge" id="loadBadge"><span class="lbVal" id="loadBadgeVal">—</span></div>
+<div class="infoOverlay" id="infoOverlay" aria-hidden="true">
             <div class="infoInner">
               <div class="infoHdr">
                 <div class="infoTitle">Conseils</div>
                 <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
               </div>
               <div class="infoBody" id="infoBody">—</div>
-            </div>
+            
+              <div class="loadPanel" id="loadPanel">
+                <div class="muted small" style="font-weight:900; letter-spacing:.06em; text-transform:uppercase;">Charge</div>
+                <div class="loadRow">
+                  <input id="loadInput" inputmode="text" autocomplete="off" autocapitalize="none" placeholder="Ex : 2x16, 80kg, 16-16…" />
+                  <button class="loadSave" id="btnLoadSave" type="button">OK</button>
+                </div>
+                <div class="muted small" style="margin-top:2px">Historique</div>
+                <div class="loadHist" id="loadHistory"></div>
+              </div>
+</div>
           </div>
           <div class="nextOverlay" id="overlayNext" aria-hidden="true">
             <img class="nextBg" id="nextImg" alt="Exercice suivant" />
@@ -786,12 +870,38 @@ body.inWorkout .btnbar #btnNext{
      ***********************/
     // History (localStorage per user)
     function histKey(exoId){ return ukey(`hist__${exoId}`); }
-    function getLastLoad(exoId){
-      return localStorage.getItem(histKey(exoId)) || "";
+
+    // Stored as JSON array of strings (new). Backward compatible with old plain string.
+    function getLoadHistory(exoId){
+      const raw = localStorage.getItem(histKey(exoId));
+      if(!raw) return [];
+      try{
+        const arr = JSON.parse(raw);
+        if(Array.isArray(arr)) return arr.filter(Boolean).map(String);
+      }catch(e){
+        // old format: single string
+        return [String(raw)].filter(Boolean);
+      }
+      return [];
     }
-    function setLastLoad(exoId, val){
-      if(val === null || val === undefined) return;
-      localStorage.setItem(histKey(exoId), String(val));
+
+    function saveLoadHistory(exoId, arr){
+      const clean = (arr||[]).filter(Boolean).map(v=>String(v).trim()).filter(Boolean);
+      localStorage.setItem(histKey(exoId), JSON.stringify(clean.slice(0, 12)));
+    }
+
+    function getLastLoad(exoId){
+      return (getLoadHistory(exoId)[0] || "");
+    }
+
+    function addLoadEntry(exoId, val){
+      const v = String(val||"").trim();
+      if(!v) return;
+      const hist = getLoadHistory(exoId);
+      // avoid duplicate consecutive entries
+      if(hist[0] === v) return;
+      hist.unshift(v);
+      saveLoadHistory(exoId, hist);
     }
 
     // Workout state
@@ -870,6 +980,8 @@ body.inWorkout .btnbar #btnNext{
         speak("Début du repos");
         beep(660, 80);
       }else if(cur.type === "warmup"){
+        currentExoId = null;
+        setLoadBadge("");
         setPhaseUI("Échauffement", "Début de l'échauffement");
         speak("Début de l'échauffement");
         beep(740, 80);
@@ -945,6 +1057,7 @@ body.inWorkout .btnbar #btnNext{
       if(!ov) return;
       ov.classList.add("active");
       ov.setAttribute("aria-hidden", "false");
+      syncLoadPanelForCurrent();
     }
     function closeInfo(){
       const ov = $("infoOverlay");
@@ -1029,7 +1142,9 @@ function buildSequence(session){
         desc  = e.todo || e.desc || "";
         reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
         rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
-        last  = getLastLoad(e.id || e.name || title) || "—";
+        const exoId = (e.id || e.name || title);
+        currentExoId = exoId;
+        last  = getLastLoad(exoId) || "—";
         imgKey = e.icon || "";
         muscle = e.muscle || e.group || e.target || "—";
 
@@ -1068,6 +1183,9 @@ function buildSequence(session){
       $("kpiReps").textContent = reps;
       $("kpiRest").textContent = rest;
       $("kpiLast").textContent = last;
+
+      // Badge charge sur le GIF (bas gauche)
+      setLoadBadge((cur.type === "work" || cur.type === "rest") ? (getLastLoad(currentExoId) || "") : "");
 
       // Dots (progression séries) — uniquement sur work/rest
       const dots = $("setDots");
