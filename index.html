@@ -869,17 +869,42 @@ body.inWorkout .btnbar #btnNext{
     // History (localStorage per user) — keeps a small list (JSON) with backward compat
     function histKey(exoId){ return ukey(`hist__${exoId}`); }
 
+    function todayISO(){
+      const d = new Date();
+      return d.toISOString().slice(0,10); // YYYY-MM-DD
+    }
+
+    function formatDateFR(iso){
+      if(!iso) return "";
+      const [y,m,dd] = iso.split("-");
+      return `${dd}.${m}.${y}`;
+    }
+
     function getLoadHistory(exoId){
       const raw = localStorage.getItem(histKey(exoId));
       if(!raw) return [];
+
       // Backward compat: old format was a single string
       if(raw[0] !== "["){
         const v = String(raw).trim();
-        return v ? [v] : [];
+        return v ? [{ v, d: todayISO() }] : [];
       }
+
       try{
         const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr.filter(Boolean) : [];
+        if(!Array.isArray(arr)) return [];
+
+        // Normalize: accept both string[] and {v,d}[]
+        return arr.map(x=>{
+          if(typeof x === "string"){
+            const v = String(x).trim();
+            return v ? ({ v, d: todayISO() }) : null;
+          }
+          if(x && x.v){
+            return { v: String(x.v).trim(), d: x.d || todayISO() };
+          }
+          return null;
+        }).filter(Boolean);
       }catch(e){
         return [];
       }
@@ -890,15 +915,17 @@ body.inWorkout .btnbar #btnNext{
       if(!v) return;
 
       const arr = getLoadHistory(exoId);
-      // move to front, remove duplicates
-      const filtered = [v, ...arr.filter(x => x !== v)];
-      const capped = filtered.slice(0, 12);
+      const filtered = arr.filter(x => x.v !== v);
+
+      const entry = { v, d: todayISO() };
+      const capped = [entry, ...filtered].slice(0, 12);
+
       localStorage.setItem(histKey(exoId), JSON.stringify(capped));
     }
 
     function getLastLoad(exoId){
       const arr = getLoadHistory(exoId);
-      return arr[0] || "";
+      return arr[0]?.v || "";
     }
 
     // keep signature for existing calls
@@ -906,7 +933,7 @@ body.inWorkout .btnbar #btnNext{
       saveLoad(exoId, val);
     }
 
-    let currentExoIdForLoad = null;
+let currentExoIdForLoad = null;
 
     function updateLoadBadge(){
       const b = $("loadBadge");
@@ -930,13 +957,13 @@ body.inWorkout .btnbar #btnNext{
       const arr = currentExoIdForLoad ? getLoadHistory(currentExoIdForLoad) : [];
       if(arr.length === 0) return;
 
-      arr.forEach(v=>{
+      arr.forEach(item=>{
         const chip = document.createElement("button");
         chip.type = "button";
         chip.className = "loadChip";
-        chip.textContent = v;
+        chip.textContent = `${formatDateFR(item.d)} – ${item.v}`;
         chip.addEventListener("click", ()=>{
-          if(input) input.value = v;
+          if(input) input.value = item.v;
         });
         host.appendChild(chip);
       });
