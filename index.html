@@ -115,8 +115,14 @@
 
 /* Simplified bottom controls (uniform like mock) */
 body.inWorkout .btnbar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 80;
   gap: 14px;
   padding: 16px 16px calc(16px + var(--safe-bot));
+  background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
 }
 body.inWorkout .btnbar .ctrlBtn{
   flex: 1;
@@ -127,7 +133,7 @@ body.inWorkout .btnbar .ctrlBtn{
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size: 28px;
+  font-size: 22px;
   color: rgba(255,255,255,.92);
   box-shadow: 0 10px 26px rgba(0,0,0,.22);
 }
@@ -231,7 +237,7 @@ body.inWorkout .btnbar #btnNext{
     .srOnly{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
     body.inWorkout .topbar{ display:none; }
 
-    #screenWorkout{ gap:10px; padding-top: calc(12px + var(--safe-top)); padding-bottom: calc(12px + var(--safe-bot)); }
+    #screenWorkout{ gap:10px; padding-top: calc(12px + var(--safe-top)); padding-bottom: calc(120px + var(--safe-bot)); }
     .workoutHeader{
       display:flex; align-items:center; justify-content:space-between;
       gap:10px; padding: 4px 2px;
