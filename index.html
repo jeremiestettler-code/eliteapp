@@ -1104,30 +1104,35 @@ let currentExoIdForLoad = null;
         const e = cur.exo || {};
         const parts = [];
 
-        // Essaye de lire des champs éventuels (sans casser si absent)
-        const doTxt = e.do || e.todo || e.cues || "";
-        const dontTxt = e.dont || e.avoid || e.warnings || "";
+        // On évite la redondance avec le bloc "À faire" : ici on met uniquement "Comment faire" + "Erreurs à éviter"
+        const howTxt = e.how || e.howto || e.do || e.cues || e.tips || "";
+        const avoidTxt = e.mistakes || e.dont || e.avoid || e.warnings || "";
 
-        if(doTxt){
-          parts.push("À faire\n" + String(doTxt).trim());
+        if(howTxt){
+          parts.push("Comment faire
+" + String(howTxt).trim());
         }
-        if(dontTxt){
-          parts.push("À éviter\n" + String(dontTxt).trim());
+        if(avoidTxt){
+          parts.push("Erreurs à éviter
+" + String(avoidTxt).trim());
         }
 
-        // Fallback : description
+        // Fallback : description uniquement (pas e.todo pour éviter la redondance)
         if(parts.length === 0){
-          const fallback = e.desc || e.muscle || "—";
+          const fallback = e.desc || e.muscle || "Pas de conseils disponibles pour cet exercice.";
           parts.push(String(fallback).trim());
         }
 
-        body.textContent = parts.join("\n\n");
+        body.textContent = parts.join("
+
+");
       }else if(cur?.type === "warmup"){
         body.textContent = String(cur.desc || "—");
       }else{
         body.textContent = "—";
       }
     }
+
 
     function openInfo(){
       const ov = $("infoOverlay");
