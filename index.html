@@ -14,1458 +14,216 @@
   <style>
     :root{
       --bg:#0b0f17; --card:#121a29; --muted:#9fb0c7; --text:#eaf1ff;
-      --accent:#4ea1ff; --accent2:#00d4ff; --danger:#ff4e6a;
-      --btn:#1a2740; --btn2:#223454;
+      --accent:#4ea1ff; --accent2:#00d4ff;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 20px;
+      --radius: 24px;
       --safe-top: env(safe-area-inset-top);
       --safe-bot: env(safe-area-inset-bottom);
-    }
-    [data-theme="light"]{
-      --bg:#f5f7fb; --card:#ffffff; --muted:#4f6076; --text:#0b1526;
-      --accent:#1976ff; --accent2:#0aa3c2;
-      --btn:#e9eef9; --btn2:#dde7fb;
-      --shadow: 0 10px 30px rgba(10,20,40,.12);
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       background:var(--bg);
       color:var(--text);
-      -webkit-tap-highlight-color: transparent;
       padding-top: var(--safe-top);
       padding-bottom: var(--safe-bot);
-      overscroll-behavior: none;
-      touch-action: manipulation;
-    }
-    a{color:inherit}
-    .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
-    .topbar{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; margin-bottom:12px;
-    }
-    .brand{
-      display:flex; flex-direction:column; gap:2px;
-    }
-    .brand .title{font-size:18px; font-weight:800; letter-spacing:.2px}
-    .brand .sub{font-size:12px; color:var(--muted)}
-    .workoutTopExo{font-size:14px;font-weight:950;text-align:center;line-height:1.2}
-
-    
-    .coachSwitch{ display:flex; align-items:center; gap:10px; margin-right:10px; }
-    .coachLabel{ font-size:13px; color:var(--text); opacity:.9; }
-    .switch{ position:relative; display:inline-block; width:46px; height:26px; }
-    .switch input{ opacity:0; width:0; height:0; }
-    .slider{ position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
-      background: rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.14);
-      transition:.2s; border-radius:999px; }
-    .slider:before{ position:absolute; content:""; height:20px; width:20px; left:3px; top:50%;
-      transform:translateY(-50%); background: rgba(255,255,255,.92); transition:.2s; border-radius:999px; }
-    .switch input:checked + .slider{ background: rgba(59,130,246,.55); border-color: rgba(59,130,246,.65); }
-    .switch input:checked + .slider:before{ transform:translate(20px,-50%); }
-.pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:999px;
-      background:var(--card); box-shadow: var(--shadow);
-      font-size:13px; color:var(--muted);
-    }
-    .pill button{
-      border:0; background:transparent; color:var(--text);
-      font-size:14px; font-weight:700;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior:none;
     }
 
-    .card{
-      background:var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px;
-    }
-    .stack{display:flex; flex-direction:column; gap:12px}
-    .row{display:flex; gap:10px; align-items:center}
-    .grow{flex:1}
-    .muted{color:var(--muted)}
-    .h1{font-size:22px; font-weight:900; margin:0 0 4px}
-    .h2{font-size:16px; font-weight:900; margin:0}
-    .small{font-size:12px}
-    .btn{
-      border:0; border-radius: 16px;
-      background:var(--btn);
-      color:var(--text);
-      padding:12px 14px;
-      font-weight:800;
-      box-shadow: var(--shadow);
-      display:inline-flex; align-items:center; justify-content:center; gap:10px;
-    }
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#061224}
-    .btn.danger{background:var(--danger)}
-    .btn.secondary{background:var(--btn2)}
-    .btn.wide{width:100%}
-    .btn.icon{width:54px; height:54px; padding:0; border-radius:18px}
-    .btn.icon.big{width:64px; height:64px; border-radius:22px}
-    .btnbar{
-      position: sticky;
-      bottom: 0;
-      padding: 12px 0 calc(12px + var(--safe-bot));
-      background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
-      display:flex; justify-content:center; gap:14px;
-    }
+    .app{max-width:520px;margin:0 auto;padding:10px 14px}
 
-/* Simplified bottom controls (uniform like mock) */
-body.inWorkout .btnbar{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 80;
-  gap: 14px;
-  padding: 16px 16px calc(16px + var(--safe-bot));
-  background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
-}
-body.inWorkout .btnbar .ctrlBtn{
-  flex: 1;
-  height: 56px;
-  border-radius: 22px;
-  border: 1px solid rgba(255,255,255,.08);
-  background: rgba(255,255,255,0.06);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size: 18px;
-  color: rgba(255,255,255,.92);
-  box-shadow: 0 10px 26px rgba(0,0,0,.22);
-}
-body.inWorkout .btnbar .ctrlBtn:active{ transform: scale(.97); }
-body.inWorkout .btnbar .ctrlBtn.primary{
-  background: linear-gradient(180deg, rgba(22,92,140,.55), rgba(10,42,64,.72));
-  border-color: rgba(120,200,255,.18);
-}
-
-body.inWorkout .btnbar #btnPrev,
-body.inWorkout .btnbar #btnNext{
-  font-weight: 800;
-  letter-spacing: -4px;
-}
-
-    .grid{display:grid; grid-template-columns:1fr; gap:12px}
-    .sessionItem{display:flex; gap:12px; align-items:center}
-    .badge{
-      font-size:12px; color:var(--muted);
-      background: rgba(255,255,255,.06);
-      padding:6px 10px; border-radius:999px;
-    }
-    [data-theme="light"] .badge{background: rgba(10,20,40,.06)}
-
-    .screen{display:none}
-    .screen.active{display:block}
-
-    .loginBox{margin-top:14px}
-    input{
-      width:100%;
-      border:0; outline:none;
-      background:var(--btn2);
-      color:var(--text);
-      padding:12px 14px;
-      border-radius:16px;
-      font-size:15px;
-    }
-    .timerBox{
-      display:flex; flex-direction:column; gap:10px;
-      align-items:center; justify-content:center;
-      padding: 14px;
-    }
-    .phase{
-      font-weight:900; letter-spacing:.3px;
-      padding:8px 12px; border-radius:999px;
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      font-size:12px;
-    }
-    [data-theme="light"] .phase{background: rgba(10,20,40,.06)}
-    .time{
-      font-variant-numeric: tabular-nums;
-      font-size: 62px;
-      font-weight: 950;
-      line-height: 1;
-      margin: 2px 0 0;
-    }
-    .subline{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
-    .preview{
-      width:100%;
-      border-radius: var(--radius);
-      overflow:hidden;
-      background: rgba(255,255,255,.06);
-      box-shadow: var(--shadow);
-    }
-    [data-theme="light"] .preview{background: rgba(10,20,40,.06)}
-    .preview img{
-      width:100%; height:auto; display:block;
-      background:transparent;
-    }
-    .kpiRow{display:flex; gap:10px; width:100%}
-    .kpi{flex:1; padding:10px 12px; border-radius:16px; background: rgba(255,255,255,.06)}
-    [data-theme="light"] .kpi{background: rgba(10,20,40,.06)}
-    .kpi .v{font-weight:950; font-size:16px}
-    .kpi .l{font-size:12px; color:var(--muted)}
-
-    
-    /* Next exercise overlay (inside GIF card) */
-    .nextOverlay{
-      position:absolute;
-      inset:0;
-      display:none;
-      z-index: 6;
-      overflow:hidden;
-      border-radius: 22px;
-    }
-    .nextOverlay.active{display:block}
-    /* background next GIF, grisé */
-    .nextOverlay .nextBg{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter: grayscale(1) brightness(.55) contrast(.95);
-      transform: scale(1);
-    }
-    /* léger voile pour lisibilité */
-    .nextOverlay::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,.10), rgba(0,0,0,.40));
-      pointer-events:none;
-    }
-    .nextOverlay .nextText{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%,-50%);
-      width: min(86%, 520px);
-      padding: 18px 18px 16px;
-      border-radius: 24px;
-      background: rgba(10,18,30,.70);
-      border: 1px solid rgba(120,200,255,.35);
-      box-shadow: 0 16px 40px rgba(0,0,0,.45);
-      text-align:center;
-      backdrop-filter: blur(6px);
-    }
-    .nextOverlay .nextTag{
-      font-weight:950;
-      letter-spacing:.28em;
-      font-size:12px;
-      color: rgba(140,215,255,.95);
-      margin-bottom: 10px;
-    }
-    .nextOverlay .nextName{
-      font-size:20px;
-      font-weight:950;
-      letter-spacing:-.2px;
-      line-height:1.05;
-    }
-    .nextOverlay .nextLast{
-      margin-top: 10px;
-      font-size:18px;
-      font-weight:850;
-      color: rgba(255,255,255,.88);
-    }
-    .nextOverlay .nextLast:empty{ display:none; }
-    [data-theme="light"] .nextOverlay .nextText{
-      background: rgba(245,248,255,.78);
-      border-color: rgba(0,120,180,.25);
-    }
-    [data-theme="light"] .nextOverlay .nextTag{ color: rgba(0,110,160,.85); }
-    [data-theme="light"] .nextOverlay .nextLast{ color: rgba(10,20,40,.70); }
-
-
-    /* Workout redesign (header + cards) */
-    .srOnly{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
-    body.inWorkout .topbar{ display:none; }
-
-    #screenWorkout{ gap:8px; padding-top: calc(12px + var(--safe-top)); padding-bottom: calc(104px + var(--safe-bot)); }
+    /* =====================
+       WORKOUT HEADER
+       ===================== */
     .workoutHeader{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; padding: 4px 2px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 2px 4px;
     }
-    .workoutBack{ width:48px; height:48px; border-radius:16px; }
-    .workoutHeaderCenter{ flex:1; text-align:center; line-height:1.05; }
-    .workoutTitle{ font-size:26px; font-weight:950; letter-spacing:-.3px; }
-    .workoutSub{ margin-top:4px; font-size:14px; color:var(--muted); }
+    .workoutBack{
+      width:44px;height:44px;border-radius:14px;
+      background:#1a2740;color:#fff;border:0;
+    }
+    .workoutHeaderCenter{
+      flex:1;text-align:center;line-height:1.1;
+    }
+    .workoutTitle{
+      font-size:24px;font-weight:950;
+    }
+    .workoutSub{
+      margin-top:4px;
+      font-size:13px;
+      color:var(--muted);
+    }
 
-    .workoutHeaderRight{ width:56px; display:flex; justify-content:flex-end; }
-
-    .workoutChips{ display:flex; justify-content:center; gap:8px; margin-top:2px; margin-bottom:0; }
+    .workoutChips{
+      display:flex;
+      justify-content:center;
+      gap:8px;
+      margin-bottom:6px;
+    }
     .chip{
-      padding:8px 12px; border-radius:999px;
-      background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--text); font-size:13px;
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:13px;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
     }
-    [data-theme="light"] .chip{ background: rgba(10,20,40,.06); border-color: rgba(10,20,40,.10); }
-    .chipPhase{ color: #bfe3ff; border-color: rgba(120,210,255,.35); }
-    .chipCoach{ color: #bfffd0; border-color: rgba(90,240,140,.35); }
-    .chipSoft{ opacity:.95; }
 
-    .cardTight{ padding:10px; border-radius: 24px; }
+    /* =====================
+       WORKOUT LAYOUT
+       ===================== */
+    #screenWorkout{
+      padding-top:0;
+      padding-bottom:calc(96px + var(--safe-bot));
+    }
+
+    .cardTight{
+      width:100%;
+      margin-bottom:5px;
+      border-radius:var(--radius);
+      background:var(--card);
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:
+        inset 0 0 0 1px rgba(255,255,255,.03),
+        0 10px 28px rgba(0,0,0,.35);
+    }
+
+    /* =====================
+       GIF CARD
+       ===================== */
     .previewCard{
       position:relative;
-      border-radius:22px;
       overflow:hidden;
-      background: rgba(0,0,0,.15);
-      border:1px solid rgba(255,255,255,.08);
     }
-    [data-theme="light"] .previewCard{ background: rgba(10,20,40,.04); border-color: rgba(10,20,40,.10); }
-    .previewCard img{ width:100%; height: min(280px, 34vh); object-fit:contain; background:#fff; display:block; }
-
-    .infoBtn{
-      position:absolute; right:10px; bottom:10px;
-      width:38px; height:38px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.35);
-      color:#fff; font-weight:900; font-size:16px;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .infoBtn:active{ transform: scale(.98); }
-
-    .setDots{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      padding: 0;
-      pointer-events:none;
-    }
-
-.dot{
-      width:10px; height:10px; border-radius:999px;
-      background: rgba(255,255,255,.20);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .dot.current{ background: rgba(80,170,255,.95); border-color: rgba(80,170,255,.65); }
-    .dot.done{ background: rgba(80,240,140,.95); border-color: rgba(80,240,140,.55); }
-
-    .infoOverlay{
-      position:absolute; inset:0;
-      background: rgba(0,0,0,.70);
-      display:none;
-      padding: 12px;
-    }
-    .infoOverlay.active{ display:flex; }
-    .infoInner{
+    .previewCard img{
       width:100%;
+      height:min(280px,34vh);
+      object-fit:contain;
+      background:#fff;
+      display:block;
+    }
+    .loadBadge{
+      position:absolute;
+      left:10px;
+      bottom:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(0,0,0,.45);
+      font-weight:900;
+      font-size:14px;
+    }
+
+    /* =====================
+       TODO CARD
+       ===================== */
+    .todoCard{padding:12px}
+    .todoHdr{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    .todoLabel{font-weight:900}
+    .todoMain{
+      margin-top:6px;
+      font-size:30px;
+      font-weight:950;
+    }
+    .todoDesc{
+      margin-top:4px;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    /* =====================
+       TIMER
+       ===================== */
+    .timerCard{padding:10px}
+    .time{
+      text-align:center;
+      font-size:56px;
+      font-weight:950;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* =====================
+       BOTTOM CONTROLS
+       ===================== */
+    .btnbar{
+      position:fixed;
+      left:0;right:0;bottom:0;
+      display:flex;
+      gap:12px;
+      padding:10px 14px calc(10px + var(--safe-bot));
+      background:linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 40%);
+    }
+    .ctrlBtn{
+      flex:1;
+      height:54px;
       border-radius:20px;
       border:1px solid rgba(255,255,255,.12);
-      background: rgba(15,20,30,.85);
-      padding: 10px;
-      display:flex; flex-direction:column;
-      gap:8px;
+      background:rgba(255,255,255,.08);
+      font-size:18px;
+      font-weight:900;
+      color:#fff;
     }
-    .infoHdr{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .infoTitle{ font-size:14px; font-weight:950; }
-    .infoBody{ color: rgba(255,255,255,.92); font-size:13px; line-height:1.3; white-space:pre-line; }
-    .infoClose{ padding: 8px 12px; border-radius: 14px; }
-
-    .todoCard{ }
-    
-    body.inWorkout .todoCard{ margin-top:-6px; }
-    body.inWorkout .card.cardTight{ margin:0; }
-.todoHdr{ display:flex; align-items:center; justify-content:space-between; }
-    .todoLabel{ font-size:16px; font-weight:950; }
-    .todoMain{ margin-top:6px; font-size:32px; font-weight:950; letter-spacing:-.35px; }
-    .todoDesc{ margin-top:4px; font-size:13px; }
-    .todoChips{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-
-    .timerCard .timerBox{ padding: 8px 4px; }
-    .timerBoxFlat{ background: transparent; box-shadow:none; padding: 8px 4px; }
-    .timerBoxFlat .time{ font-size: 56px; }
-    .timerBoxFlat .subline{ text-align:center; margin-top: 4px; }
-
-    /* Slightly smaller bottom controls for fit */
-    body.inWorkout .btnbar{ gap:12px; padding: 10px 0 calc(10px + var(--safe-bot)); }
-    body.inWorkout .btn.icon{ width:52px; height:52px; border-radius:18px; }
-    body.inWorkout .btn.icon.big{ width:60px; height:60px; border-radius:20px; }
-
-  
-/* Badge "dernière charge" sur le GIF (bas gauche) */
-.loadBadge{
-  position:absolute;
-  left:10px;
-  bottom:10px;
-  z-index:7;
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.14);
-  background: rgba(0,0,0,.40);
-  color:#fff;
-  font-weight:900;
-  font-size:14px;
-  letter-spacing:-.2px;
-  backdrop-filter: blur(6px);
-}
-.loadBadge.hidden{ display:none; }
-
-/* Bloc charge + historique dans le "i" */
-.loadBox{
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid rgba(255,255,255,.10);
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.loadRow{
-  display:flex;
-  gap:8px;
-  align-items:center;
-}
-.loadInput{
-  flex:1;
-  width:auto;
-  background: rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.10);
-  padding:10px 12px;
-  border-radius:14px;
-  color: var(--text);
-  font-size:14px;
-}
-.loadBtn{
-  padding:10px 12px;
-  border-radius:14px;
-  font-weight:900;
-}
-.loadHist{
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-}
-.loadChip{
-  padding:8px 10px;
-  border-radius:999px;
-  background: rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.10);
-  color: rgba(255,255,255,.92);
-  font-size:13px;
-  font-weight:850;
-}
-.loadChip:active{ transform: scale(.98); }
-
-[data-theme="light"] .loadBadge{
-  background: rgba(255,255,255,.72);
-  color:#0b1526;
-  border-color: rgba(10,20,40,.12);
-}
-[data-theme="light"] .loadInput{
-  background: rgba(10,20,40,.06);
-  border-color: rgba(10,20,40,.10);
-}
-[data-theme="light"] .loadChip{
-  background: rgba(10,20,40,.06);
-  border-color: rgba(10,20,40,.10);
-  color: rgba(10,20,40,.85);
-}
-
-
+    .ctrlBtn.primary{
+      background:linear-gradient(180deg,#1b6cff,#0d3f7a);
+    }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="brand">
-        <div class="title" id="brandTitle">Programme Force</div>
-        <div class="sub" id="userLine">Non connecté</div>
-      </div>
-      <div class="pill" id="pillAuth">
-        <span id="pillStatus">🔒</span>
-        <div class="coachSwitch" id="coachSwitchWrap" style="display:none">
-          <span class="coachLabel">Coach</span>
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button id="btnLogout" style="display:none">Déconnexion</button>
-      </div>
+<div class="app">
+
+<section id="screenWorkout">
+
+  <!-- HEADER -->
+  <div class="workoutHeader">
+    <button class="workoutBack">←</button>
+    <div class="workoutHeaderCenter">
+      <div class="workoutTitle">Pompes</div>
+      <div class="workoutSub">Exercice 1/6</div>
     </div>
-
-    <!-- LOGIN -->
-    <section class="screen active" id="screenLogin">
-      <div class="card loginBox">
-        <div class="h1">Connexion</div>
-        <div class="muted small">Charge automatiquement le pack de séances via Firestore (Option B).</div>
-        <div style="height:12px"></div>
-        <div class="stack">
-          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" />
-          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Mot de passe" />
-          <button class="btn primary wide" id="btnLogin">Se connecter</button>
-          <div class="muted small" id="loginMsg"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOME -->
-    <section class="screen" id="screenHome">
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h1">Séances</div>
-            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
-          </div>
-          <button class="btn secondary" id="btnTheme" title="Thème">🌓</button>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="grid" id="sessionList"></div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h2">Réglages</div>
-            <div class="muted small">Sauvegardés par utilisateur.</div>
-          </div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- WORKOUT -->
-    
-    <section class="screen" id="screenWorkout">
-      <!-- Header workout (remplace la topbar) -->
-      <div class="workoutHeader">
-        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour">←</button>
-
-        <div class="workoutHeaderCenter">
-          <div class="workoutTitle" id="workoutTitle">—</div>
-          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
-        </div>
-
-        <div class="workoutHeaderRight">
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch2" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="workoutChips">
-        <div class="chip chipPhase" id="chipPhase">Travail</div>
-        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
-        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
-      </div>
-
-      <div class="card cardTight">
-        <div class="previewCard" id="previewCard">
-          <img id="exoImg" alt="Exercice" />
-          <div class="loadBadge hidden" id="loadBadge">—</div>
-          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
-          
-          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
-            <div class="infoInner">
-              <div class="infoHdr">
-                <div class="infoTitle">Conseils</div>
-                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
-              </div>
-              <div class="infoBody" id="infoBody">—</div>
-
-              <div class="loadBox">
-                <div class="loadRow">
-                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
-                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
-                </div>
-                <div class="loadHist" id="loadHist"></div>
-              </div>
-            </div>
-          </div>
-          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
-            <img class="nextBg" id="nextImg" alt="Exercice suivant" />
-            <div class="nextText">
-              <div class="nextTag">EXERCICE SUIVANT</div>
-              <div class="nextName" id="nextName">—</div>
-              <div class="nextLast" id="nextLast">—</div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-<div class="card cardTight todoCard">
-        <div class="todoHdr">
-          <div class="todoLabel">À faire</div>
-          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
-        </div>
-        <div class="todoMain" id="todoMain">—</div>
-        <div class="todoDesc muted" id="todoDesc">—</div>
-
-        <div class="todoChips">
-          <div class="chip chipSoft" id="chipMuscle">—</div>
-          <div class="chip chipSoft" id="chipRest">Repos: —</div>
-        </div>
-
-        <!-- valeurs conservées pour compat (logique inchangée) -->
-        <span class="srOnly" id="kpiReps">—</span>
-        <span class="srOnly" id="kpiRest">—</span>
-        <span class="srOnly" id="kpiLast">—</span>
-        <span class="srOnly" id="exoDesc">—</span>
-      </div>
-
-      <div class="card cardTight timerCard">
-        <div class="timerBox timerBoxFlat">
-          <div class="time" id="timeText">00:00</div>
-</div>
-      </div>
-
-      
-  <div class="btnbar">
-    <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">◀◀</button>
-    <button class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause" aria-label="Start / Pause">▶︎</button>
-    <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">▶▶</button>
   </div>
+
+  <div class="workoutChips">
+    <div class="chip">Travail</div>
+  </div>
+
+  <!-- GIF -->
+  <div class="cardTight previewCard">
+    <img src="./images/pompes.gif" alt="">
+    <div class="loadBadge">2x16</div>
+  </div>
+
+  <!-- A FAIRE -->
+  <div class="cardTight todoCard">
+    <div class="todoHdr">
+      <div class="todoLabel">À faire</div>
+    </div>
+    <div class="todoMain">4 × 12</div>
+    <div class="todoDesc">Gainage, amplitude complète</div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="cardTight timerCard">
+    <div class="time">00:45</div>
+  </div>
+
 </section>
+
+<!-- CONTROLS -->
+<div class="btnbar">
+  <button class="ctrlBtn">◀◀</button>
+  <button class="ctrlBtn primary">▶︎</button>
+  <button class="ctrlBtn">▶▶</button>
 </div>
 
-  <!-- Overlay "EXERCICE SUIVANT" -->
-  
-<!-- images.js reste "en dur" -->
-  <script src="./images.js"></script>
-
-  <script type="module">
-    /***********************
-     * 1) Firebase imports
-     ***********************/
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    /*******************************************************
-     * 2) Firebase config (FOURNIE PAR TOI)
-     *******************************************************/
-    const firebaseConfig = {
-      apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
-      authDomain: "programme-force.firebaseapp.com",
-      projectId: "programme-force",
-      storageBucket: "programme-force.firebasestorage.app",
-      messagingSenderId: "1070910165788",
-      appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-
-    /***********************
-     * 3) Helpers UI
-     ***********************/
-    const $ = (id)=>document.getElementById(id);
-
-    const APP_TITLE = "Programme Force";
-    let topbarUserText = "Non connecté";
-    const screens = { login:$("screenLogin"), home:$("screenHome"), workout:$("screenWorkout") };
-    function showScreen(name){
-      Object.values(screens).forEach(s=>s.classList.remove("active"));
-      screens[name].classList.add("active");
-
-      // Topbar title/subtitle
-      const bt = $("brandTitle");
-      if(bt) bt.textContent = (name === "workout") ? (curSession?.name || "Séance") : APP_TITLE;
-      const ul = $("userLine");
-      if(ul && name !== "workout") ul.textContent = topbarUserText;
-
-      document.body.classList.toggle("inWorkout", name === "workout");
-
-      // Topbar: sur la page exercice, on masque toujours (header custom)
-      const wrap = $("coachSwitchWrap");
-      if(wrap) wrap.style.display = "none";
-      const lo = $("btnLogout");
-      if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
-    }
-    function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
-
-    /***********************
-     * 4) Theme (home only)
-     ***********************/
-    const THEME_KEY = "coach_theme";
-    function applyTheme(t){
-      document.documentElement.setAttribute("data-theme", t);
-      localStorage.setItem(THEME_KEY, t);
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute("content", t==="light" ? "#f5f7fb" : "#0b0f17");
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) || "dark");
-    $("btnTheme").addEventListener("click", ()=>{
-      const cur = document.documentElement.getAttribute("data-theme") || "dark";
-      applyTheme(cur === "dark" ? "light" : "dark");
-    });
-
-    /***********************
-     * 5) Per-user storage
-     ***********************/
-    let currentUser = null;
-    function ukey(suffix){
-      const uid = currentUser?.uid || "anon";
-      return `${uid}__${suffix}`;
-    }
-
-    /***********************
-     * 6) Coach audio
-     ***********************/
-    let coachMode = true;
-
-    function speak(text){
-      try{
-        if(!coachMode) return;
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "fr-FR";
-        u.rate = 1.0;
-        speechSynthesis.speak(u);
-      }catch(e){}
-    }
-    function beep(freq=880, ms=90){
-      try{
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = freq;
-        o.connect(g); g.connect(ctx.destination);
-        g.gain.value = 0.06;
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
-      }catch(e){}
-    }
-
-    function loadCoachMode(){
-      const v = localStorage.getItem(ukey("coach_mode"));
-      coachMode = (v === null) ? true : (v === "1");
-      const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    }
-    function toggleCoachMode(){
-      coachMode = !coachMode;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    }
-    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
-
-    $("coachSwitch")?.addEventListener("change", (e)=>{
-      coachMode = !!e.target.checked;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    });
-
-    $("coachSwitch2")?.addEventListener("change", (e)=>{
-      coachMode = !!e.target.checked;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    });
-
-    /***********************
-     * 7) Dynamic sessions loader (Option B)
-     ***********************/
-    function loadScriptOnce(src){
-      return new Promise((resolve, reject)=>{
-        if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
-        const s = document.createElement("script");
-        s.src = src;
-        s.async = true;
-        s.setAttribute("data-dyn", src);
-        s.onload = ()=>resolve();
-        s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
-        document.head.appendChild(s);
-      });
-    }
-
-    async function getUserConfig(uid){
-      const ref = doc(db, `users/${uid}/profile/config`);
-      const snap = await getDoc(ref);
-      if(!snap.exists()){
-        throw new Error("Config Firestore manquante : users/{uid}/profile/config");
-      }
-      return snap.data();
-    }
-
-    // Normalisation: toute l'app lit window.SESSIONS
-    window.SESSIONS = null;
-
-    async function loadUserSessions(uid){
-      const cfg = await getUserConfig(uid);
-      const file = cfg.sessionsFile;
-      const varName = cfg.sessionsVar;
-
-      if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar.");
-      await loadScriptOnce(file);
-
-      const obj = window[varName];
-      if(!obj) throw new Error(`Variable sessions introuvable: window["${varName}"]`);
-
-      window.SESSIONS = obj;
-      topbarUserText = cfg.displayName || currentUser?.email || "Connecté";
-      // Si on n'est pas en séance, on reflète le nom en haut
-      if(!screens.workout.classList.contains("active")) $("userLine").textContent = topbarUserText;
-    }
-
-    /***********************
-     * 8) Sessions UI (Home)
-     ***********************/
-    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
-
-    function renderHome(){
-      const sessions = window.SESSIONS || {};
-      const keys = Object.keys(sessions);
-
-      const host = $("sessionList");
-      host.innerHTML = "";
-
-      if(keys.length === 0){
-        host.innerHTML = `<div class="muted small">Aucune séance trouvée dans ton pack.</div>`;
-        return;
-      }
-
-      keys.forEach((k)=>{
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nItems = (s?.items||[]).length;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        host.appendChild(card);
-      });
-    }
-
-    /***********************
-     * 9) Workout engine
-     ***********************/
-    // History (localStorage per user) — keeps a small list (JSON) with backward compat
-    function histKey(exoId){ return ukey(`hist__${exoId}`); }
-
-    function todayISO(){
-      const d = new Date();
-      return d.toISOString().slice(0,10); // YYYY-MM-DD
-    }
-
-    function formatDateFR(iso){
-      if(!iso) return "";
-      const [y,m,dd] = iso.split("-");
-      return `${dd}.${m}.${y}`;
-    }
-
-    function getLoadHistory(exoId){
-      const raw = localStorage.getItem(histKey(exoId));
-      if(!raw) return [];
-
-      // Backward compat: old format was a single string
-      if(raw[0] !== "["){
-        const v = String(raw).trim();
-        return v ? [{ v, d: todayISO() }] : [];
-      }
-
-      try{
-        const arr = JSON.parse(raw);
-        if(!Array.isArray(arr)) return [];
-
-        // Normalize: accept both string[] and {v,d}[]
-        return arr.map(x=>{
-          if(typeof x === "string"){
-            const v = String(x).trim();
-            return v ? ({ v, d: todayISO() }) : null;
-          }
-          if(x && x.v){
-            return { v: String(x.v).trim(), d: x.d || todayISO() };
-          }
-          return null;
-        }).filter(Boolean);
-      }catch(e){
-        return [];
-      }
-    }
-
-    function saveLoad(exoId, value){
-      const v = String(value||"").trim();
-      if(!v) return;
-
-      const arr = getLoadHistory(exoId);
-      const filtered = arr.filter(x => x.v !== v);
-
-      const entry = { v, d: todayISO() };
-      const capped = [entry, ...filtered].slice(0, 12);
-
-      localStorage.setItem(histKey(exoId), JSON.stringify(capped));
-    }
-
-    function getLastLoad(exoId){
-      const arr = getLoadHistory(exoId);
-      return arr[0]?.v || "";
-    }
-
-    // keep signature for existing calls
-    function setLastLoad(exoId, val){
-      saveLoad(exoId, val);
-    }
-
-let currentExoIdForLoad = null;
-
-    function updateLoadBadge(){
-      const b = $("loadBadge");
-      if(!b) return;
-      const v = currentExoIdForLoad ? getLastLoad(currentExoIdForLoad) : "";
-      if(v){
-        b.textContent = v; // "juste X"
-        b.classList.remove("hidden");
-      }else{
-        b.textContent = "—";
-        b.classList.add("hidden");
-      }
-    }
-
-    function renderLoadHistory(){
-      const host = $("loadHist");
-      const input = $("loadInput");
-      if(!host) return;
-      host.innerHTML = "";
-
-      const arr = currentExoIdForLoad ? getLoadHistory(currentExoIdForLoad) : [];
-      if(arr.length === 0) return;
-
-      arr.forEach(item=>{
-        const chip = document.createElement("button");
-        chip.type = "button";
-        chip.className = "loadChip";
-        chip.textContent = `${formatDateFR(item.d)} – ${item.v}`;
-        chip.addEventListener("click", ()=>{
-          if(input) input.value = item.v;
-        });
-        host.appendChild(chip);
-      });
-    }
-
-    function saveFromInput(){
-      if(!currentExoIdForLoad) return;
-      const input = $("loadInput");
-      const v = (input?.value || "").trim();
-      if(!v) return;
-
-      saveLoad(currentExoIdForLoad, v);
-
-      // refresh UI everywhere
-      updateLoadBadge();
-      renderLoadHistory();
-    }
-
-
-    // Workout state
-    let curSessionId = null;
-    let curSession = null;
-    let seq = []; // flattened
-    let idx = 0;
-
-    let running = false;
-    let timer = null;
-    let remaining = 0;
-
-    function mmss(sec){
-      const s = Math.max(0, Math.floor(sec));
-      const m = Math.floor(s/60);
-      const r = s%60;
-      return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
-    }
-
-    function setPhaseUI(phase, hint){
-      const cp = $("chipPhase");
-      if(cp) cp.textContent = (phase || "").toString();
-      $("phaseHint").textContent = hint || "";
-    }
-
-    function stopTimer(){
-      running = false;
-      if(timer){ clearInterval(timer); timer=null; }
-      $("btnPlayPause").textContent = "▶︎";
-    }
-
-    function startTimer(){
-      if(running) return;
-      running = true;
-      $("btnPlayPause").textContent = "⏸";
-      let lastTick = Date.now();
-
-      timer = setInterval(()=>{
-        const now = Date.now();
-        const dt = (now - lastTick) / 1000;
-        lastTick = now;
-        remaining -= dt;
-
-        // 3-2-1 only at end of WORK (not rest)
-        const cur = seq[idx];
-        if(cur?.type === "work"){
-          if(Math.ceil(remaining) === 3) speak("3");
-          if(Math.ceil(remaining) === 2) speak("2");
-          if(Math.ceil(remaining) === 1) speak("1");
-        }
-
-        if(remaining <= 0){
-          clearInterval(timer); timer=null;
-          running = false;
-          $("btnPlayPause").textContent = "▶︎";
-          onPhaseEnd();
-          return;
-        }
-        $("timeText").textContent = mmss(remaining);
-      }, 120);
-    }
-
-    function onPhaseStart(){
-      const cur = seq[idx];
-      if(!cur) return;
-
-      remaining = cur.seconds || 0;
-      $("timeText").textContent = mmss(remaining);
-
-      if(cur.type === "work"){
-        setPhaseUI("Travail", "Début de l'exercice");
-        speak("Début de l'exercice");
-        beep(880, 80);
-      }else if(cur.type === "rest"){
-        setPhaseUI("Repos", "Début du repos");
-        speak("Début du repos");
-        beep(660, 80);
-      }else if(cur.type === "warmup"){
-        setPhaseUI("Échauffement", "Début de l'échauffement");
-        speak("Début de l'échauffement");
-        beep(740, 80);
-      }else{
-        setPhaseUI("Prêt", "Appuie sur ▶︎ pour démarrer");
-      }
-
-      // During the last rest of an exercise, preview the next exercise
-      if(cur.type === "rest" && cur.isLastRestOfExercise) showNextOverlay();
-      else hideNextOverlay();
-    }
-
-    function onPhaseEnd(){
-      const cur = seq[idx];
-      if(!cur) return;
-
-      // Leaving a phase: hide any overlay
-      hideNextOverlay();
-
-      // Auto-advance if coachMode
-      if(coachMode){
-        idx = Math.min(seq.length-1, idx+1);
-        renderWorkoutStep();
-        startTimer();
-      }else{
-        idx = Math.min(seq.length-1, idx+1);
-        renderWorkoutStep();
-      }
-    }
-
-    function setImg(imgEl, iconKey){
-      const map = window.IMG || {};
-      const path = map[iconKey] || iconKey || "";
-      imgEl.src = path;
-    }
-
-    
-    function updateInfoOverlayContent(cur){
-  const body = $("infoBody");
-  if(!body) return;
-
-  if(cur?.type === "work" || cur?.type === "rest"){
-    const e = cur.exo || {};
-    const parts = [];
-
-    // Champs attendus (sans redondance avec "À faire" qui utilise déjà e.todo)
-    const howTxt =
-      e.how || e.howto || e.do || e.cues || e.tips || e.technique || e.form || "";
-    const mistakesTxt =
-      e.mistakes || e.dont || e.avoid || e.warnings || e.errors || "";
-
-    if(howTxt){
-      parts.push("Comment faire\n" + String(howTxt).trim());
-    }
-    if(mistakesTxt){
-      parts.push("Erreurs à éviter\n" + String(mistakesTxt).trim());
-    }
-
-    // Fallback : description (pas e.todo)
-    if(parts.length === 0){
-      const fallback = e.desc || e.muscle || "—";
-      parts.push(String(fallback).trim());
-    }
-
-    body.textContent = parts.join("\n\n");
-  }else if(cur?.type === "warmup"){
-    body.textContent = String(cur.desc || "—");
-  }else{
-    body.textContent = "—";
-  }
-}
-
-function openInfo(){
-      const ov = $("infoOverlay");
-      if(!ov) return;
-      ov.classList.add("active");
-      ov.setAttribute("aria-hidden", "false");
-    }
-    function closeInfo(){
-      const ov = $("infoOverlay");
-      if(!ov) return;
-      ov.classList.remove("active");
-      ov.setAttribute("aria-hidden", "true");
-    }
-
-function buildSequence(session){
-      const out = [];
-
-      // warmup as timed blocks
-      (session.warmup || []).forEach((w)=>{
-        out.push({
-          type:"warmup",
-          title: w.name || "Échauffement",
-          desc: w.desc || w.todo || "",
-          seconds: w.seconds || 60,
-          icon: w.icon || ""
-        });
-      });
-
-      // each exercise expands to work/rest repeated by sets
-      (session.items || []).forEach((e)=>{
-        const sets = Number(e.sets || 1);
-        const work = Number(e.work || (e.type==="time" ? e.seconds : 45) || 45);
-        const rest = Number(e.rest || 60);
-
-        for(let s=1; s<=sets; s++){
-          out.push({
-            type:"work",
-            exo: e,
-            setIndex: s,
-            setTotal: sets,
-            seconds: work
-          });
-          // rest after each set, last rest marked for overlay
-          out.push({
-            type:"rest",
-            exo: e,
-            setIndex: s,
-            setTotal: sets,
-            seconds: rest,
-            isLastRestOfExercise: (s === sets)
-          });
-        }
-      });
-
-      return out;
-    }
-
-    function renderWorkoutStep(){
-      stopTimer();
-
-      const cur = seq[idx];
-      if(!cur){
-        showScreen("home");
-        return;
-      }
-
-      // Determine displayed content
-      let title = "";
-      let desc  = "";
-      let reps  = "—";
-      let rest  = "—";
-      let last  = "—";
-      let imgKey = "";
-      let muscle = "—";
-      let todoLine = "—";
-
-      if(cur.type === "warmup"){
-        title = cur.title || "Échauffement";
-        desc = cur.desc || "";
-        imgKey = cur.icon || "";
-        $("chipSeries").textContent = "Échauff.";
-        todoLine = "—";
-        muscle = "Échauffement";
-        rest = "—";
-      }else if(cur.type === "work" || cur.type === "rest"){
-        const e = cur.exo || {};
-        const exoId = e.id || e.name || "Exercice";
-        currentExoIdForLoad = exoId;
-        title = e.name || "Exercice";
-        desc  = e.todo || e.desc || "";
-        reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
-        rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
-        last  = getLastLoad(exoId) || "—";
-        imgKey = e.icon || "";
-        muscle = e.muscle || e.group || e.target || "—";
-
-        const sets = Number(e.sets || cur.setTotal || 1);
-        // todoLine: "4 × 6–8" style
-        todoLine = `${sets} × ${reps}`;
-
-        $("chipSeries").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
-      }
-
-      // Header title/subtitle
-      $("workoutTitle").textContent = title;
-      $("workoutSubtitle").textContent = (()=> {
-        if(cur.type === "warmup") return "Échauffement";
-        if(cur.type === "work" || cur.type === "rest"){
-          const items = (curSession?.items || []);
-          const total = items.length;
-          const key = (cur?.exo?.id || cur?.exo?.name || title);
-          let pos = items.findIndex(it => (it.id || it.name) === key);
-          if(pos < 0) pos = items.findIndex(it => (it.name || "") === (cur?.exo?.name || ""));
-          if(pos < 0) pos = 0;
-          return total ? `Exercice ${pos+1}/${total}` : "Exercice";
-        }
-        return "";
-      })();
-
-      // Chips
-      const phaseTxt =
-        (cur.type === "work") ? "Travail" :
-        (cur.type === "rest") ? "Repos" :
-        (cur.type === "warmup") ? "Échauffement" : "Prêt";
-      $("chipPhase").textContent = phaseTxt;
-      $("chipCoach").textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-
-      // Image
-      setImg($("exoImg"), imgKey);
-
-      // Todo card
-      $("todoMain").textContent = todoLine;
-      $("todoDesc").textContent = desc || "—";
-      $("chipMuscle").textContent = muscle || "—";
-      $("chipRest").textContent = (rest && rest !== "—") ? `Repos: ${rest}` : "Repos: —";
-
-      // Hidden legacy values (compat)
-      $("exoDesc").textContent = desc || "—";
-      $("kpiReps").textContent = reps;
-      $("kpiRest").textContent = rest;
-      $("kpiLast").textContent = last;
-
-      // Dots (progression séries) — uniquement sur work/rest
-      const dots = $("setDots");
-      if(dots){
-        dots.innerHTML = "";
-        if(cur.type === "work" || cur.type === "rest"){
-          const total = Number(cur.setTotal || 1);
-          const current = Number(cur.setIndex || 1);
-
-          for(let s=1; s<=total; s++){
-            const d = document.createElement("div");
-            d.className = "dot";
-
-            // Bleu = série en cours (pendant WORK)
-            if(cur.type === "work" && s === current){
-              d.classList.add("current");
-            }
-
-            // Vert = série terminée
-            const done = (s < current) || (cur.type === "rest" && s <= current);
-            if(done){
-              d.classList.add("done");
-              d.classList.remove("current");
-            }
-
-            dots.appendChild(d);
-          }
-          dots.style.display = "flex";
-        }else{
-          dots.style.display = "none";
-        }
-      }
-
-      // Load UI (badge + overlay)
-      updateLoadBadge();
-      const inp = $("loadInput");
-      if(inp){
-        inp.value = getLastLoad(currentExoIdForLoad) || "";
-      }
-      renderLoadHistory();
-
-      // Info overlay content (si présent dans la data)
-      updateInfoOverlayContent(cur);
-
-      onPhaseStart();
-    }
-
-    function startSession(sessionId){
-      curSessionId = sessionId;
-      curSession = (window.SESSIONS || {})[sessionId];
-      if(!curSession) return;
-
-      seq = buildSequence(curSession);
-      idx = 0;
-
-      showScreen("workout");
-      renderWorkoutStep();
-    }
-
-    function stepPrev(){
-      stopTimer();
-      idx = Math.max(0, idx-1);
-      renderWorkoutStep();
-    }
-    function stepNext(){
-      stopTimer();
-      idx = Math.min(seq.length-1, idx+1);
-      renderWorkoutStep();
-    }
-
-    $("btnPrev").addEventListener("click", stepPrev);
-    $("btnNext").addEventListener("click", stepNext);
-
-    $("btnPlayPause").addEventListener("click", ()=>{
-      if(running){
-        stopTimer();
-      }else{
-        startTimer();
-      }
-    });
-
-    $("btnBackHome").addEventListener("click", ()=>{
-      stopTimer();
-      showScreen("home");
-    });
-
-    // Info overlay (sur la carte GIF)
-    $("btnInfo")?.addEventListener("click", openInfo);
-    $("btnInfoClose")?.addEventListener("click", closeInfo);
-    $("infoOverlay")?.addEventListener("click", (e)=>{ if(e.target?.id === "infoOverlay") closeInfo(); });
-
-    // Load (charge) UI inside info overlay
-    $("btnLoadSave")?.addEventListener("click", saveFromInput);
-    $("loadInput")?.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter"){
-        e.preventDefault();
-        saveFromInput();
-      }
-    });
-
-
-
-    /***********************
-     * 10) Next overlay
-     ***********************/
-    function showNextOverlay(){
-      const next = seq.slice(idx+1).find(x=>x.type==="work");
-      if(!next || !next.exo) return;
-
-      const e = next.exo;
-      $("nextName").textContent = e.name || "Exercice";
-      const last = getLastLoad(e.id || e.name) || "—";
-      $("nextLast").textContent = (last === "—" || !last) ? "" : `Dernière charge : ${last}`;
-      setImg($("nextImg"), e.icon || "");
-
-      $("overlayNext").classList.add("active");
-      $("overlayNext").setAttribute("aria-hidden", "false");
-    }
-    function hideNextOverlay(){
-      $("overlayNext").classList.remove("active");
-      $("overlayNext").setAttribute("aria-hidden", "true");
-    }
-    $("overlayNext")?.addEventListener("click", (e)=>{
-      // tap outside the inner content closes
-      if(e.target?.id === "overlayNext") hideNextOverlay();
-    });
-
-    $("overlayNext").addEventListener("click", (ev)=>{
-      if(ev.target === $("overlayNext")) $("overlayNext").classList.remove("active");
-    });
-
-    /***********************
-     * 11) Auth UI
-     ***********************/
-    $("btnLogin").addEventListener("click", async ()=>{
-      setMsg("");
-      const email = $("loginEmail").value.trim();
-      const pass  = $("loginPass").value;
-      if(!email || !pass){
-        setMsg("Entre email + mot de passe.");
-        return;
-      }
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-      }catch(e){
-        setMsg("Connexion impossible : " + (e?.message || e));
-      }
-    });
-
-    $("btnLogout").addEventListener("click", async ()=>{
-      try{ await signOut(auth); }catch(e){}
-    });
-
-    onAuthStateChanged(auth, async (user)=>{
-      currentUser = user;
-
-      if(!user){
-        topbarUserText = "Non connecté";
-        $("userLine").textContent = topbarUserText;
-        $("pillStatus").textContent = "🔒";
-        $("btnLogout").style.display = "none";
-        showScreen("login");
-        return;
-      }
-
-      $("pillStatus").textContent = "✅";
-      $("btnLogout").style.display = "inline-flex";
-
-      try{
-        await loadUserSessions(user.uid);
-        loadCoachMode();
-        renderHome();
-        showScreen("home");
-      }catch(e){
-        showScreen("login");
-        setMsg("Erreur chargement config/séances : " + (e?.message || e));
-      }
-    });
-
-    /***********************
-     * 12) PWA service worker (si présent)
-     ***********************/
-    if("serviceWorker" in navigator){
-      navigator.serviceWorker.register("./service-worker.js").catch(()=>{});
-    }
-
-    /***********************
-     * 13) iOS double-tap zoom guard
-     ***********************/
-    let lastTouchEnd = 0;
-    document.addEventListener("touchend", function (event) {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, { passive:false });
-
-  </script>
+</div>
 </body>
 </html>
