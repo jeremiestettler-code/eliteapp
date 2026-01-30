@@ -45,6 +45,9 @@
     a{color:inherit}
     .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
     body.inWorkout .app{ padding-top:8px; padding-bottom:0; }
+    /* Safe-area for workout screen (topbar hidden) */
+    body.inWorkout{ padding-top: var(--safe-top); }
+
 
     /* Global iOS-like topbar (logo + title + user + logout)
        - Sticky at the top
