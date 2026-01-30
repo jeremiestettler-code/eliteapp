@@ -467,6 +467,19 @@ body.inWorkout .btnbar #btnNext{
 }
 
 
+  /* --- Cohérence visuelle (GIF / À faire / Timer) --- */
+body.inWorkout .previewCard,
+body.inWorkout .todoCard,
+body.inWorkout .timerCard{
+  border: 1px solid rgba(255,255,255,.10);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.03),
+    0 12px 28px rgba(0,0,0,.35);
+}
+/* 5px entre les blocs */
+body.inWorkout .card.cardTight{ margin-bottom:5px; }
+body.inWorkout .timerCard{ margin-bottom:0; }
+
   </style>
 </head>
 
@@ -1000,6 +1013,16 @@ let currentExoIdForLoad = null;
       return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
     }
 
+function getExerciseProgress(){
+  const items = curSession?.items || [];
+  if(!items.length) return null;
+  const cur = seq[idx];
+  if(!cur || !cur.exo) return null;
+  const i = items.findIndex(e => e === cur.exo);
+  if(i === -1) return null;
+  return { current: i+1, total: items.length };
+}
+
     function setPhaseUI(phase, hint){
       const cp = $("chipPhase");
       if(cp) cp.textContent = (phase || "").toString();
@@ -1192,7 +1215,8 @@ function buildSequence(session){
 
       const cur = seq[idx];
       if(!cur){
-        showScreen("home");
+        $("workoutTitle").textContent = "Bravo";
+        $("workoutSubtitle").textContent = "Fin de séance 🎉";
         return;
       }
 
@@ -1234,20 +1258,13 @@ function buildSequence(session){
       }
 
       // Header title/subtitle
-      $("workoutTitle").textContent = title;
-      $("workoutSubtitle").textContent = (()=> {
-        if(cur.type === "warmup") return "Échauffement";
-        if(cur.type === "work" || cur.type === "rest"){
-          const items = (curSession?.items || []);
-          const total = items.length;
-          const key = (cur?.exo?.id || cur?.exo?.name || title);
-          let pos = items.findIndex(it => (it.id || it.name) === key);
-          if(pos < 0) pos = items.findIndex(it => (it.name || "") === (cur?.exo?.name || ""));
-          if(pos < 0) pos = 0;
-          return total ? `Exercice ${pos+1}/${total}` : "Exercice";
-        }
-        return "";
-      })();
+$("workoutTitle").textContent = title;
+if(cur.type === "warmup"){
+  $("workoutSubtitle").textContent = "Échauffement";
+}else{
+  const p = getExerciseProgress();
+  $("workoutSubtitle").textContent = p ? `Exercice ${p.current}/${p.total}` : "Exercice";
+}
 
       // Chips
       const phaseTxt =
