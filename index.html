@@ -561,14 +561,7 @@
       </div>
       <div class="pill" id="pillAuth">
         <span id="pillStatus">🔒</span>
-        <div class="coachSwitch" id="coachSwitchWrap" style="display:none">
-          <span class="coachLabel">Coach</span>
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button id="btnLogout" style="display:none">Déconnexion</button>
+<button id="btnLogout" style="display:none">Déconnexion</button>
       </div>
     </div>
 
@@ -589,7 +582,86 @@
 
     <!-- HOME -->
     <section class="screen" id="screenHome">
-<div class="nextOverlay" id="overlayNext" aria-hidden="true">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h1">Séances</div>
+            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
+          </div>
+          <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
+        </div>
+
+        <div style="height:12px"></div>
+        <div class="grid" id="sessionList"></div>
+      </div>
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h2">Réglages</div>
+            <div class="muted small">Sauvegardés par utilisateur.</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORKOUT -->
+    <section class="screen" id="screenWorkout">
+      <div class="workoutHeader">
+        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour"><span class="chevronLeft" aria-hidden="true"></span></button>
+
+        <div class="workoutHeaderCenter">
+          <div class="workoutTitle" id="workoutTitle">—</div>
+          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
+        </div>
+
+        <div class="workoutHeaderRight">
+          <label class="switch" aria-label="Mode coach">
+            <input type="checkbox" id="coachSwitch2" />
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="workoutChips">
+        <div class="chip chipPhase" id="chipPhase">Travail</div>
+        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
+        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
+      </div>
+
+      <div class="card cardTight">
+        <div class="previewCard" id="previewCard">
+          <img id="exoImg" alt="Exercice" />
+          <div class="loadBadge hidden" id="loadBadge">—</div>
+
+          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
+
+          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
+            <div class="infoInner">
+              <div class="infoHdr">
+                <div class="infoTitle">Conseils</div>
+                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
+              </div>
+              <div class="infoBody" id="infoBody">—</div>
+
+              <div class="loadBox">
+                <div class="loadRow">
+                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
+                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
+                </div>
+                <div class="loadHist" id="loadHist"></div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
             <img class="nextBg" id="nextImg" alt="Exercice suivant" />
             <div class="nextText">
               <div class="nextTag">EXERCICE SUIVANT</div>
@@ -682,6 +754,7 @@
       if(wrap) wrap.style.display = "none";
       const lo = $("btnLogout");
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
+
       const sb = $("btnSettings");
       if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
     }
@@ -696,7 +769,7 @@
     }
     applyTheme(localStorage.getItem(THEME_KEY) || "dark");
 
-    // --- Réglages (popup) ---
+    // --- Réglages (home only) ---
     (function(){
       const modal = $("settingsModal");
       const openBtn = $("btnSettings");
@@ -706,6 +779,7 @@
 
       function openModal(){
         if(!modal) return;
+        // sync switches
         if(themeT) themeT.checked = (document.documentElement.getAttribute("data-theme") === "dark");
         if(coachT) coachT.checked = !!coachMode;
         modal.classList.remove("hidden");
@@ -720,21 +794,19 @@
       if(modal) modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
 
       if(themeT){
-        themeT.addEventListener("change", ()=> applyTheme(themeT.checked ? "dark" : "light"));
+        themeT.addEventListener("change", ()=>{
+          applyTheme(themeT.checked ? "dark" : "light");
+        });
       }
       if(coachT){
         coachT.addEventListener("change", ()=>{
-          coachMode = !!coachT.checked;
-          localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-          const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
-          const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-          const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
+          coachMode = coachT.checked;
+          localStorage.setItem("coachMode", coachMode ? "1" : "0");
         });
       }
     })();
 
-
-    let coachMode = (localStorage.getItem(ukey("coach_mode")) === "0") ? false : true;
+    let coachMode = (localStorage.getItem("coachMode") === "0") ? false : true;
     function speak(text){
       try{
         if(!coachMode) return;
@@ -764,7 +836,7 @@
       coachMode = (v === null) ? true : (v === "1");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
     function toggleCoachMode(){
@@ -772,14 +844,16 @@
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
+    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
+
     $("coachSwitch")?.addEventListener("change", (e)=>{
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -787,7 +861,7 @@
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -887,7 +961,7 @@
       function addSection(title, keys, opts){
         const options = opts || {};
         const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : false;
+        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
 
         // Header row
         const header = document.createElement("div");
@@ -900,14 +974,14 @@
         const t = document.createElement("div");
         t.className = "h2";
         t.style.fontSize = "16px";
-        t.textContent = title;
+        t.textContent = `${title} (${keys.length})`;
 
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.style.padding = "8px 10px";
         btn.style.minWidth = "44px";
         btn.setAttribute("aria-expanded", defaultOpen ? "true" : "false");
-        btn.textContent = String(keys.length);
+        btn.textContent = defaultOpen ? "−" : "+";
 
         header.appendChild(t);
         header.appendChild(btn);
@@ -922,7 +996,7 @@
         btn.addEventListener("click", ()=>{
           const isOpen = container.style.display !== "none";
           container.style.display = isOpen ? "none" : "";
-          btn.textContent = String(keys.length);
+          btn.textContent = isOpen ? "+" : "−";
           btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
         });
 
@@ -1398,7 +1472,7 @@
       else startTimer();
     });
 
-    $("btnBackHome")?.addEventListener("click", ()=>{
+    $("btnBackHome").addEventListener("click", ()=>{
       stopTimer();
       showScreen("home");
     });
