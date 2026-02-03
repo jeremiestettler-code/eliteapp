@@ -872,7 +872,7 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
       if(!screens.workout.classList.contains("active")) $("userLine").textContent = topbarUserText;
     }
 
-    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
+    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#039;" }[m])); }
 
     function renderHome(){
       const sessions = window.SESSIONS || {};
