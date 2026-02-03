@@ -534,6 +534,16 @@
       padding: 12px 6px;
       border-top: 1px solid rgba(255,255,255,.06);
     }
+    .icon-btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:42px; height:42px;
+      border-radius: 14px;
+      border: 0;
+      background: var(--btn);
+      color: var(--text);
+      box-shadow: none;
+      font-size: 18px;
+    }
 
 </style>
 </head>
@@ -551,14 +561,7 @@
       </div>
       <div class="pill" id="pillAuth">
         <span id="pillStatus">🔒</span>
-        <div class="coachSwitch" id="coachSwitchWrap" style="display:none">
-          <span class="coachLabel">Coach</span>
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch" />
-            <span class="slider"></span>
-          </label>
-        </div>
-        <button id="btnLogout" style="display:none">Déconnexion</button>
+<button id="btnLogout" style="display:none">Déconnexion</button>
       </div>
     </div>
 
@@ -585,7 +588,7 @@
             <div class="h1">Séances</div>
             <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
           </div>
-          <button class="btn secondary" id="btnSettings" title="Thème" aria-label="Réglages" title="Réglages">⚙️</button>
+          <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
         </div>
 
         <div style="height:12px"></div>
@@ -602,7 +605,10 @@
           </div>
         </div>
         <div style="height:10px"></div>
-</div>
+        <div class="row">
+          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
+        </div>
+      </div>
     </section>
 
     <!-- WORKOUT -->
@@ -751,8 +757,6 @@
 
       const sb = $("btnSettings");
       if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
-      const sb = $("btnSettings");
-      if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
     }
     function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
 
@@ -765,7 +769,7 @@
     }
     applyTheme(localStorage.getItem(THEME_KEY) || "dark");
 
-    // --- Réglages (popup) ---
+    // --- Réglages (home only) ---
     (function(){
       const modal = $("settingsModal");
       const openBtn = $("btnSettings");
@@ -775,6 +779,7 @@
 
       function openModal(){
         if(!modal) return;
+        // sync switches
         if(themeT) themeT.checked = (document.documentElement.getAttribute("data-theme") === "dark");
         if(coachT) coachT.checked = !!coachMode;
         modal.classList.remove("hidden");
@@ -795,46 +800,13 @@
       }
       if(coachT){
         coachT.addEventListener("change", ()=>{
-          coachMode = !!coachT.checked;
-          localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-          updateCoachUI();
+          coachMode = coachT.checked;
+          localStorage.setItem("coachMode", coachMode ? "1" : "0");
         });
       }
     })();
 
-
-    // --- Réglages (popup) ---
-    (function(){
-      const modal = $("settingsModal");
-      const openBtn = $("btnSettings");
-      const closeBtn = $("closeSettings");
-      const themeT = $("themeToggleModal");
-      const coachT = $("coachToggleModal");
-
-      function openModal(){
-        if(!modal) return;
-        if(themeT) themeT.checked = (document.documentElement.getAttribute("data-theme") === "dark");
-        if(coachT) coachT.checked = !!coachMode;
-        modal.classList.remove("hidden");
-      }
-      function closeModal(){
-        if(!modal) return;
-        modal.classList.add("hidden");
-      }
-
-      openBtn?.addEventListener("click", openModal);
-      closeBtn?.addEventListener("click", closeModal);
-      modal?.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
-
-      themeT?.addEventListener("change", ()=> applyTheme(themeT.checked ? "dark" : "light"));
-
-      coachT?.addEventListener("change", ()=>{
-        coachMode = !!coachT.checked;
-        localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-        loadCoachMode();
-      });
-    })();
-let coachMode = true;
+    let coachMode = (localStorage.getItem("coachMode") === "0") ? false : true;
     function speak(text){
       try{
         if(!coachMode) return;
@@ -864,7 +836,7 @@ let coachMode = true;
       coachMode = (v === null) ? true : (v === "1");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
     function toggleCoachMode(){
@@ -872,14 +844,16 @@ let coachMode = true;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
-$("coachSwitch")?.addEventListener("change", (e)=>{
+    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
+
+    $("coachSwitch")?.addEventListener("change", (e)=>{
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -887,7 +861,7 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
-      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -931,14 +905,13 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
       if(!screens.workout.classList.contains("active")) $("userLine").textContent = topbarUserText;
     }
 
-    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","\'":"&#039;" }[m])); }
+    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
 
     function renderHome(){
       const sessions = window.SESSIONS || {};
       const allKeys = Object.keys(sessions);
 
       const host = $("sessionList");
-      if(!host) return;
       host.innerHTML = "";
 
       if(allKeys.length === 0){
@@ -946,7 +919,10 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
         return;
       }
 
-      // Groupes home
+      // --- Groupes home (app pro) ---
+      // 1) Séances complètes : A1,B1,C1,D1,A2,B2,...
+      // 2) Running : échauffements course (ex: RUN_WU)
+      // (Prévu plus tard) Hockey : clés type HOC_* ou nom contenant "hockey"
       const isRunning = (k, s) => /^RUN[_-]/i.test(k) || /course|running/i.test(String(s?.name||""));
       const isHockey  = (k, s) => /^HOC[_-]/i.test(k) || /hockey/i.test(String(s?.name||""));
 
@@ -968,41 +944,26 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
         if(ma && mb){
           const la = ma[1].toUpperCase(), lb = mb[1].toUpperCase();
           const na = parseInt(ma[2], 10), nb = parseInt(mb[2], 10);
-          if(na !== nb) return na - nb; // 1 puis 2...
+          if(na !== nb) return na - nb; // 1 puis 2 puis 3...
           const oa = (la in letterOrder) ? letterOrder[la] : 99;
           const ob = (lb in letterOrder) ? letterOrder[lb] : 99;
           if(oa !== ob) return oa - ob; // A,B,C,D
           return la.localeCompare(lb);
         }
+        // fallback alpha
         return String(a).localeCompare(String(b));
       }
+
       complete.sort(sortComplete);
       running.sort((a,b)=>String(a).localeCompare(String(b)));
       hockey.sort((a,b)=>String(a).localeCompare(String(b)));
 
-      function addSessionCard(k, mount){
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nCooldown = (s?.cooldown||[]).length;
-        const nItems = (s?.items||[]).length;
+      function addSection(title, keys, opts){
+        const options = opts || {};
+        const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
 
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices${nCooldown ? ` • ${nCooldown} étirements` : ""}</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        mount.appendChild(card);
-      }
-
-      function addSection(title, keys, sectionId){
+        // Header row
         const header = document.createElement("div");
         header.style.margin = "14px 2px 8px";
         header.style.display = "flex";
@@ -1013,138 +974,71 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
         const t = document.createElement("div");
         t.className = "h2";
         t.style.fontSize = "16px";
-        t.textContent = title;
+        t.textContent = `${title}`;
 
         const btn = document.createElement("button");
         btn.className = "btn";
         btn.style.padding = "8px 10px";
         btn.style.minWidth = "44px";
-        btn.setAttribute("aria-expanded", "false");
+        btn.setAttribute("aria-expanded", defaultOpen ? "true" : "false");
         btn.textContent = String(keys.length);
 
         header.appendChild(t);
         header.appendChild(btn);
         host.appendChild(header);
 
+        // Container
         const container = document.createElement("div");
         container.dataset.section = sectionId;
-        container.style.display = "none";
-        host.appendChild(container);
-
-        btn.addEventListener("click", ()=>{
-          const isOpen = container.style.display !== "none";
-          const willOpen = !isOpen;
-          container.style.display = willOpen ? "" : "none";
-          btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
-        });
-
-        keys.forEach((k)=>addSessionCard(k, container));
-      }
-
-      if(complete.length) addSection("Séances complètes", complete, "complete");
-      if(running.length) addSection("Running", running, "running");
-      if(hockey.length) addSection("Hockey", hockey, "hockey");
-    }
-
-      const isRunning = (k, s) => /^RUN[_-]/i.test(k) || /course|running/i.test(String(s?.name||""));
-      const isHockey  = (k, s) => /^HOC[_-]/i.test(k) || /hockey/i.test(String(s?.name||""));
-
-      const complete = [];
-      const running = [];
-      const hockey = [];
-
-      allKeys.forEach((k)=>{
-        const s = sessions[k];
-        if(isHockey(k, s)) hockey.push(k);
-        else if(isRunning(k, s)) running.push(k);
-        else complete.push(k);
-      });
-
-      const letterOrder = { A:0, B:1, C:2, D:3 };
-      function sortComplete(a, b){
-        const ma = String(a).match(/^([A-Z])([0-9]+)$/i);
-        const mb = String(b).match(/^([A-Z])([0-9]+)$/i);
-        if(ma && mb){
-          const la = ma[1].toUpperCase(), lb = mb[1].toUpperCase();
-          const na = parseInt(ma[2], 10), nb = parseInt(mb[2], 10);
-          if(na !== nb) return na - nb; // 1 puis 2...
-          const oa = (la in letterOrder) ? letterOrder[la] : 99;
-          const ob = (lb in letterOrder) ? letterOrder[lb] : 99;
-          if(oa !== ob) return oa - ob; // A,B,C,D
-          return la.localeCompare(lb);
-        }
-        return String(a).localeCompare(String(b));
-      }
-      complete.sort(sortComplete);
-      running.sort((a,b)=>String(a).localeCompare(String(b)));
-      hockey.sort((a,b)=>String(a).localeCompare(String(b)));
-
-      function addSessionCard(k, mount){
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nCooldown = (s?.cooldown||[]).length;
-        const nItems = (s?.items||[]).length;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices${nCooldown ? ` • ${nCooldown} étirements` : ""}</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        mount.appendChild(card);
-      }
-
-      function addSection(title, keys, sectionId){
-        const header = document.createElement("div");
-        header.style.margin = "14px 2px 8px";
-        header.style.display = "flex";
-        header.style.alignItems = "center";
-        header.style.justifyContent = "space-between";
-        header.style.gap = "10px";
-
-        const t = document.createElement("div");
-        t.className = "h2";
-        t.style.fontSize = "16px";
-        t.textContent = title;
-
-        const btn = document.createElement("button");
-        btn.className = "btn secondary";
-        btn.style.padding = "8px 12px";
-        btn.style.minWidth = "48px";
-        btn.style.borderRadius = "999px";
-        btn.textContent = String(keys.length);
-        btn.setAttribute("aria-expanded", "false");
-
-        header.appendChild(t);
-        header.appendChild(btn);
-        host.appendChild(header);
-
-        const container = document.createElement("div");
-        container.dataset.section = sectionId;
-        container.style.display = "none";
+        container.style.display = defaultOpen ? "" : "none";
         host.appendChild(container);
 
         btn.addEventListener("click", ()=>{
           const isOpen = container.style.display !== "none";
           container.style.display = isOpen ? "none" : "";
+          btn.textContent = String(keys.length);
           btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
         });
 
         keys.forEach((k)=>addSessionCard(k, container));
       }
 
-      if(complete.length) addSection("Séances complètes", complete, "complete");
-      if(running.length) addSection("Running", running, "running");
-      if(hockey.length) addSection("Hockey", hockey, "hockey");
-    }
+      function addSessionCard(k, mount){
+        const s = sessions[k];
+        const name = s?.name || k;
+        const nWarmup = (s?.warmup||[]).length;
+        const nCooldown = (s?.cooldown||[]).length;
+        const nItems = (s?.items||[]).length;
 
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <div class="sessionItem">
+            <div class="grow">
+              <div class="h2">${escapeHtml(name)}</div>
+              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices${nCooldown ? ` • ${nCooldown} étirements` : ""}</div>
+            </div>
+            <button class="btn primary">Démarrer</button>
+          </div>
+        `;
+        card.querySelector("button").addEventListener("click", ()=>startSession(k));
+        mount.appendChild(card);
+      }
+
+      // Render
+      if(complete.length){
+        addSection("Séances complètes", complete, { id:"complete", defaultOpen:false });
+      }
+
+      if(running.length){
+        addSection("Running", running, { id:"running", defaultOpen:false });
+      }
+
+      // On ne l'affiche que si tu ajoutes des séances hockey plus tard
+      if(hockey.length){
+        addSection("Hockey", hockey, { id:"hockey", defaultOpen:false });
+      }
+    }
 
     /***********************
      * History (per-user) with date
@@ -1667,7 +1561,7 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
   <div class="modal-content">
     <div class="modal-header">
       <div class="h2" id="settingsTitle">Réglages</div>
-      <button class="btn secondary" id="closeSettings" aria-label="Fermer">✕</button>
+      <button id="closeSettings" class="icon-btn" aria-label="Fermer">✕</button>
     </div>
 
     <div class="setting-row">
