@@ -987,28 +987,6 @@ $("coachSwitch")?.addEventListener("change", (e)=>{
     }
 
 
-      keys.forEach((k)=>{
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nItems = (s?.items||[]).length;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        host.appendChild(card);
-      });
-    }
-
     /***********************
      * History (per-user) with date
      ***********************/
