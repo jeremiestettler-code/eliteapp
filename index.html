@@ -734,9 +734,7 @@
     })();
 
 
-    });
-
-    let coachMode = true;
+    let coachMode = (localStorage.getItem(ukey("coach_mode")) === "0") ? false : true;
     function speak(text){
       try{
         if(!coachMode) return;
