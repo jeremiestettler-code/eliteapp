@@ -840,20 +840,105 @@
 
     function renderHome(){
       const sessions = window.SESSIONS || {};
-      const keys = Object.keys(sessions);
+      const allKeys = Object.keys(sessions);
 
       const host = $("sessionList");
       host.innerHTML = "";
 
-      if(keys.length === 0){
+      if(allKeys.length === 0){
         host.innerHTML = `<div class="muted small">Aucune séance trouvée dans ton pack.</div>`;
         return;
       }
 
-      keys.forEach((k)=>{
+      // --- Groupes home (app pro) ---
+      // 1) Séances complètes : A1,B1,C1,D1,A2,B2,...
+      // 2) Running : échauffements course (ex: RUN_WU)
+      // (Prévu plus tard) Hockey : clés type HOC_* ou nom contenant "hockey"
+      const isRunning = (k, s) => /^RUN[_-]/i.test(k) || /course|running/i.test(String(s?.name||""));
+      const isHockey  = (k, s) => /^HOC[_-]/i.test(k) || /hockey/i.test(String(s?.name||""));
+
+      const complete = [];
+      const running = [];
+      const hockey = [];
+
+      allKeys.forEach((k)=>{
+        const s = sessions[k];
+        if(isHockey(k, s)) hockey.push(k);
+        else if(isRunning(k, s)) running.push(k);
+        else complete.push(k);
+      });
+
+      const letterOrder = { A:0, B:1, C:2, D:3 };
+      function sortComplete(a, b){
+        const ma = String(a).match(/^([A-Z])([0-9]+)$/i);
+        const mb = String(b).match(/^([A-Z])([0-9]+)$/i);
+        if(ma && mb){
+          const la = ma[1].toUpperCase(), lb = mb[1].toUpperCase();
+          const na = parseInt(ma[2], 10), nb = parseInt(mb[2], 10);
+          if(na !== nb) return na - nb; // 1 puis 2 puis 3...
+          const oa = (la in letterOrder) ? letterOrder[la] : 99;
+          const ob = (lb in letterOrder) ? letterOrder[lb] : 99;
+          if(oa !== ob) return oa - ob; // A,B,C,D
+          return la.localeCompare(lb);
+        }
+        // fallback alpha
+        return String(a).localeCompare(String(b));
+      }
+
+      complete.sort(sortComplete);
+      running.sort((a,b)=>String(a).localeCompare(String(b)));
+      hockey.sort((a,b)=>String(a).localeCompare(String(b)));
+
+      function addSection(title, keys, opts){
+        const options = opts || {};
+        const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
+        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
+
+        // Header row
+        const header = document.createElement("div");
+        header.style.margin = "14px 2px 8px";
+        header.style.display = "flex";
+        header.style.alignItems = "center";
+        header.style.justifyContent = "space-between";
+        header.style.gap = "10px";
+
+        const t = document.createElement("div");
+        t.className = "h2";
+        t.style.fontSize = "16px";
+        t.textContent = title;
+
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.style.padding = "8px 10px";
+        btn.style.minWidth = "44px";
+        btn.setAttribute("aria-expanded", defaultOpen ? "true" : "false");
+        btn.textContent = defaultOpen ? "−" : "+";
+
+        header.appendChild(t);
+        header.appendChild(btn);
+        host.appendChild(header);
+
+        // Container
+        const container = document.createElement("div");
+        container.dataset.section = sectionId;
+        container.style.display = defaultOpen ? "" : "none";
+        host.appendChild(container);
+
+        btn.addEventListener("click", ()=>{
+          const isOpen = container.style.display !== "none";
+          container.style.display = isOpen ? "none" : "";
+          btn.textContent = isOpen ? "+" : "−";
+          btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+        });
+
+        keys.forEach((k)=>addSessionCard(k, container));
+      }
+
+      function addSessionCard(k, mount){
         const s = sessions[k];
         const name = s?.name || k;
         const nWarmup = (s?.warmup||[]).length;
+        const nCooldown = (s?.cooldown||[]).length;
         const nItems = (s?.items||[]).length;
 
         const card = document.createElement("div");
@@ -862,14 +947,28 @@
           <div class="sessionItem">
             <div class="grow">
               <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices</div>
+              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices${nCooldown ? ` • ${nCooldown} étirements` : ""}</div>
             </div>
             <button class="btn primary">Démarrer</button>
           </div>
         `;
         card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        host.appendChild(card);
-      });
+        mount.appendChild(card);
+      }
+
+      // Render
+      if(complete.length){
+        addSection("Séances complètes", complete, { id:"complete", defaultOpen:true });
+      }
+
+      if(running.length){
+        addSection("Running", running, { id:"running", defaultOpen:true });
+      }
+
+      // On ne l'affiche que si tu ajoutes des séances hockey plus tard
+      if(hockey.length){
+        addSection("Hockey", hockey, { id:"hockey", defaultOpen:false });
+      }
     }
 
     /***********************
@@ -1052,10 +1151,6 @@
         setPhaseUI("Échauffement", "");
         speak("Début de l'échauffement");
         beep(740, 80);
-      }else if(cur.type === "cooldown"){
-        setPhaseUI("Étirements", "");
-        speak("Début des étirements");
-        beep(520, 80);
       }else{
         setPhaseUI("Prêt", "");
       }
@@ -1110,7 +1205,7 @@
         }
 
         body.textContent = parts.join("\n\n");
-      }else if(cur?.type === "warmup" || cur?.type === "cooldown"){
+      }else if(cur?.type === "warmup"){
         body.textContent = String(cur.desc || "—");
       }else{
         body.textContent = "—";
@@ -1165,17 +1260,6 @@
         }
       });
 
-      // Cooldown / étirements en fin de séance
-      (session.cooldown || []).forEach((c)=>{
-        out.push({
-          type:"cooldown",
-          title: c.name || "Étirements",
-          desc: c.desc || c.todo || "",
-          seconds: c.seconds || 45,
-          icon: c.icon || ""
-        });
-      });
-
       return out;
     }
 
@@ -1203,14 +1287,13 @@
       let muscle = "—";
       let todoLine = "—";
 
-      if(cur.type === "warmup" || cur.type === "cooldown"){
-        const isCd = (cur.type === "cooldown");
-        title = cur.title || (isCd ? "Étirements" : "Échauffement");
+      if(cur.type === "warmup"){
+        title = cur.title || "Échauffement";
         desc = cur.desc || "";
         imgKey = cur.icon || "";
-        $("chipSeries").textContent = isCd ? "Cool-down" : "Échauff.";
+        $("chipSeries").textContent = "Échauff.";
         todoLine = "—";
-        muscle = isCd ? "Étirements" : "Échauffement";
+        muscle = "Échauffement";
         rest = "—";
         currentExoIdForLoad = null;
         updateLoadBadge();
@@ -1240,8 +1323,6 @@
 
       if(cur.type === "warmup"){
         $("workoutSubtitle").textContent = "Échauffement";
-      }else if(cur.type === "cooldown"){
-        $("workoutSubtitle").textContent = "Étirements";
       }else{
         const p = getExerciseProgress();
         $("workoutSubtitle").textContent = p ? `Exercice ${p.current}/${p.total}` : "Exercice";
@@ -1250,8 +1331,7 @@
       const phaseTxt =
         (cur.type === "work") ? "Travail" :
         (cur.type === "rest") ? "Repos" :
-        (cur.type === "warmup") ? "Échauffement" :
-        (cur.type === "cooldown") ? "Étirements" : "Prêt";
+        (cur.type === "warmup") ? "Échauffement" : "Prêt";
       $("chipPhase").textContent = phaseTxt;
       $("chipCoach").textContent = coachMode ? "Coach : ON" : "Coach : OFF";
 
