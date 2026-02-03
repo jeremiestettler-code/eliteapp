@@ -892,7 +892,8 @@
       function addSection(title, keys, opts){
         const options = opts || {};
         const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
+        const stored = localStorage.getItem("home_section_open_" + sectionId);
+        const defaultOpen = (stored !== null) ? (stored === "1") : ((options.defaultOpen !== undefined) ? options.defaultOpen : true);
 
         // Header row
         const header = document.createElement("div");
@@ -926,9 +927,12 @@
 
         btn.addEventListener("click", ()=>{
           const isOpen = container.style.display !== "none";
-          container.style.display = isOpen ? "none" : "";
-          btn.textContent = isOpen ? "+" : "−";
-          btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
+          const willOpen = !isOpen;
+          container.style.display = willOpen ? "" : "none";
+          btn.textContent = willOpen ? "−" : "+";
+          btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+          localStorage.setItem("home_section_open_" + sectionId, willOpen ? "1" : "0");
+          if(willOpen) localStorage.setItem("home_section_last_open", sectionId);
         });
 
         keys.forEach((k)=>addSessionCard(k, container));
@@ -955,6 +959,16 @@
         card.querySelector("button").addEventListener("click", ()=>startSession(k));
         mount.appendChild(card);
       }
+
+
+      // Restore last opened section if no explicit state saved yet
+      (function(){
+        const last = localStorage.getItem("home_section_last_open");
+        if(!last) return;
+        const hasAny = ["complete","running","hockey"].some(id => localStorage.getItem("home_section_open_" + id) !== null);
+        if(hasAny) return;
+        localStorage.setItem("home_section_open_" + last, "1");
+      })();
 
       // Render
       if(complete.length){
@@ -1487,5 +1501,68 @@
     }, { passive:false });
 
   </script>
+
+<div id="settingsModal" class="modal hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="h2">Réglages</div>
+      <button id="closeSettings" class="icon-btn" aria-label="Fermer">✕</button>
+    </div>
+
+    <div class="setting-row">
+      <span>Thème clair / sombre</span>
+      <label class="switch">
+        <input type="checkbox" id="themeToggleModal">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="setting-row">
+      <span>Mode coach</span>
+      <label class="switch">
+        <input type="checkbox" id="coachToggleModal">
+        <span class="slider"></span>
+      </label>
+    </div>
+  </div>
+</div>
+
 </body>
+
+<script>
+(function(){
+  const settingsBtn = document.getElementById("settingsBtn");
+  const modal = document.getElementById("settingsModal");
+  const closeBtn = document.getElementById("closeSettings");
+
+  if(settingsBtn && modal){
+    settingsBtn.addEventListener("click", ()=> modal.classList.remove("hidden"));
+  }
+  if(closeBtn){
+    closeBtn.addEventListener("click", ()=> modal.classList.add("hidden"));
+  }
+
+  // Sync theme
+  const themeToggle = document.getElementById("themeToggleModal");
+  if(themeToggle){
+    themeToggle.checked = document.documentElement.getAttribute("data-theme") === "dark";
+    themeToggle.addEventListener("change", ()=>{
+      applyTheme(themeToggle.checked ? "dark" : "light");
+    });
+  }
+
+  // Sync coach mode
+  const storedCoach = localStorage.getItem("coachMode");
+  if(storedCoach !== null) window.coachMode = (storedCoach === "1");
+  const coachToggle = document.getElementById("coachToggleModal");
+  if(coachToggle){
+    coachToggle.checked = !!window.coachMode;
+    coachToggle.addEventListener("change", ()=>{
+      window.coachMode = coachToggle.checked;
+      localStorage.setItem("coachMode", window.coachMode ? "1" : "0");
+    });
+  }
+})();
+</script>
+
 </html>
