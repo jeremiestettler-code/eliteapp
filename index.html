@@ -905,7 +905,7 @@
         const t = document.createElement("div");
         t.className = "h2";
         t.style.fontSize = "16px";
-        t.textContent = title;
+        t.textContent = `${title} (${keys.length})`;
 
         const btn = document.createElement("button");
         btn.className = "btn";
@@ -958,11 +958,11 @@
 
       // Render
       if(complete.length){
-        addSection("Séances complètes", complete, { id:"complete", defaultOpen:true });
+        addSection("Séances complètes", complete, { id:"complete", defaultOpen:false });
       }
 
       if(running.length){
-        addSection("Running", running, { id:"running", defaultOpen:true });
+        addSection("Running", running, { id:"running", defaultOpen:false });
       }
 
       // On ne l'affiche que si tu ajoutes des séances hockey plus tard
