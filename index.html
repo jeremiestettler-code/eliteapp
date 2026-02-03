@@ -769,13 +769,7 @@
         loadCoachMode();
       });
     })();
-
-    $("btnTheme").addEventListener("click", ()=>{
-      const cur = document.documentElement.getAttribute("data-theme") || "dark";
-      applyTheme(cur === "dark" ? "light" : "dark");
-    });
-
-    let coachMode = true;
+let coachMode = true;
     function speak(text){
       try{
         if(!coachMode) return;
