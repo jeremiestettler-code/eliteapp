@@ -589,59 +589,7 @@
 
     <!-- HOME -->
     <section class="screen" id="screenHome">
-</section>
-
-    <!-- WORKOUT -->
-    <section class="screen" id="screenWorkout">
-      <div class="workoutHeader">
-        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour"><span class="chevronLeft" aria-hidden="true"></span></button>
-
-        <div class="workoutHeaderCenter">
-          <div class="workoutTitle" id="workoutTitle">—</div>
-          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
-        </div>
-
-        <div class="workoutHeaderRight">
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch2" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="workoutChips">
-        <div class="chip chipPhase" id="chipPhase">Travail</div>
-        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
-        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
-      </div>
-
-      <div class="card cardTight">
-        <div class="previewCard" id="previewCard">
-          <img id="exoImg" alt="Exercice" />
-          <div class="loadBadge hidden" id="loadBadge">—</div>
-
-          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
-
-          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
-            <div class="infoInner">
-              <div class="infoHdr">
-                <div class="infoTitle">Conseils</div>
-                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
-              </div>
-              <div class="infoBody" id="infoBody">—</div>
-
-              <div class="loadBox">
-                <div class="loadRow">
-                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
-                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
-                </div>
-                <div class="loadHist" id="loadHist"></div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
+<div class="nextOverlay" id="overlayNext" aria-hidden="true">
             <img class="nextBg" id="nextImg" alt="Exercice suivant" />
             <div class="nextText">
               <div class="nextTag">EXERCICE SUIVANT</div>
@@ -734,10 +682,9 @@
       if(wrap) wrap.style.display = "none";
       const lo = $("btnLogout");
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
-    
       const sb = $("btnSettings");
       if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
-}
+    }
     function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
 
     const THEME_KEY = "coach_theme";
@@ -773,18 +720,21 @@
       if(modal) modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
 
       if(themeT){
-        themeT.addEventListener("change", ()=>{
-          applyTheme(themeT.checked ? "dark" : "light");
-        });
+        themeT.addEventListener("change", ()=> applyTheme(themeT.checked ? "dark" : "light"));
       }
       if(coachT){
         coachT.addEventListener("change", ()=>{
           coachMode = !!coachT.checked;
           localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-          updateCoachUI();
+          const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
+          const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
+          const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
         });
       }
     })();
+
+
+    });
 
     let coachMode = true;
     function speak(text){
@@ -939,7 +889,7 @@
       function addSection(title, keys, opts){
         const options = opts || {};
         const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
+        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : false;
 
         // Header row
         const header = document.createElement("div");
@@ -974,7 +924,7 @@
         btn.addEventListener("click", ()=>{
           const isOpen = container.style.display !== "none";
           container.style.display = isOpen ? "none" : "";
-          btn.textContent = isOpen ? "+" : "−";
+          btn.textContent = String(keys.length);
           btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
         });
 
