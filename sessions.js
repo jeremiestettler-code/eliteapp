@@ -27,11 +27,11 @@ window.SESSIONS = {
     ],
     cooldown: [
       { id:"CD-A1-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-A1-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-A1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-A1-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-A1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-A1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-A1-2", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"45 s", seconds:45, desc:"Relâche les épaules/pectoraux. Garde les omoplates basses." },
+      { id:"CD-A1-3", name:"Adho Mukha Svanasana — épaules + chaîne post.", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
+      { id:"CD-A1-4", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
+      { id:"CD-A1-5", name:"Cocon — relâchement du haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Arrondis le dos, respire, relâche nuque et épaules." },
+      { id:"CD-A1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"A1-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"6–8", work:45, rest:120,
@@ -76,11 +76,11 @@ window.SESSIONS = {
     ],
     cooldown: [
       { id:"CD-A2-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-A2-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-A2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-A2-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-A2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-A2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-A2-2", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"45 s", seconds:45, desc:"Relâche les épaules/pectoraux. Garde les omoplates basses." },
+      { id:"CD-A2-3", name:"Adho Mukha Svanasana — épaules + chaîne post.", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
+      { id:"CD-A2-4", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
+      { id:"CD-A2-5", name:"Cocon — relâchement du haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Arrondis le dos, respire, relâche nuque et épaules." },
+      { id:"CD-A2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"A2-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"8–10", work:45, rest:90,
@@ -127,12 +127,12 @@ window.SESSIONS = {
       { id:"WU-B1-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"1 min", seconds:60, desc:"Rétractions + rotations douces." }
     ],
     cooldown: [
-      { id:"CD-B1-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-B1-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-B1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-B1-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-B1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-B1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-B1-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression dos/épaules, relâche la prise progressivement." },
+      { id:"CD-B1-2", name:"Adho Mukha Svanasana — dorsaux + ischios", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"90 s", seconds:90, desc:"Allonge la colonne, pousse les hanches vers l’arrière." },
+      { id:"CD-B1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre l’avant de la hanche (utile après hinge/row)." },
+      { id:"CD-B1-4", name:"Baddha Konasana — adducteurs/hanches", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
+      { id:"CD-B1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, respiration." },
+      { id:"CD-B1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"B1-1", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:4, reps:"8", work:45, rest:120,
@@ -175,12 +175,12 @@ window.SESSIONS = {
       { id:"WU-B2-3", name:"Good morning léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Charnière hanche (léger)." }
     ],
     cooldown: [
-      { id:"CD-B2-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-B2-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-B2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-B2-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-B2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-B2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-B2-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression dos/épaules, relâche la prise progressivement." },
+      { id:"CD-B2-2", name:"Adho Mukha Svanasana — dorsaux + ischios", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"90 s", seconds:90, desc:"Allonge la colonne, pousse les hanches vers l’arrière." },
+      { id:"CD-B2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre l’avant de la hanche (utile après hinge/row)." },
+      { id:"CD-B2-4", name:"Baddha Konasana — adducteurs/hanches", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
+      { id:"CD-B2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, respiration." },
+      { id:"CD-B2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"B2-1", name:"Rowing landmine (prise serrée)", icon:"landminerow", muscle:"Dos (épaisseur)", sets:4, reps:"8–10", work:45, rest:90,
@@ -227,12 +227,12 @@ window.SESSIONS = {
       { id:"WU-C1-3", name:"Élévations latérales légères", icon:"lateral", todo:"1×15", seconds:45, desc:"Très léger, juste la sensation." }
     ],
     cooldown: [
-      { id:"CD-C1-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-C1-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-C1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-C1-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-C1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-C1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-C1-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression épaules, relâche trapèzes." },
+      { id:"CD-C1-2", name:"Adho Mukha Svanasana — épaules + dos", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge la colonne." },
+      { id:"CD-C1-3", name:"Bhujangasana (cobra) — ouverture thoracique", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Ouvre la cage, épaules basses." },
+      { id:"CD-C1-4", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Ouvre le flanc, stabilise l’épaule." },
+      { id:"CD-C1-5", name:"Cocon — relâchement nuque/haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Respire, relâche les tensions." },
+      { id:"CD-C1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"C1-1", name:"Développé militaire haltères", icon:"ohp", muscle:"Épaules + triceps", sets:4, reps:"6–8", work:45, rest:90,
@@ -275,12 +275,12 @@ window.SESSIONS = {
       { id:"WU-C2-3", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Ouverture hanches, amplitude confortable." }
     ],
     cooldown: [
-      { id:"CD-C2-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-C2-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-C2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-C2-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-C2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-C2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-C2-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression épaules, relâche trapèzes." },
+      { id:"CD-C2-2", name:"Adho Mukha Svanasana — épaules + dos", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge la colonne." },
+      { id:"CD-C2-3", name:"Bhujangasana (cobra) — ouverture thoracique", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Ouvre la cage, épaules basses." },
+      { id:"CD-C2-4", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Ouvre le flanc, stabilise l’épaule." },
+      { id:"CD-C2-5", name:"Cocon — relâchement nuque/haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Respire, relâche les tensions." },
+      { id:"CD-C2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"C2-1", name:"Arnold press haltères", icon:"ohp", muscle:"Épaules", sets:4, reps:"10", work:45, rest:90,
@@ -327,12 +327,12 @@ window.SESSIONS = {
       { id:"WU-D1-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Prépare triceps/pecs." }
     ],
     cooldown: [
-      { id:"CD-D1-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-D1-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-D1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-D1-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-D1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-D1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-D1-1", name:"Adho Mukha Svanasana — full body", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Étire chaîne postérieure, épaules." },
+      { id:"CD-D1-2", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Contrebalance les pompes / pressing." },
+      { id:"CD-D1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre hanches après métabolique." },
+      { id:"CD-D1-4", name:"Baddha Virabhadrasana — ouverture hanches", icon:"baddha_virabhadrasana_posture_du_guerrier_humble", todo:"45 s / côté", seconds:90, desc:"Respire, épaules relâchées." },
+      { id:"CD-D1-5", name:"Ardha Navasana — gainage doux", icon:"ardha_navasana_posture_du_demi_bateau", todo:"45 s", seconds:45, desc:"Gainage contrôlé, respiration." },
+      { id:"CD-D1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"D1-1", name:"Superset : Curl Zottman + Extension triceps au-dessus de la tête", muscle:"Bras", sets:4, reps:"10 + 10", work:45, rest:60,
@@ -376,12 +376,12 @@ window.SESSIONS = {
       { id:"WU-D2-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Activation haut du corps." }
     ],
     cooldown: [
-      { id:"CD-D2-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
-      { id:"CD-D2-2", name:"Adho Mukha Svanasana — chaîne postérieure", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
-      { id:"CD-D2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
-      { id:"CD-D2-4", name:"Baddha Konasana — hanches/adducteurs", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
-      { id:"CD-D2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, regard fixe." },
-      { id:"CD-D2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+      { id:"CD-D2-1", name:"Adho Mukha Svanasana — full body", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Étire chaîne postérieure, épaules." },
+      { id:"CD-D2-2", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Contrebalance les pompes / pressing." },
+      { id:"CD-D2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre hanches après métabolique." },
+      { id:"CD-D2-4", name:"Baddha Virabhadrasana — ouverture hanches", icon:"baddha_virabhadrasana_posture_du_guerrier_humble", todo:"45 s / côté", seconds:90, desc:"Respire, épaules relâchées." },
+      { id:"CD-D2-5", name:"Ardha Navasana — gainage doux", icon:"ardha_navasana_posture_du_demi_bateau", todo:"45 s", seconds:45, desc:"Gainage contrôlé, respiration." },
+      { id:"CD-D2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
     ],
     items: [
       { id:"D2-1", name:"Kettlebell swing", icon:"swing", muscle:"Fessiers + cardio", sets:4, reps:"15", work:45, rest:75,
