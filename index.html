@@ -561,7 +561,14 @@
       </div>
       <div class="pill" id="pillAuth">
         <span id="pillStatus">🔒</span>
-<button id="btnLogout" style="display:none">Déconnexion</button>
+        <div class="coachSwitch" id="coachSwitchWrap" style="display:none">
+          <span class="coachLabel">Coach</span>
+          <label class="switch" aria-label="Mode coach">
+            <input type="checkbox" id="coachSwitch" />
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button id="btnLogout" style="display:none">Déconnexion</button>
       </div>
     </div>
 
@@ -582,13 +589,7 @@
 
     <!-- HOME -->
     <section class="screen" id="screenHome">
-</div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
-        </div>
-      </div>
-    </section>
+</section>
 
     <!-- WORKOUT -->
     <section class="screen" id="screenWorkout">
@@ -733,10 +734,10 @@
       if(wrap) wrap.style.display = "none";
       const lo = $("btnLogout");
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
-
+    
       const sb = $("btnSettings");
       if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
-    }
+}
     function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
 
     const THEME_KEY = "coach_theme";
@@ -748,7 +749,7 @@
     }
     applyTheme(localStorage.getItem(THEME_KEY) || "dark");
 
-    // --- Réglages (home only) ---
+    // --- Réglages (popup) ---
     (function(){
       const modal = $("settingsModal");
       const openBtn = $("btnSettings");
@@ -758,7 +759,6 @@
 
       function openModal(){
         if(!modal) return;
-        // sync switches
         if(themeT) themeT.checked = (document.documentElement.getAttribute("data-theme") === "dark");
         if(coachT) coachT.checked = !!coachMode;
         modal.classList.remove("hidden");
@@ -779,13 +779,14 @@
       }
       if(coachT){
         coachT.addEventListener("change", ()=>{
-          coachMode = coachT.checked;
-          localStorage.setItem("coachMode", coachMode ? "1" : "0");
+          coachMode = !!coachT.checked;
+          localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
+          updateCoachUI();
         });
       }
     })();
 
-    let coachMode = (localStorage.getItem("coachMode") === "0") ? false : true;
+    let coachMode = true;
     function speak(text){
       try{
         if(!coachMode) return;
@@ -815,7 +816,7 @@
       coachMode = (v === null) ? true : (v === "1");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
     function toggleCoachMode(){
@@ -823,16 +824,14 @@
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     }
-    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
-
     $("coachSwitch")?.addEventListener("change", (e)=>{
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -840,7 +839,7 @@
       coachMode = !!e.target.checked;
       localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
       const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
+      const bct = $("btnCoachToggle"); if(bct) bct.textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
       const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
     });
 
@@ -953,7 +952,7 @@
         const t = document.createElement("div");
         t.className = "h2";
         t.style.fontSize = "16px";
-        t.textContent = `${title} (${keys.length})`;
+        t.textContent = title;
 
         const btn = document.createElement("button");
         btn.className = "btn";
