@@ -25,6 +25,14 @@ window.SESSIONS = {
       { id:"WU-A1-3", name:"Squats à vide", icon:"wu_squat", todo:"2×10", seconds:60, desc:"Descente lente, genoux stables, respiration." },
       { id:"WU-A1-4", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8–12", seconds:45, desc:"Genoux si besoin, amplitude confortable." }
     ],
+    cooldown: [
+      { id:"CD-A1-1", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Avant-bras sur un encadrement, tourne le buste doucement." },
+      { id:"CD-A1-2", name:"Étirement triceps au-dessus de la tête", icon:"supersetB", todo:"45 s / côté", seconds:90, desc:"Coude vers le plafond, garde les côtes rentrées." },
+      { id:"CD-A1-3", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Allongé, rotation douce, respiration lente." },
+      { id:"CD-A1-4", name:"Étirement deltoïde antérieur / biceps", icon:"wu_wrist_shoulder", todo:"45 s / côté", seconds:90, desc:"Bras tendu, paume au mur, rotation douce." },
+      { id:"CD-A1-5", name:"Étirement avant-bras", icon:"wu_wrist_shoulder", todo:"45 s / côté", seconds:90, desc:"Poignet en extension puis flexion, sans douleur." },
+      { id:"CD-A1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." }
+    ],
     items: [
       { id:"A1-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"6–8", work:45, rest:120,
         desc:"Mouvement principal : lourd et propre (1–2 reps en réserve).",
@@ -65,6 +73,14 @@ window.SESSIONS = {
       { id:"WU-A2-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Tirage léger, pause 1s en fin de course." },
       { id:"WU-A2-3", name:"Pompes tempo", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"3s descente, contrôle." },
       { id:"WU-A2-4", name:"Triceps léger (poulie)", icon:"cabletri", todo:"1×15", seconds:45, desc:"Prise serrée, amplitude complète." }
+    ],
+    cooldown: [
+      { id:"CD-A2-1", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Avant-bras au mur/porte, ouverture progressive." },
+      { id:"CD-A2-2", name:"Étirement triceps au-dessus de la tête", icon:"supersetB", todo:"45 s / côté", seconds:90, desc:"Coude haut, buste gainé." },
+      { id:"CD-A2-3", name:"Étirement grand dorsal (lat)", icon:"wu_band_pullapart", todo:"1 min", seconds:60, desc:"Bras au-dessus, tire les hanches en arrière (dos long)." },
+      { id:"CD-A2-4", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Rotation douce, respiration." },
+      { id:"CD-A2-5", name:"Étirement épaules (cross-body)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Bras croisé devant, omoplate basse." },
+      { id:"CD-A2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente, relâchement." }
     ],
     items: [
       { id:"A2-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"8–10", work:45, rest:90,
@@ -110,6 +126,14 @@ window.SESSIONS = {
       { id:"WU-B1-2", name:"Row élastique", icon:"wu_rowband", todo:"2×15", seconds:60, desc:"Pause 1s, omoplates basses." },
       { id:"WU-B1-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"1 min", seconds:60, desc:"Rétractions + rotations douces." }
     ],
+    cooldown: [
+      { id:"CD-B1-1", name:"Étirement ischios / chaîne postérieure", icon:"wu_hip_hinge", todo:"1 min", seconds:60, desc:"Hinge léger, dos neutre, genoux souples." },
+      { id:"CD-B1-2", name:"Étirement fessiers (figure 4)", icon:"wu_glute_bridge", todo:"45 s / côté", seconds:90, desc:"Cheville sur genou, tire doucement." },
+      { id:"CD-B1-3", name:"Étirement grand dorsal (lat)", icon:"wu_band_row", todo:"1 min", seconds:60, desc:"Bras tendu, assis sur talons si possible." },
+      { id:"CD-B1-4", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Rotation douce, respire." },
+      { id:"CD-B1-5", name:"Étirement biceps / avant-bras", icon:"wu_wrist_shoulder", todo:"45 s / côté", seconds:90, desc:"Bras tendu, paume au mur, rotation douce." },
+      { id:"CD-B1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente, relâchement." }
+    ],
     items: [
       { id:"B1-1", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:4, reps:"8", work:45, rest:120,
         desc:"Arrière jambes + fessiers, dos neutre.",
@@ -149,6 +173,14 @@ window.SESSIONS = {
       { id:"WU-B2-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Ouverture thoracique + scapula." },
       { id:"WU-B2-2", name:"Row élastique tempo", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"2s tirage / 2s retour + pause 1s." },
       { id:"WU-B2-3", name:"Good morning léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Charnière hanche (léger)." }
+    ],
+    cooldown: [
+      { id:"CD-B2-1", name:"Étirement ischios / chaîne postérieure", icon:"wu_hip_hinge", todo:"1 min", seconds:60, desc:"Hinge léger, bas du dos neutre." },
+      { id:"CD-B2-2", name:"Étirement fessiers (figure 4)", icon:"wu_glute_bridge", todo:"45 s / côté", seconds:90, desc:"Relâche hanches." },
+      { id:"CD-B2-3", name:"Étirement grand dorsal (lat)", icon:"wu_band_row", todo:"1 min", seconds:60, desc:"Tire les hanches en arrière, bras longs." },
+      { id:"CD-B2-4", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Rotation douce." },
+      { id:"CD-B2-5", name:"Étirement biceps / avant-bras", icon:"wu_wrist_shoulder", todo:"45 s / côté", seconds:90, desc:"Sans douleur, épaule basse." },
+      { id:"CD-B2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente." }
     ],
     items: [
       { id:"B2-1", name:"Rowing landmine (prise serrée)", icon:"landminerow", muscle:"Dos (épaisseur)", sets:4, reps:"8–10", work:45, rest:90,
@@ -194,6 +226,14 @@ window.SESSIONS = {
       { id:"WU-C1-2", name:"Rotations externes élastique", icon:"wu_external", todo:"2×12", seconds:60, desc:"Coiffe : léger, contrôle." },
       { id:"WU-C1-3", name:"Élévations latérales légères", icon:"lateral", todo:"1×15", seconds:45, desc:"Très léger, juste la sensation." }
     ],
+    cooldown: [
+      { id:"CD-C1-1", name:"Étirement deltoïde (cross-body)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Bras croisé, épaule basse." },
+      { id:"CD-C1-2", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Ouvre la poitrine doucement." },
+      { id:"CD-C1-3", name:"Étirement trapèzes supérieurs", icon:"wu_shoulder_mob", todo:"1 min", seconds:60, desc:"Incline la tête, épaule opposée basse." },
+      { id:"CD-C1-4", name:"Étirement coiffe / rotation externe (léger)", icon:"wu_external", todo:"1 min", seconds:60, desc:"Très doux, sensation d’ouverture." },
+      { id:"CD-C1-5", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Respire, rotation douce." },
+      { id:"CD-C1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente, relâchement." }
+    ],
     items: [
       { id:"C1-1", name:"Développé militaire haltères", icon:"ohp", muscle:"Épaules + triceps", sets:4, reps:"6–8", work:45, rest:90,
         desc:"Presse verticale stricte.",
@@ -233,6 +273,14 @@ window.SESSIONS = {
       { id:"WU-C2-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Thorax + scapula." },
       { id:"WU-C2-2", name:"Rotations externes élastique", icon:"wu_external", todo:"2×12", seconds:60, desc:"Léger, contrôle." },
       { id:"WU-C2-3", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Ouverture hanches, amplitude confortable." }
+    ],
+    cooldown: [
+      { id:"CD-C2-1", name:"Étirement deltoïde (cross-body)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Bras croisé, contrôle." },
+      { id:"CD-C2-2", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Ouverture progressive." },
+      { id:"CD-C2-3", name:"Étirement trapèzes supérieurs", icon:"wu_shoulder_mob", todo:"1 min", seconds:60, desc:"Doux, sans tirer fort." },
+      { id:"CD-C2-4", name:"Étirement coiffe / rotation externe (léger)", icon:"wu_external", todo:"1 min", seconds:60, desc:"Très doux." },
+      { id:"CD-C2-5", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Rotation douce." },
+      { id:"CD-C2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente." }
     ],
     items: [
       { id:"C2-1", name:"Arnold press haltères", icon:"ohp", muscle:"Épaules", sets:4, reps:"10", work:45, rest:90,
@@ -278,6 +326,14 @@ window.SESSIONS = {
       { id:"WU-D1-2", name:"Triceps léger (poulie)", icon:"cabletri", todo:"2×12", seconds:60, desc:"Prise serrée, amplitude complète." },
       { id:"WU-D1-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Prépare triceps/pecs." }
     ],
+    cooldown: [
+      { id:"CD-D1-1", name:"Étirement avant-bras", icon:"wu_wrist_shoulder", todo:"1 min", seconds:60, desc:"Extension/flexion poignet, doux." },
+      { id:"CD-D1-2", name:"Étirement biceps (bras au mur)", icon:"wu_wrist_shoulder", todo:"45 s / côté", seconds:90, desc:"Paume au mur, rotation douce." },
+      { id:"CD-D1-3", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Ouvre la poitrine." },
+      { id:"CD-D1-4", name:"Étirement hanches (fléchisseur)", icon:"wu_hip_mobility", todo:"45 s / côté", seconds:90, desc:"Fente statique, bassin neutre." },
+      { id:"CD-D1-5", name:"Étirement fessiers (figure 4)", icon:"wu_glute_bridge", todo:"45 s / côté", seconds:90, desc:"Relâche hanches." },
+      { id:"CD-D1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente." }
+    ],
     items: [
       { id:"D1-1", name:"Superset : Curl Zottman + Extension triceps au-dessus de la tête", muscle:"Bras", sets:4, reps:"10 + 10", work:45, rest:60,
         images:{ a:"supersetA", b:"supersetB" },
@@ -319,6 +375,14 @@ window.SESSIONS = {
       { id:"WU-D2-2", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Ouverture hanches, amplitude confortable." },
       { id:"WU-D2-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Activation haut du corps." }
     ],
+    cooldown: [
+      { id:"CD-D2-1", name:"Étirement mollets", icon:"wu_cardio_lowimpact", todo:"45 s / côté", seconds:90, desc:"Talons au sol, genou tendu puis fléchi." },
+      { id:"CD-D2-2", name:"Étirement ischios", icon:"wu_hip_hinge", todo:"45 s / côté", seconds:90, desc:"Hinge léger, dos neutre." },
+      { id:"CD-D2-3", name:"Étirement fléchisseurs de hanche", icon:"wu_hip_mobility", todo:"45 s / côté", seconds:90, desc:"Fente statique, bassin neutre." },
+      { id:"CD-D2-4", name:"Étirement pectoraux (porte)", icon:"wu_shoulder_mob", todo:"45 s / côté", seconds:90, desc:"Ouvre la poitrine." },
+      { id:"CD-D2-5", name:"Ouverture thoracique (T-spine)", icon:"wu_tspine_open", todo:"1 min", seconds:60, desc:"Rotation douce." },
+      { id:"CD-D2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Respiration lente." }
+    ],
     items: [
       { id:"D2-1", name:"Kettlebell swing", icon:"swing", muscle:"Fessiers + cardio", sets:4, reps:"15", work:45, rest:75,
         desc:"Explosif hanche.",
@@ -352,6 +416,28 @@ window.SESSIONS = {
         mistakes:["Élan","Trapèzes","Poignets cassés"] }
     ]
   }
+
+  ,
+
+  /* =====================
+     RUN — ÉCHAUFFEMENT COURSE (7–10 km)
+     ===================== */
+
+  RUN_WU: {
+    name: "Échauffement course — 7 à 10 km",
+    warmup: [
+      { id:"WU-RUN-1", name:"Marche active / footing léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Démarre très facile, augmente progressivement la cadence." },
+      { id:"WU-RUN-2", name:"Mobilité chevilles", icon:"wu_hip_mobility", todo:"1 min", seconds:60, desc:"Cercles de chevilles + flexions/ extensions (amplitude confortable)." },
+      { id:"WU-RUN-3", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"1 min", seconds:60, desc:"Ouvertures de hanches, rotations, sans à-coups." },
+      { id:"WU-RUN-4", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:80, desc:"Pas contrôlé, buste haut, ouverture hanches." },
+      { id:"WU-RUN-5", name:"Montées de genoux", icon:"wu_cardio_lowimpact", todo:"45 s", seconds:45, desc:"Rythme progressif, posture haute." },
+      { id:"WU-RUN-6", name:"Talons-fesses", icon:"wu_cardio_lowimpact", todo:"45 s", seconds:45, desc:"Cadence légère, sans tirer sur le genou." },
+      { id:"WU-RUN-7", name:"Skippings légers", icon:"wu_cardio_lowimpact", todo:"30 s", seconds:30, desc:"Petites foulées, coordination, sans forcer." },
+      { id:"WU-RUN-8", name:"Accélérations progressives", icon:"wu_cardio_lowimpact", todo:"3×20 s", seconds:60, desc:"3 accélérations de 20s : 60% → 75% → 85%, récup marche entre." }
+    ],
+    items: []
+  }
+
 };
 
 // Expose aussi la variable globale `SESSIONS` pour compatibilité
