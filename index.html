@@ -654,6 +654,11 @@
 
 
 </style>
+
+  <!-- Favicon -->
+  <link rel="icon" href="images/icon-192.png" sizes="192x192">
+  <link rel="apple-touch-icon" href="images/icon-192.png">
+
 </head>
 
 <body>
@@ -1426,7 +1431,6 @@
       const barW = (w - pad*2 - gap*(n-1)) / n;
 
       const color = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff";
-
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.9;
 
@@ -1437,8 +1441,6 @@
         const y = h - pad - bh;
         ctx.fillRect(x, y, barW, bh);
       }
-      ctx.globalAlpha = 1;
-    }
       ctx.globalAlpha = 1;
     }
 
