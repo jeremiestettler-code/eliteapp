@@ -1179,9 +1179,10 @@
         header.style.justifyContent = "space-between";
         header.style.gap = "10px";
 
-        const t = document.createElement("button");
-        t.className = "sectionTitleBtn";
-        t.type = "button";
+        const t = document.createElement("div");
+        t.className = "h2";
+        t.style.fontSize = "16px";
+        t.style.cursor = "pointer";
         t.textContent = `${title}`;
 
         const btn = document.createElement("button");
