@@ -895,15 +895,15 @@
         <span class="srOnly" id="exoDesc">—</span>
       </div>
 
-      <div class="card cardTight timerCard">
+      <div class="card cardTight timerCard" id="timerCard">
         <div class="timerBox timerBoxFlat">
           <div class="time" id="timeText">00:00</div>
           <!-- ✅ phaseHint supprimé (redondant) -->
         </div>
       </div>
 
-      <div class="finishBar hidden" id="finishBar">
-        <button class="btn wide" id="btnFinishHome">🏠 Retour accueil</button>
+      <div class="finishBar hidden" id="finishBar" style="display:none;">
+        <button class="btn wide" id="btnFinishHome" aria-label="Retour accueil"><span class="chevronLeft" aria-hidden="true"></span>&nbsp;Retour accueil</button>
       </div>
 
 
@@ -1561,7 +1561,12 @@
         remaining -= dt;
 
         const cur = seq[idx];
-      const fb = $("finishBar"); if(fb) fb.classList.add("hidden");
+      const fb = $("finishBar");
+      const tc = $("timerCard");
+      if(cur){
+        if(fb){ fb.classList.add("hidden"); fb.style.display = "none"; }
+        if(tc) tc.style.display = "";
+      }
         if(cur?.type === "work"){
           if(Math.ceil(remaining) === 3) speak("3");
           if(Math.ceil(remaining) === 2) speak("2");
@@ -1781,7 +1786,8 @@ function buildSequence(session){
         $("todoDesc").textContent = "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
         $("chipMuscle").textContent = "Bravo";
         $("chipRest").textContent = "Repos: —";
-        const fb = $("finishBar"); if(fb) fb.classList.remove("hidden");
+        const fb = $("finishBar"); if(fb){ fb.classList.remove("hidden"); fb.style.display = ""; }
+        const tc = $("timerCard"); if(tc) tc.style.display = "none";
 
         const cp = $("chipPhase"); if(cp) cp.textContent = "Terminé";
         const cs = $("chipSeries"); if(cs) cs.textContent = "—";
