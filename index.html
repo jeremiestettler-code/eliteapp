@@ -1179,9 +1179,9 @@
         header.style.justifyContent = "space-between";
         header.style.gap = "10px";
 
-        const t = document.createElement("div");
-        t.className = "h2";
-        t.style.fontSize = "16px";
+        const t = document.createElement("button");
+        t.className = "sectionTitleBtn";
+        t.type = "button";
         t.textContent = `${title}`;
 
         const btn = document.createElement("button");
@@ -1201,12 +1201,16 @@
         container.style.display = defaultOpen ? "" : "none";
         host.appendChild(container);
 
-        btn.addEventListener("click", ()=>{
+        const toggle = ()=>{
           const isOpen = container.style.display !== "none";
           container.style.display = isOpen ? "none" : "";
           btn.textContent = String(keys.length);
           btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
-        });
+        };
+
+        btn.addEventListener("click", toggle);
+        t.addEventListener("click", toggle);
+
 
         keys.forEach((k)=>addSessionCard(k, container));
       }
