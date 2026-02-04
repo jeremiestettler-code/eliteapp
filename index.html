@@ -1760,8 +1760,15 @@ function buildSequence(session){
         stopTimer();
         hideNextOverlay();
         closeInfo();
-        $("workoutTitle").textContent = "Bravo";
+        $("workoutTitle").textContent = "Félicitations";
         $("workoutSubtitle").textContent = "Fin de séance 🎉";
+        // Fin de séance GIF (ajoute fin_seance.gif dans /images)
+        setImg($("workoutImg"), "images/fin_seance.gif");
+        $("todoTitle").textContent = "Félicitations 🎉";
+        $("todoText").textContent = "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
+        // Hide rest badge line in end screen
+        $("restBadge").textContent = "Repos: —";
+
         const cp = $("chipPhase"); if(cp) cp.textContent = "Terminé";
         const cs = $("chipSeries"); if(cs) cs.textContent = "—";
         $("timeText").textContent = "00:00";
@@ -1884,7 +1891,8 @@ function buildSequence(session){
     }
     function stepNext(){
       stopTimer();
-      idx = Math.min(seq.length-1, idx+1);
+      // allow going one step past the last item to reach the end screen
+      idx = Math.min(seq.length, idx+1);
       renderWorkoutStep();
     }
 
