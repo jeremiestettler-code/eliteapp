@@ -545,6 +545,114 @@
       font-size: 18px;
     }
 
+
+    /* ===== Historique ===== */
+    .historyFilters{
+      display:flex;
+      gap:8px;
+      overflow:auto;
+      padding-bottom: 6px;
+      -webkit-overflow-scrolling: touch;
+    }
+    .hchip{
+      border: 1px solid rgba(255,255,255,.14);
+      background: transparent;
+      color: inherit;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      white-space: nowrap;
+      opacity: .85;
+    }
+    [data-theme="light"] .hchip{
+      border-color: rgba(10,20,40,.14);
+    }
+    .hchip.active{
+      opacity: 1;
+      border-color: rgba(255,255,255,.35);
+    }
+    [data-theme="light"] .hchip.active{
+      border-color: rgba(10,20,40,.28);
+    }
+
+    .kpiGrid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .kpiCard{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+    }
+    [data-theme="light"] .kpiCard{
+      border-color: rgba(10,20,40,.10);
+      background: rgba(10,20,40,.03);
+    }
+    .kpiLabel{ font-size: 12px; opacity:.75; }
+    .kpiValue{ font-size: 24px; font-weight: 900; margin-top: 6px; letter-spacing:-.2px; }
+    .kpiSub{ font-size: 12px; opacity:.7; margin-top: 2px; }
+
+    .charts{
+      display:grid;
+      gap:10px;
+    }
+    .chartCard{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.04);
+    }
+    [data-theme="light"] .chartCard{
+      border-color: rgba(10,20,40,.10);
+      background: rgba(10,20,40,.03);
+    }
+    .chartTitle{ font-size: 13px; opacity:.8; margin-bottom: 8px; }
+
+    .historyListHeader{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .dangerTextBtn{
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+    .dangerTextBtn:active{ transform: translateY(1px); }
+
+    .historyList{
+      display:flex;
+      flex-direction: column;
+      gap:10px;
+    }
+    .historyItem{
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px;
+      background: rgba(255,255,255,.03);
+    }
+    [data-theme="light"] .historyItem{
+      border-color: rgba(10,20,40,.10);
+      background: rgba(10,20,40,.02);
+    }
+    .historyItemTop{
+      display:flex;
+      justify-content: space-between;
+      gap:10px;
+      align-items: baseline;
+    }
+    .historyName{ font-weight: 950; letter-spacing:-.2px; }
+    .historyMeta{ opacity: .75; font-size: 12px; }
+    .historyLine{ margin-top: 6px; opacity: .90; font-size: 13px; }
+
+
 </style>
 </head>
 
@@ -589,6 +697,7 @@
             <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
           </div>
           <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
+          <button id="btnHistory" class="icon-btn" aria-label="Historique" title="Historique">📊</button>
         </div>
 
         <div style="height:12px"></div>
@@ -611,7 +720,79 @@
       </div>
     </section>
 
-    <!-- WORKOUT -->
+    
+    <!-- HISTORY -->
+    <section class="screen" id="screenHistory">
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h1">Historique</div>
+            <div class="muted small">Tes dernières séances et quelques stats (stockées en local).</div>
+          </div>
+          <button id="btnBackFromHistory" class="btn secondary icon" aria-label="Retour" title="Retour">←</button>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="historyFilters" id="historyFilters">
+          <button class="hchip active" data-range="7">7j</button>
+          <button class="hchip" data-range="30">30j</button>
+          <button class="hchip" data-range="90">90j</button>
+          <button class="hchip" data-range="365">1 an</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div class="kpiGrid">
+          <div class="kpiCard">
+            <div class="kpiLabel">Séances</div>
+            <div class="kpiValue" id="kpiWorkouts">—</div>
+            <div class="kpiSub" id="kpiWorkoutsSub">sur la période</div>
+          </div>
+          <div class="kpiCard">
+            <div class="kpiLabel">Temps total</div>
+            <div class="kpiValue" id="kpiTime">—</div>
+            <div class="kpiSub">estimé</div>
+          </div>
+          <div class="kpiCard">
+            <div class="kpiLabel">Séries</div>
+            <div class="kpiValue" id="kpiSets">—</div>
+            <div class="kpiSub">total</div>
+          </div>
+          <div class="kpiCard">
+            <div class="kpiLabel">Streak</div>
+            <div class="kpiValue" id="kpiStreak">—</div>
+            <div class="kpiSub">jours</div>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div class="charts">
+          <div class="chartCard">
+            <div class="chartTitle">Séances / semaine</div>
+            <canvas id="chartWorkouts" height="120"></canvas>
+          </div>
+          <div class="chartCard">
+            <div class="chartTitle">Temps / semaine</div>
+            <canvas id="chartTime" height="120"></canvas>
+          </div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="historyListHeader">
+          <div class="h2" style="margin:0">Dernières séances</div>
+          <button class="dangerTextBtn" id="btnClearHistory">Tout effacer</button>
+        </div>
+
+        <div style="height:10px"></div>
+
+        <div id="historyList" class="historyList"></div>
+      </div>
+    </section>
+
+<!-- WORKOUT -->
     <section class="screen" id="screenWorkout">
       <div class="workoutHeader">
         <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour"><span class="chevronLeft" aria-hidden="true"></span></button>
@@ -731,7 +912,7 @@
 
     const APP_TITLE = "EliteTraining";
     let topbarUserText = "Non connecté";
-    const screens = { login:$("screenLogin"), home:$("screenHome"), workout:$("screenWorkout") };
+    const screens = { login:$("screenLogin"), home:$("screenHome"), history:$("screenHistory"), workout:$("screenWorkout") };
 
     let currentUser = null;
     function ukey(suffix){
@@ -756,7 +937,9 @@
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
 
       const sb = $("btnSettings");
-      if(sb) sb.style.display = (name === "workout") ? "none" : "inline-flex";
+      const hb = $("btnHistory");
+      if(hb) hb.style.display = (name === "workout" || name === "history") ? "none" : "inline-flex";
+      if(sb) sb.style.display = (name === "workout" || name === "history") ? "none" : "inline-flex";
     }
     function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
 
@@ -1139,10 +1322,169 @@
       }
     });
 
+    
     /***********************
+     * Workout History (per-user)
+     ***********************/
+    function workoutHistKey(){ return ukey("workout_history"); }
+
+    function loadWorkoutHistory(){
+      try{
+        return JSON.parse(localStorage.getItem(workoutHistKey()) || "[]");
+      }catch(e){
+        return [];
+      }
+    }
+    function saveWorkoutHistory(arr){
+      localStorage.setItem(workoutHistKey(), JSON.stringify(arr));
+    }
+
+    function formatDateShort(ts){
+      const d = new Date(ts);
+      return d.toLocaleDateString(undefined, { weekday:"short", day:"2-digit", month:"short" });
+    }
+    function formatHhMmFromSec(sec){
+      const m = Math.round((sec||0)/60);
+      const h = Math.floor(m/60);
+      const mm = m%60;
+      if(h<=0) return `${mm} min`;
+      return `${h}h${String(mm).padStart(2,"0")}`;
+    }
+
+    function computeStreakFromHistory(all){
+      const days = new Set(all.map(x=>{
+        const d = new Date(x.ts);
+        d.setHours(0,0,0,0);
+        return d.getTime();
+      }));
+      let streak = 0;
+      const cur = new Date();
+      cur.setHours(0,0,0,0);
+      while(days.has(cur.getTime())){
+        streak++;
+        cur.setDate(cur.getDate()-1);
+      }
+      return streak;
+    }
+
+    function weeklyBuckets8(all){
+      const now = new Date();
+      now.setHours(0,0,0,0);
+      const buckets = Array.from({length:8}, ()=>({ workouts:0, timeSec:0 }));
+
+      // bucket 0 oldest, 7 newest
+      for(let i=0;i<8;i++){
+        const start = new Date(now);
+        start.setDate(start.getDate() - (7*(7-i)) - 6);
+        const end = new Date(now);
+        end.setDate(end.getDate() - (7*(7-i)) + 1); // exclusive
+
+        all.forEach(x=>{
+          if(x.ts >= start.getTime() && x.ts < end.getTime()){
+            buckets[i].workouts += 1;
+            buckets[i].timeSec += (x.durationSec || 0);
+          }
+        });
+      }
+      return buckets;
+    }
+
+    function drawBars(canvas, values){
+      if(!canvas) return;
+      const ctx = canvas.getContext("2d");
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.width  = Math.floor(canvas.clientWidth * dpr);
+      const h = canvas.height = Math.floor(canvas.clientHeight * dpr);
+      ctx.clearRect(0,0,w,h);
+
+      const pad = 10*dpr;
+      const max = Math.max(1, ...values);
+      const n = values.length;
+      const gap = 6*dpr;
+      const barW = (w - pad*2 - gap*(n-1)) / n;
+
+      const color = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff";
+
+      for(let i=0;i<n;i++){
+        const v = values[i];
+        const bh = (h - pad*2) * (v / max);
+        const x = pad + i*(barW+gap);
+        const y = h - pad - bh;
+
+        ctx.globalAlpha = 0.20;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, pad, barW, h - pad*2);
+
+        ctx.globalAlpha = 0.85;
+        ctx.fillRect(x, y, barW, bh);
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    let historyRangeDays = 30;
+
+    function filterHistoryByRange(all){
+      const cutoff = Date.now() - historyRangeDays*24*3600*1000;
+      return all.filter(x => x.ts >= cutoff);
+    }
+
+    function renderHistory(){
+      const all = loadWorkoutHistory();
+      const period = filterHistoryByRange(all);
+
+      const workouts = period.length;
+      const timeSec = period.reduce((a,x)=>a+(x.durationSec||0),0);
+      const sets = period.reduce((a,x)=>a+(x.setsCount||0),0);
+      const streak = computeStreakFromHistory(all);
+
+      $("kpiWorkouts").textContent = workouts;
+      $("kpiWorkoutsSub").textContent = `sur ${historyRangeDays} jours`;
+      $("kpiTime").textContent = formatHhMmFromSec(timeSec);
+      $("kpiSets").textContent = sets ? String(sets) : "—";
+      $("kpiStreak").textContent = String(streak);
+
+      const buckets = weeklyBuckets8(all);
+      drawBars($("chartWorkouts"), buckets.map(b=>b.workouts));
+      drawBars($("chartTime"), buckets.map(b=>Math.round((b.timeSec||0)/60))); // minutes
+
+      const list = $("historyList");
+      if(!list) return;
+
+      if(period.length === 0){
+        list.innerHTML = `<div class="historyItem"><div class="historyName">Aucune séance</div><div class="historyMeta">Commence une séance, elle apparaîtra ici.</div></div>`;
+        return;
+      }
+
+      list.innerHTML = period.slice(0, 30).map(x=>{
+        const dur = x.durationSec ? formatHhMmFromSec(x.durationSec) : "—";
+        const meta = `${formatDateShort(x.ts)} • ${dur}`;
+        const line = `${x.exercisesCount||0} exercices • ${x.setsCount||0} séries`;
+        return `
+          <div class="historyItem">
+            <div class="historyItemTop">
+              <div class="historyName">${escapeHtml(x.sessionName || "Séance")}</div>
+              <div class="historyMeta">${meta}</div>
+            </div>
+            <div class="historyLine">${line}</div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function openHistory(){
+      showScreen("history");
+      // render after layout to get correct canvas sizes
+      setTimeout(renderHistory, 0);
+    }
+
+
+/***********************
      * Workout state
      ***********************/
     let curSessionId = null;
+    let workoutStartMs = null;
+    let workoutLogged = false;
+
     let curSession = null;
     let seq = [];
     let idx = 0;
@@ -1337,6 +1679,30 @@
 
       const cur = seq[idx];
       if(!cur){
+        // --- Log workout once when sequence ends ---
+        if(!workoutLogged && workoutStartMs){
+          const durationSec = Math.max(0, Math.round((Date.now() - workoutStartMs)/1000));
+          // Avoid logging super short accidental opens (<45s)
+          if(durationSec >= 45){
+            const items = curSession?.items || [];
+            const exercisesCount = items.length || 0;
+            const setsCount = items.reduce((a,e)=>a + Number(e?.sets || 0), 0);
+
+            const all = loadWorkoutHistory();
+            all.unshift({
+              id: String(Date.now()),
+              ts: Date.now(),
+              sessionId: curSessionId || "",
+              sessionName: curSession?.name || "Séance",
+              durationSec,
+              exercisesCount,
+              setsCount
+            });
+            saveWorkoutHistory(all.slice(0, 200)); // keep last 200
+          }
+          workoutLogged = true;
+        }
+
         stopTimer();
         hideNextOverlay();
         closeInfo();
@@ -1444,6 +1810,9 @@
     function startSession(sessionId){
       curSessionId = sessionId;
       curSession = (window.SESSIONS || {})[sessionId];
+      workoutStartMs = Date.now();
+      workoutLogged = false;
+
       if(!curSession) return;
 
       seq = buildSequence(curSession);
@@ -1474,8 +1843,54 @@
 
     $("btnBackHome").addEventListener("click", ()=>{
       stopTimer();
+      // Log partial workout if user exits early (optional)
+      if(!workoutLogged && workoutStartMs){
+        const durationSec = Math.max(0, Math.round((Date.now() - workoutStartMs)/1000));
+        if(durationSec >= 120){ // only if meaningful
+          const items = curSession?.items || [];
+          const exercisesCount = items.length || 0;
+          const setsCount = items.reduce((a,e)=>a + Number(e?.sets || 0), 0);
+
+          const all = loadWorkoutHistory();
+          all.unshift({
+            id: String(Date.now()),
+            ts: Date.now(),
+            sessionId: curSessionId || "",
+            sessionName: (curSession?.name || "Séance") + " (arrêtée)",
+            durationSec,
+            exercisesCount,
+            setsCount
+          });
+          saveWorkoutHistory(all.slice(0, 200));
+          workoutLogged = true;
+        }
+      }
+
       showScreen("home");
     });
+
+    // --- Historique navigation ---
+    $("btnHistory")?.addEventListener("click", openHistory);
+    $("btnBackFromHistory")?.addEventListener("click", ()=>showScreen("home"));
+
+    // Range chips
+    $("historyFilters")?.addEventListener("click", (e)=>{
+      const btn = e.target.closest("button[data-range]");
+      if(!btn) return;
+      $("historyFilters").querySelectorAll(".hchip").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      historyRangeDays = parseInt(btn.dataset.range, 10) || 30;
+      renderHistory();
+    });
+
+    // Clear history
+    $("btnClearHistory")?.addEventListener("click", ()=>{
+      if(!confirm("Supprimer tout l’historique ?")) return;
+      saveWorkoutHistory([]);
+      renderHistory();
+    });
+
+
 
     $("btnInfo")?.addEventListener("click", openInfo);
     $("btnInfoClose")?.addEventListener("click", closeInfo);
