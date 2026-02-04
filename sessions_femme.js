@@ -1,16 +1,12 @@
 /* sessions_femme.js
-   Yasmine — Préparation avant opération ligament genou gauche
-   Objectif : renforcement + stabilité, sans rotation
-   Durée : 4 séances ~20 min
+   Yasmine — Pré-op ligament genou gauche
+   IMPORTANT: l’app attend window["SESSIONS_YS"]
 */
 
 (function () {
 
-  window.SESSIONS = [
+  window.SESSIONS_YS = [
 
-    /* =========================
-       SÉANCE A — FESSIERS / HANCHES
-       ========================= */
     {
       id: "ys_preop_A",
       title: "Yasmine — Pré-op A (Fessiers)",
@@ -33,9 +29,6 @@
       ]
     },
 
-    /* =========================
-       SÉANCE B — STABILITÉ / CORE
-       ========================= */
     {
       id: "ys_preop_B",
       title: "Yasmine — Pré-op B (Stabilité)",
@@ -56,9 +49,6 @@
       ]
     },
 
-    /* =========================
-       SÉANCE C — CORE / GAINAGE
-       ========================= */
     {
       id: "ys_preop_C",
       title: "Yasmine — Pré-op C (Core)",
@@ -78,9 +68,6 @@
       ]
     },
 
-    /* =========================
-       SÉANCE D — HAUT DU CORPS
-       ========================= */
     {
       id: "ys_preop_D",
       title: "Yasmine — Pré-op D (Haut du corps)",
