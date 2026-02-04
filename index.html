@@ -1581,7 +1581,7 @@
         setPhaseUI("Repos", "");
         speak("Début du repos");
         beep(660, 80);
-      }else if(cur.type === "warmup"){
+      }else if(cur.type === "warmup" || cur.type === "cooldown"){
         setPhaseUI("Échauffement", "");
         speak("Début de l'échauffement");
         beep(740, 80);
@@ -1694,6 +1694,18 @@
         }
       });
 
+      // Cooldown / Étirements (si présents)
+      (session.cooldown || []).forEach((c)=>{
+        out.push({
+          type:"cooldown",
+          title: c.name || "Étirements",
+          desc: c.desc || c.todo || "",
+          seconds: c.seconds || 60,
+          icon: c.icon || ""
+        });
+      });
+
+
       return out;
     }
 
@@ -1746,12 +1758,12 @@
       let todoLine = "—";
 
       if(cur.type === "warmup"){
-        title = cur.title || "Échauffement";
+        title = cur.title || (cur.type === "cooldown" ? "Étirements" : "Échauffement");
         desc = cur.desc || "";
         imgKey = cur.icon || "";
-        $("chipSeries").textContent = "Échauff.";
+        $("chipSeries").textContent = (cur.type === "cooldown") ? "Étire." : "Échauff.";
         todoLine = "—";
-        muscle = "Échauffement";
+        muscle = (cur.type === "cooldown") ? "Étirements" : "Échauffement";
         rest = "—";
         currentExoIdForLoad = null;
         updateLoadBadge();
@@ -1779,8 +1791,8 @@
 
       $("workoutTitle").textContent = title;
 
-      if(cur.type === "warmup"){
-        $("workoutSubtitle").textContent = "Échauffement";
+      if(cur.type === "warmup" || cur.type === "cooldown"){
+        $("workoutSubtitle").textContent = (cur.type === "cooldown") ? "Étirements" : "Échauffement";
       }else{
         const p = getExerciseProgress();
         $("workoutSubtitle").textContent = p ? `Exercice ${p.current}/${p.total}` : "Exercice";
@@ -1789,7 +1801,8 @@
       const phaseTxt =
         (cur.type === "work") ? "Travail" :
         (cur.type === "rest") ? "Repos" :
-        (cur.type === "warmup") ? "Échauffement" : "Prêt";
+        (cur.type === "warmup") ? "Échauffement" :
+        (cur.type === "cooldown") ? "Étirements" : "Prêt";
       $("chipPhase").textContent = phaseTxt;
       $("chipCoach").textContent = coachMode ? "Coach : ON" : "Coach : OFF";
 
