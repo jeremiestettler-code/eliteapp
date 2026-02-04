@@ -697,7 +697,6 @@
             <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
           </div>
           <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
-          <button id="btnHistory" class="icon-btn" aria-label="Historique" title="Historique">📊</button>
         </div>
 
         <div style="height:12px"></div>
@@ -718,6 +717,23 @@
           <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
         </div>
       </div>
+    
+
+      <div style="height:12px"></div>
+
+      <div class="card">
+        <div class="row">
+          <div class="grow">
+            <div class="h2">Historique</div>
+            <div class="muted small">Stats + séances passées (local).</div>
+          </div>
+        </div>
+        <div style="height:10px"></div>
+        <div class="row">
+          <button class="btn wide" id="btnHistory">📊 Ouvrir l'historique</button>
+        </div>
+      </div>
+
     </section>
 
     
@@ -937,8 +953,6 @@
       if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
 
       const sb = $("btnSettings");
-      const hb = $("btnHistory");
-      if(hb) hb.style.display = (name === "workout" || name === "history") ? "none" : "inline-flex";
       if(sb) sb.style.display = (name === "workout" || name === "history") ? "none" : "inline-flex";
     }
     function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
@@ -1393,10 +1407,18 @@
       if(!canvas) return;
       const ctx = canvas.getContext("2d");
       const dpr = window.devicePixelRatio || 1;
-      const w = canvas.width  = Math.floor(canvas.clientWidth * dpr);
-      const h = canvas.height = Math.floor(canvas.clientHeight * dpr);
-      ctx.clearRect(0,0,w,h);
 
+      // Resize (this also clears the canvas)
+      const cw = Math.max(1, Math.floor(canvas.clientWidth));
+      const ch = Math.max(1, Math.floor(canvas.clientHeight));
+      canvas.width  = Math.floor(cw * dpr);
+      canvas.height = Math.floor(ch * dpr);
+
+      // Reset transform + clear
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+
+      const w = canvas.width, h = canvas.height;
       const pad = 10*dpr;
       const max = Math.max(1, ...values);
       const n = values.length;
@@ -1405,19 +1427,18 @@
 
       const color = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff";
 
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.9;
+
       for(let i=0;i<n;i++){
         const v = values[i];
         const bh = (h - pad*2) * (v / max);
         const x = pad + i*(barW+gap);
         const y = h - pad - bh;
-
-        ctx.globalAlpha = 0.20;
-        ctx.fillStyle = color;
-        ctx.fillRect(x, pad, barW, h - pad*2);
-
-        ctx.globalAlpha = 0.85;
         ctx.fillRect(x, y, barW, bh);
       }
+      ctx.globalAlpha = 1;
+    }
       ctx.globalAlpha = 1;
     }
 
