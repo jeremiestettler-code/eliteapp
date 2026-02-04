@@ -1615,11 +1615,11 @@
       hideNextOverlay();
 
       if(coachMode){
-        idx = Math.min(seq.length-1, idx+1);
+        idx = Math.min(seq.length, idx+1);
         renderWorkoutStep();
         startTimer();
       }else{
-        idx = Math.min(seq.length-1, idx+1);
+        idx = Math.min(seq.length, idx+1);
         renderWorkoutStep();
       }
     }
