@@ -1747,6 +1747,13 @@ function buildSequence(session){
     }
 
     function renderWorkoutStep(){
+      // 🔒 Always hide finish button by default (only shown on end screen)
+      const __fb = $("finishBar");
+      if(__fb){
+        __fb.classList.add("hidden");
+        __fb.style.display = "none";
+      }
+
       stopTimer();
 
       const cur = seq[idx];
