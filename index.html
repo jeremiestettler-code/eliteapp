@@ -654,6 +654,19 @@
 
 
     .finishBar{ margin-top: 10px; }
+    /* Slide sections on home */
+    .homeSection{
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transform: translateY(-4px);
+      transition: max-height 260ms ease, opacity 220ms ease, transform 220ms ease;
+    }
+    .homeSection.open{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
 </style>
 
   <!-- Favicon -->
@@ -1199,14 +1212,29 @@
         // Container
         const container = document.createElement("div");
         container.dataset.section = sectionId;
-        container.style.display = defaultOpen ? "" : "none";
+        container.className = "homeSection" + (defaultOpen ? " open" : "");
+        // max-height is set dynamically for smooth slide
+        container.style.maxHeight = defaultOpen ? (container.scrollHeight + "px") : "0px";
         host.appendChild(container);
 
         const toggle = ()=>{
-          const isOpen = container.style.display !== "none";
-          container.style.display = isOpen ? "none" : "";
+          const isOpen = container.classList.contains("open");
+
+          if(isOpen){
+            // collapse
+            container.style.maxHeight = container.scrollHeight + "px";
+            // force reflow
+            void container.offsetHeight;
+            container.style.maxHeight = "0px";
+            container.classList.remove("open");
+            btn.setAttribute("aria-expanded", "false");
+          }else{
+            container.classList.add("open");
+            container.style.maxHeight = container.scrollHeight + "px";
+            btn.setAttribute("aria-expanded", "true");
+          }
+
           btn.textContent = String(keys.length);
-          btn.setAttribute("aria-expanded", isOpen ? "false" : "true");
         };
 
         btn.addEventListener("click", toggle);
@@ -1214,6 +1242,11 @@
 
 
         keys.forEach((k)=>addSessionCard(k, container));
+
+        // Update height after cards are inserted
+        if(defaultOpen){
+          container.style.maxHeight = container.scrollHeight + "px";
+        }
       }
 
       function addSessionCard(k, mount){
@@ -1237,6 +1270,14 @@
         card.querySelector("button").addEventListener("click", ()=>startSession(k));
         mount.appendChild(card);
       }
+
+
+      function updateOpenSectionsHeight(){
+        host.querySelectorAll(".homeSection.open").forEach(el=>{
+          el.style.maxHeight = el.scrollHeight + "px";
+        });
+      }
+      window.addEventListener("resize", ()=>{ updateOpenSectionsHeight(); }, { passive:true });
 
       // Render
       if(complete.length){
