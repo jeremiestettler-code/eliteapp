@@ -653,6 +653,7 @@
     .historyLine{ margin-top: 6px; opacity: .90; font-size: 13px; }
 
 
+    .finishBar{ margin-top: 10px; }
 </style>
 
   <!-- Favicon -->
@@ -900,6 +901,11 @@
           <!-- ✅ phaseHint supprimé (redondant) -->
         </div>
       </div>
+
+      <div class="finishBar hidden" id="finishBar">
+        <button class="btn wide" id="btnFinishHome">🏠 Retour accueil</button>
+      </div>
+
 
       <div class="btnbar">
         <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">◀◀</button>
@@ -1538,6 +1544,12 @@
 
     function startTimer(){
       if(running) return;
+      // Guard: don't restart timer on end screen
+      if(idx >= seq.length || !seq[idx]){
+        $("btnPlayPause").textContent = "▶︎";
+        running = false;
+        return;
+      }
       running = true;
       $("btnPlayPause").textContent = "⏸";
       let lastTick = Date.now();
@@ -1549,6 +1561,7 @@
         remaining -= dt;
 
         const cur = seq[idx];
+      const fb = $("finishBar"); if(fb) fb.classList.add("hidden");
         if(cur?.type === "work"){
           if(Math.ceil(remaining) === 3) speak("3");
           if(Math.ceil(remaining) === 2) speak("2");
@@ -1763,17 +1776,25 @@ function buildSequence(session){
         $("workoutTitle").textContent = "Félicitations";
         $("workoutSubtitle").textContent = "Fin de séance 🎉";
         // Fin de séance GIF (ajoute fin_seance.gif dans /images)
-        setImg($("workoutImg"), "images/fin_seance.gif");
-        $("todoTitle").textContent = "Félicitations 🎉";
-        $("todoText").textContent = "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
-        // Hide rest badge line in end screen
-        $("restBadge").textContent = "Repos: —";
+        setImg($("exoImg"), "images/fin_seance.gif");
+        $("todoMain").textContent = "Félicitations 🎉";
+        $("todoDesc").textContent = "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
+        $("chipMuscle").textContent = "Bravo";
+        $("chipRest").textContent = "Repos: —";
+        const fb = $("finishBar"); if(fb) fb.classList.remove("hidden");
 
         const cp = $("chipPhase"); if(cp) cp.textContent = "Terminé";
         const cs = $("chipSeries"); if(cs) cs.textContent = "—";
         $("timeText").textContent = "00:00";
+        $("btnPlayPause").disabled = true;
+        $("btnNext").disabled = true;
+        $("btnPrev").disabled = false;
+
         return;
       }
+
+      $("btnPlayPause").disabled = false;
+      $("btnNext").disabled = false;
 
       let title = "";
       let desc  = "";
@@ -1902,6 +1923,11 @@ function buildSequence(session){
     $("btnPlayPause").addEventListener("click", ()=>{
       if(running) stopTimer();
       else startTimer();
+    });
+
+    $("btnFinishHome")?.addEventListener("click", ()=>{
+      stopTimer();
+      showScreen("home");
     });
 
     $("btnBackHome").addEventListener("click", ()=>{
