@@ -1609,6 +1609,12 @@
     function setImg(imgEl, iconKey){
       const map = window.IMG || {};
       const path = map[iconKey] || iconKey || "";
+      if(!path){
+        imgEl.removeAttribute("src");
+        imgEl.style.display = "none";
+        return;
+      }
+      imgEl.style.display = "block";
       imgEl.src = path;
     }
 
@@ -1670,16 +1676,29 @@
       return { current: i + 1, total: items.length };
     }
 
-    function buildSequence(session){
+    
+    function normalizeStepText(obj){
+      if(!obj) return "";
+      if(typeof obj === "string") return obj;
+      const t = obj.desc ?? obj.todo ?? obj.text ?? obj.instructions ?? obj.instruction ?? obj.note ?? obj.notes ?? obj.do ?? "";
+      if(Array.isArray(t)) return t.filter(Boolean).join(" • ");
+      return String(t || "");
+    }
+    function normalizeStepIcon(obj){
+      if(!obj || typeof obj === "string") return "";
+      return obj.icon || obj.gif || obj.img || obj.image || obj.media || "";
+    }
+
+function buildSequence(session){
       const out = [];
 
       (session.warmup || []).forEach((w)=>{
         out.push({
           type:"warmup",
-          title: w.name || "Échauffement",
-          desc: w.desc || w.todo || "",
-          seconds: w.seconds || 60,
-          icon: w.icon || ""
+          title: (typeof w === "string") ? w : (w.name || "Échauffement"),
+          desc: normalizeStepText(w),
+          seconds: (typeof w === "string") ? 60 : (w.seconds || 60),
+          icon: normalizeStepIcon(w)
         });
       });
 
@@ -1698,10 +1717,10 @@
       (session.cooldown || []).forEach((c)=>{
         out.push({
           type:"cooldown",
-          title: c.name || "Étirements",
-          desc: c.desc || c.todo || "",
-          seconds: c.seconds || 60,
-          icon: c.icon || ""
+          title: (typeof c === "string") ? c : (c.name || "Étirements"),
+          desc: normalizeStepText(c),
+          seconds: (typeof c === "string") ? 60 : (c.seconds || 60),
+          icon: normalizeStepIcon(c)
         });
       });
 
@@ -1757,7 +1776,7 @@
       let muscle = "—";
       let todoLine = "—";
 
-      if(cur.type === "warmup"){
+      if(cur.type === "warmup" || cur.type === "cooldown"){
         title = cur.title || (cur.type === "cooldown" ? "Étirements" : "Échauffement");
         desc = cur.desc || "";
         imgKey = cur.icon || "";
