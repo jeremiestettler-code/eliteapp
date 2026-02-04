@@ -951,6 +951,31 @@
     const $ = (id)=>document.getElementById(id);
 
     const APP_TITLE = "EliteTraining";
+
+    /***********************
+     * Fin de séance (aléatoire)
+     ***********************/
+    const FIN_GIFS = [
+      "images/fin_seance.gif",
+      "images/fin_seance_2.gif",
+      // Ajoute d'autres GIFs ici, ex:
+      // "images/fin_seance_2.gif",
+      // "images/fin_seance_3.gif",
+    ];
+
+    const FIN_PHRASES = [
+      "Bravo, tu es sur le chemin pour devenir la meilleure version de toi !",
+      "Bravo ! No pain, No gain!",
+      // Ajoute d'autres phrases ici, ex:
+      // "Bravo ! Petit étirement et récupération, tu l'as mérité.",
+      // "Excellent travail 💪 Pense à bien respirer et à boire un verre d'eau.",
+    ];
+
+    function pickRandom(arr){
+      if(!Array.isArray(arr) || arr.length === 0) return null;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
     let topbarUserText = "Non connecté";
     const screens = { login:$("screenLogin"), home:$("screenHome"), history:$("screenHistory"), workout:$("screenWorkout") };
 
@@ -1834,9 +1859,10 @@ function buildSequence(session){
         $("workoutTitle").textContent = "Félicitations";
         $("workoutSubtitle").textContent = "Fin de séance 🎉";
         // Fin de séance GIF (ajoute fin_seance.gif dans /images)
-        setImg($("exoImg"), "images/fin_seance.gif");
+        const gif = pickRandom(FIN_GIFS) || "images/fin_seance.gif";
+        setImg($("exoImg"), gif);
         $("todoMain").textContent = "Félicitations 🎉";
-        $("todoDesc").textContent = "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
+        $("todoDesc").textContent = pickRandom(FIN_PHRASES) || "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
         $("chipMuscle").textContent = "Bravo";
         $("chipRest").textContent = "Repos: —";
         const fb = $("finishBar"); if(fb){ fb.classList.remove("hidden"); fb.style.display = ""; }
