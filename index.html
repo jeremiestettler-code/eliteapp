@@ -1067,6 +1067,7 @@
     })();
 
     let coachMode = (localStorage.getItem("coachMode") === "0") ? false : true;
+    let __endSpoken = false;
     function speak(text){
       try{
         if(!coachMode) return;
@@ -1876,7 +1877,14 @@ function buildSequence(session){
         const gif = pickRandom(FIN_GIFS) || "images/fin_seance.gif";
         setImg($("exoImg"), gif);
         $("todoMain").textContent = "Félicitations 🎉";
-        $("todoDesc").textContent = pickRandom(FIN_PHRASES) || "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
+        const __phraseFin = pickRandom(FIN_PHRASES) || "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
+        $("todoDesc").textContent = __phraseFin;
+        // 🔊 Coach vocal : "Séance terminée" puis punchline (une seule fois)
+        if(coachMode && !__endSpoken){
+          speak("Séance terminée");
+          setTimeout(()=>speak(__phraseFin), 900);
+          __endSpoken = true;
+        }
         $("chipMuscle").textContent = "Bravo";
         $("chipRest").textContent = "Repos: —";
         const fb = $("finishBar"); if(fb){ fb.classList.remove("hidden"); fb.style.display = ""; }
@@ -1990,6 +1998,7 @@ function buildSequence(session){
     }
 
     function startSession(sessionId){
+      __endSpoken = false;
       curSessionId = sessionId;
       curSession = (window.SESSIONS || {})[sessionId];
       workoutStartMs = Date.now();
