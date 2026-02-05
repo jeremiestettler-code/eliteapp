@@ -667,6 +667,16 @@
       transform: translateY(0);
     }
 
+    .historyDelBtn{
+      background: transparent;
+      border: none;
+      color: var(--danger);
+      font-size: 14px;
+      font-weight: 900;
+      padding: 6px 10px;
+      border-radius: 12px;
+    }
+    .historyDelBtn:active{ transform: translateY(1px); }
 </style>
 
   <!-- Favicon -->
@@ -802,17 +812,6 @@
         </div>
 
         <div style="height:12px"></div>
-
-        <div class="charts">
-          <div class="chartCard">
-            <div class="chartTitle">Séances / semaine</div>
-            <canvas id="chartWorkouts" height="120"></canvas>
-          </div>
-          <div class="chartCard">
-            <div class="chartTitle">Temps / semaine</div>
-            <canvas id="chartTime" height="120"></canvas>
-          </div>
-        </div>
 
         <div style="height:14px"></div>
 
@@ -1578,7 +1577,10 @@
           <div class="historyItem">
             <div class="historyItemTop">
               <div class="historyName">${escapeHtml(x.sessionName || "Séance")}</div>
-              <div class="historyMeta">${meta}</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div class="historyMeta">${meta}</div>
+                <button class="historyDelBtn" data-delhist="${escapeHtml(x.id)}" aria-label="Supprimer cette entrée" title="Supprimer">✕</button>
+              </div>
             </div>
             <div class="historyLine">${line}</div>
           </div>
@@ -2086,6 +2088,21 @@ function buildSequence(session){
       saveWorkoutHistory([]);
       renderHistory();
     });
+
+    // Delete a single history entry
+    $("historyList")?.addEventListener("click", (e)=>{
+      const btn = e.target.closest("[data-delhist]");
+      if(!btn) return;
+      const id = btn.getAttribute("data-delhist");
+      if(!id) return;
+      if(!confirm("Supprimer cette séance de l’historique ?")) return;
+
+      const all = loadWorkoutHistory();
+      const next = all.filter(x => String(x.id) !== String(id));
+      saveWorkoutHistory(next);
+      renderHistory();
+    });
+
 
 
 
