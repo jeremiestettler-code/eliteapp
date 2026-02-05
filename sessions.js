@@ -425,14 +425,14 @@ window.SESSIONS = {
 
 
   /* =====================
-     HOCKEY — FORCE SPÉCIFIQUE (4 séances full body)
+     HOCKEY — FORCE + PHYSIQUE (4 séances full body)
      Durée cible : 50–60 min
      ===================== */
 
   H1: {
-    name: "Hockey H1 — Unilatéral + stabilité (Base patinage)",
+    name: "Hockey H1 — Unilatéral + stabilité + bras",
     warmup: [
-      { id:"WU-H1-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Montée progressive." },
+      { id:"WU-H1-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
       { id:"WU-H1-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Ouvertures contrôlées." },
       { id:"WU-H1-3", name:"Abduction élastique", icon:"wu_band_abduction", todo:"2×12", seconds:60, desc:"Fessier moyen." },
       { id:"WU-H1-4", name:"Hip hinge", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Charnière propre." }
@@ -448,7 +448,9 @@ window.SESSIONS = {
       { id:"H1-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:3, reps:"10 / côté", work:45, rest:90 },
       { id:"H1-4", name:"Landmine press unilatéral", icon:"landminepress", muscle:"Épaules", sets:3, reps:"8 / côté", work:45, rest:90 },
       { id:"H1-5", name:"Pallof press", icon:"pallof_press_band", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 },
-      { id:"H1-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"40 s / côté", type:"time", seconds:40, work:40, rest:60 }
+      { id:"H1-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"40 s / côté", type:"time", seconds:40, work:40, rest:60 },
+      { id:"H1-7", name:"Poulie triceps (bonus)", icon:"cabletri", muscle:"Triceps", sets:2, reps:"12–15", work:45, rest:45 },
+      { id:"H1-8", name:"Curl marteau (bonus)", icon:"hammer", muscle:"Biceps", sets:2, reps:"12–15", work:45, rest:45 }
     ]
   },
 
@@ -456,8 +458,7 @@ window.SESSIONS = {
     name: "Hockey H2 — Puissance hanche",
     warmup: [
       { id:"WU-H2-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
-      { id:"WU-H2-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Hanches libres." },
-      { id:"WU-H2-3", name:"Hip hinge", icon:"wu_hip_hinge", todo:"2×8", seconds:60, desc:"Pattern." }
+      { id:"WU-H2-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Hanches libres." }
     ],
     cooldown: [
       { id:"CD-H2-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Relâche." },
@@ -474,7 +475,7 @@ window.SESSIONS = {
   },
 
   H3: {
-    name: "Hockey H3 — Haut du corps utile",
+    name: "Hockey H3 — Dos + pecs/bras",
     warmup: [
       { id:"WU-H3-1", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"2 min", seconds:120, desc:"Scapula." },
       { id:"WU-H3-2", name:"Face pull", icon:"wu_facepull", todo:"2×12", seconds:60, desc:"Activation." }
@@ -485,16 +486,16 @@ window.SESSIONS = {
     ],
     items: [
       { id:"H3-1", name:"Row poitrine sur banc", icon:"chest_supported_row", muscle:"Dos", sets:4, reps:"10–12", work:45, rest:90 },
-      { id:"H3-2", name:"Développé militaire haltères assis", icon:"db_ohp_seated", muscle:"Épaules", sets:3, reps:"8–10", work:45, rest:90 },
-      { id:"H3-3", name:"Face pull", icon:"facepull_band", muscle:"Arrière épaules", sets:3, reps:"15", work:45, rest:60 },
-      { id:"H3-4", name:"Goblet squat", icon:"goblet", muscle:"Jambes", sets:3, reps:"10–12", work:45, rest:90 },
-      { id:"H3-5", name:"Pallof press", icon:"pallof_press_band", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 },
-      { id:"H3-6", name:"Farmer hold", icon:"farmer_hold", muscle:"Grip", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:75 }
+      { id:"H3-2", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux", sets:4, reps:"6–10", work:45, rest:120 },
+      { id:"H3-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:3, reps:"10 / côté", work:45, rest:90 },
+      { id:"H3-4", name:"Landmine press", icon:"landmine_press", muscle:"Épaules", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H3-5", name:"Superset bras", icon:"superset_arms", muscle:"Biceps + triceps", sets:3, reps:"12 + 12", work:45, rest:60 },
+      { id:"H3-6", name:"Pallof press", icon:"pallof_press_band", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 }
     ]
   },
 
   H4: {
-    name: "Hockey H4 — Athlétique & effort répété",
+    name: "Hockey H4 — Athlétique + pecs",
     warmup: [
       { id:"WU-H4-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
       { id:"WU-H4-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Appuis." }
@@ -504,14 +505,15 @@ window.SESSIONS = {
       { id:"CD-H4-2", name:"Respiration", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme." }
     ],
     items: [
-      { id:"H4-1", name:"Landmine press", icon:"landmine_press", muscle:"Transfert force", sets:4, reps:"10", work:45, rest:75 },
+      { id:"H4-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance", sets:4, reps:"12–15", work:45, rest:75 },
       { id:"H4-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:4, reps:"15", work:45, rest:60 },
-      { id:"H4-3", name:"Glute bridge haltère", icon:"glute_bridge_db", muscle:"Fessiers", sets:3, reps:"12", work:45, rest:75 },
-      { id:"H4-4", name:"Pompes inclinées", icon:"incline_pushup_bench", muscle:"Pecs/triceps", sets:3, reps:"12–15", work:45, rest:75 },
+      { id:"H4-3", name:"Hip thrust pause", icon:"hip_thrust_pause", muscle:"Fessiers", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H4-4", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pec", sets:3, reps:"8–12", work:45, rest:90 },
       { id:"H4-5", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 },
-      { id:"H4-6", name:"Kettlebell swing", icon:"swing", muscle:"Finisher", sets:3, reps:"15", work:45, rest:75 }
+      { id:"H4-6", name:"Poulie triceps (bonus)", icon:"cabletri", muscle:"Triceps", sets:2, reps:"12–15", work:45, rest:45 }
     ]
   },
+
 
 
   RUN_WU: {
