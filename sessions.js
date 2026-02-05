@@ -417,6 +417,203 @@ window.SESSIONS = {
     ]
   }
 
+  /* =====================
+     HOCKEY — FORCE SPÉCIFIQUE (4 séances full body)
+     Objectif : patinage (unilatéral/latéral), puissance hanche, core anti-rotation, épaules solides + grip
+     Durée cible : 50–60 min
+     ===================== */
+
+  H1: {
+    name: "Hockey H1 — Unilatéral + stabilité (Base patinage)",
+    warmup: [
+      { id:"WU-H1-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Montée progressive (respiration, posture haute)." },
+      { id:"WU-H1-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Ouvertures de hanches + rotations contrôlées." },
+      { id:"WU-H1-3", name:"Abduction élastique", icon:"wu_band_abduction", todo:"2×12", seconds:60, desc:"Active fessier moyen (genoux stables)." },
+      { id:"WU-H1-4", name:"Hip hinge (charnière)", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Dos neutre, hanches en arrière." },
+      { id:"WU-H1-5", name:"Glute bridge (activation)", icon:"wu_glute_bridge", todo:"1×12", seconds:45, desc:"Pause 1s en haut, fessiers serrés." }
+    ],
+    cooldown: [
+      { id:"CD-H1-1", name:"Mobilité hanches (retour au calme)", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Respire, amplitude confortable." },
+      { id:"CD-H1-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Rotation thoracique douce, sans forcer." },
+      { id:"CD-H1-3", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"75 s", seconds:75, desc:"Épaules basses, relâche trapèzes." },
+      { id:"CD-H1-4", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Redescends le rythme." }
+    ],
+    items: [
+      { id:"H1-1", name:"Bulgarian split squat", icon:"bulgarian", muscle:"Jambes (unilatéral) + stabilité", sets:4, reps:"8 / jambe", work:45, rest:120,
+        desc:"Base patinage : force unilatérale + genou stable (1–2 reps en réserve).",
+        steps:["Buste gainé, descente contrôlée.","Genou aligné (pas de valgus).","Pousse par le talon, fessier actif."],
+        mistakes:["Genou qui rentre","Élan","Amplitude trop courte"] },
+
+      { id:"H1-2", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:3, reps:"8–10", work:45, rest:120,
+        desc:"Chaîne postérieure (puissance hanche).",
+        steps:["Hanches en arrière, dos neutre.","Haltères proches des jambes.","Remonte en serrant les fessiers."],
+        mistakes:["Dos rond","Rebond","Genoux trop pliés"] },
+
+      { id:"H1-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos + stabilité", sets:3, reps:"10 / côté", work:45, rest:90,
+        desc:"Tire vers la hanche (pause 1s) pour renforcer le dos utile hockey.",
+        steps:["Buste stable.","Coude vers la hanche.","Retour contrôlé."],
+        mistakes:["Rotation","Élan","Tirer vers l’épaule"] },
+
+      { id:"H1-4", name:"Landmine press unilatéral", icon:"landminepress", muscle:"Épaules + gainage", sets:3, reps:"8 / côté", work:45, rest:90,
+        desc:"Transfert de force + stabilité de l’épaule (contacts / tir).",
+        steps:["Gainage fort.","Pousse en diagonale.","Retour contrôlé (épaule basse)."],
+        mistakes:["Cambrure","Rotation du buste","Épaule qui monte"] },
+
+      { id:"H1-5", name:"Pallof press (élastique)", icon:"pallof_press_band", muscle:"Core anti-rotation", sets:3, reps:"10–12 / côté", work:45, rest:60,
+        desc:"Anti-rotation : essentiel pour tirs et changements de direction.",
+        steps:["Côtes rentrées, bassin neutre.","Presse loin du buste, pause 1s.","Reviens sans tourner."],
+        mistakes:["Tourner le bassin","Cambrure","Aller trop vite"] },
+
+      { id:"H1-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques + stabilité", sets:3, reps:"35–45 s / côté", type:"time", seconds:40, work:40, rest:60,
+        desc:"Stabilité latérale (virages / appuis).",
+        steps:["Coude sous l’épaule.","Hanches hautes, corps aligné.","Respire."],
+        mistakes:["Hanches qui s’affaissent","Apnée","Épaule mal placée"] }
+    ]
+  },
+
+  H2: {
+    name: "Hockey H2 — Puissance hanche + chaîne postérieure",
+    warmup: [
+      { id:"WU-H2-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif, sans se cramer." },
+      { id:"WU-H2-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Hanches libres pour produire de la puissance." },
+      { id:"WU-H2-3", name:"Hip hinge (charnière)", icon:"wu_hip_hinge", todo:"2×8", seconds:60, desc:"Pattern hinge propre." },
+      { id:"WU-H2-4", name:"Glute bridge (activation)", icon:"wu_glute_bridge_iso", todo:"1×30 s", seconds:30, desc:"Isométrique : fessiers ON." },
+      { id:"WU-H2-5", name:"Band row (activation dos)", icon:"wu_band_row", todo:"1×12", seconds:45, desc:"Omoplates basses, pause 1s." }
+    ],
+    cooldown: [
+      { id:"CD-H2-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Relâche l’avant de hanche." },
+      { id:"CD-H2-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Récupération haut du dos." },
+      { id:"CD-H2-3", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme le système." }
+    ],
+    items: [
+      { id:"H2-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance hanche + cardio", sets:5, reps:"12–15", work:45, rest:75,
+        desc:"Explosif (comme un shift) : qualité avant quantité.",
+        steps:["Hinge (charnière) — pas un squat.","Explose les hanches, bras guides.","Contrôle le retour entre les jambes."],
+        mistakes:["Lever avec les bras","Dos rond","Squat au lieu de hinge"] },
+
+      { id:"H2-2", name:"Hip thrust haltère", icon:"hip_thrust_db", muscle:"Fessiers (puissance)", sets:4, reps:"8–10", work:45, rest:120,
+        desc:"Puissance de poussée (accélérations). Pause 1s en haut.",
+        steps:["Tibia vertical en haut.","Rétroversion bassin, fessiers serrés.","Descends contrôlé."],
+        mistakes:["Hyperextension lombaire","Amplitude courte","Genoux qui s’ouvrent trop"] },
+
+      { id:"H2-3", name:"Landmine squat", icon:"landminesquat", muscle:"Jambes + gainage", sets:3, reps:"8–10", work:45, rest:120,
+        desc:"Force utile et stable (moins de stress que back squat).",
+        steps:["Buste gainé, trajectoire verticale.","Genoux suivent les pointes.","Remonte en poussant le sol."],
+        mistakes:["Bassin qui bascule","Genoux qui rentrent","Trop vite"] },
+
+      { id:"H2-4", name:"Rowing landmine", icon:"landminerow", muscle:"Dos (puissance) + gainage", sets:3, reps:"8–10", work:45, rest:90,
+        desc:"Puissant et stable (utile contacts).",
+        steps:["Hinge, dos neutre.","Tire vers sternum bas, pause 1s.","Contrôle la descente."],
+        mistakes:["Dos arrondi","Élan","Trapèzes dominants"] },
+
+      { id:"H2-5", name:"Farmer walk", icon:"farmer", muscle:"Grip + gainage", sets:3, reps:"50 s", type:"time", seconds:50, work:50, rest:90,
+        desc:"Grip / posture / tronc (batailles le long de la bande).",
+        steps:["Grandis-toi, épaules basses.","Marche lente, respiration.","Ne te penche pas."],
+        mistakes:["Trapèzes hauts","Pas rapides","Dos qui s’arrondit"] },
+
+      { id:"H2-6", name:"Hollow hold", icon:"hollow_hold", muscle:"Core anti-extension", sets:3, reps:"30–40 s", type:"time", seconds:35, work:35, rest:60,
+        desc:"Renforce le tronc pour transmettre la force.",
+        steps:["Bas du dos collé.","Côtes rentrées.","Respire sans casser la posture."],
+        mistakes:["Dos qui se creuse","Apnée","Trop dur = posture cassée"] }
+    ]
+  },
+
+  H3: {
+    name: "Hockey H3 — Haut du corps (tirage/stabilité) + unilatéral",
+    warmup: [
+      { id:"WU-H3-1", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"2 min", seconds:120, desc:"Scapula + ouverture thoracique." },
+      { id:"WU-H3-2", name:"Face pull (élastique)", icon:"wu_facepull", todo:"2×12", seconds:60, desc:"Épaules basses, pause 1s." },
+      { id:"WU-H3-3", name:"Row élastique", icon:"wu_band_row", todo:"1×15", seconds:60, desc:"Active le dos, contrôle." },
+      { id:"WU-H3-4", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"1 min", seconds:60, desc:"Prépare les appuis." }
+    ],
+    cooldown: [
+      { id:"CD-H3-1", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"90 s", seconds:90, desc:"Relâche haut du dos/épaules." },
+      { id:"CD-H3-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Rotation thoracique douce." },
+      { id:"CD-H3-3", name:"Poignets/épaules", icon:"wu_wrist_shoulder", todo:"60 s", seconds:60, desc:"Utile pour le stick + prise." },
+      { id:"CD-H3-4", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Redescends le rythme." }
+    ],
+    items: [
+      { id:"H3-1", name:"Row poitrine sur banc (haltères)", icon:"chest_supported_row", muscle:"Dos (stabilité)", sets:4, reps:"10–12", work:45, rest:90,
+        desc:"Tirage propre sans triche (épaule solide).",
+        steps:["Poitrine collée au banc.","Tire coudes vers l’arrière.","Pause 1s, contrôle la descente."],
+        mistakes:["Hausser les épaules","Trop lourd","Amplitude courte"] },
+
+      { id:"H3-2", name:"Développé militaire haltères (assis)", icon:"db_ohp_seated", muscle:"Épaules + triceps", sets:3, reps:"8–10", work:45, rest:90,
+        desc:"Pressing stable (contacts / posture).",
+        steps:["Côtes rentrées.","Pousse au-dessus sans cambrer.","Contrôle la descente."],
+        mistakes:["Cambrure","Épaules hautes","Vitesse"] },
+
+      { id:"H3-3", name:"Face pull (élastique)", icon:"facepull_band", muscle:"Arrière épaules + posture", sets:3, reps:"15", work:45, rest:60,
+        desc:"Prévention épaules + stabilité du haut du dos.",
+        steps:["Tire vers le visage (coudes hauts).","Pause 1s, omoplates basses.","Retour contrôlé."],
+        mistakes:["Épaules qui montent","Trop lourd","Cambrure"] },
+
+      { id:"H3-4", name:"Goblet squat", icon:"goblet", muscle:"Jambes + tronc", sets:3, reps:"10–12", work:45, rest:90,
+        desc:"Force générale + posture (sans te cramer).",
+        steps:["Coude près du buste, poitrine fière.","Genoux suivent pointes.","Remonte en poussant le sol."],
+        mistakes:["Genoux qui rentrent","Buste qui s’écrase","Amplitude courte"] },
+
+      { id:"H3-5", name:"Pallof press (élastique)", icon:"pallof_press_band", muscle:"Core anti-rotation", sets:3, reps:"10 / côté", work:45, rest:60,
+        desc:"Transfert de force (tirs, changements direction).",
+        steps:["Bassin neutre.","Presse + pause 1s.","Reviens sans tourner."],
+        mistakes:["Tourner","Cambrer","Aller trop vite"] },
+
+      { id:"H3-6", name:"Farmer hold", icon:"farmer_hold", muscle:"Grip + gainage", sets:3, reps:"40–50 s", type:"time", seconds:45, work:45, rest:75,
+        desc:"Grip pour le stick + stabilité en contact.",
+        steps:["Épaules basses.","Gainage, respiration.","Tiens sans te pencher."],
+        mistakes:["Trapèzes hauts","Buste qui penche","Apnée"] }
+    ]
+  },
+
+  H4: {
+    name: "Hockey H4 — Athlétique (transfert glace) + effort répété",
+    warmup: [
+      { id:"WU-H4-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H4-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Prépare les appuis latéraux." },
+      { id:"WU-H4-3", name:"Abduction élastique", icon:"wu_band_abduction", todo:"1×15", seconds:45, desc:"Fessier moyen ON." },
+      { id:"WU-H4-4", name:"Face pull (activation)", icon:"wu_facepull", todo:"1×12", seconds:45, desc:"Posture / épaules." },
+      { id:"WU-H4-5", name:"Dead bug (léger)", icon:"wu_dead_bug_light", todo:"1×8 / côté", seconds:45, desc:"Active le gainage profond." }
+    ],
+    cooldown: [
+      { id:"CD-H4-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Retour au calme appuis/hanche." },
+      { id:"CD-H4-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Relâche haut du dos." },
+      { id:"CD-H4-3", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"75 s", seconds:75, desc:"Respire, épaules basses." },
+      { id:"CD-H4-4", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme, récupération." }
+    ],
+    items: [
+      { id:"H4-1", name:"Landmine press", icon:"landmine_press", muscle:"Transfert force + core", sets:4, reps:"10", work:45, rest:75,
+        desc:"Pressing athlétique, gainage fort (transfert hockey).",
+        steps:["Pieds stables, côtes rentrées.","Pousse en diagonale.","Retour contrôlé."],
+        mistakes:["Cambrure","Épaule qui monte","Élan"] },
+
+      { id:"H4-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos + posture", sets:4, reps:"15", work:45, rest:60,
+        desc:"Endurance dos (posture en match).",
+        steps:["Tire vers le nombril/hanche.","Pause 1s.","Retour lent."],
+        mistakes:["Épaules hautes","Vitesse","Amplitude courte"] },
+
+      { id:"H4-3", name:"Glute bridge haltère", icon:"glute_bridge_db", muscle:"Fessiers", sets:3, reps:"12", work:45, rest:75,
+        desc:"Puissance hanche (support patinage).",
+        steps:["Pause 1s en haut.","Bassin neutre.","Contrôle la descente."],
+        mistakes:["Dos qui cambre","Amplitude courte","Trop lourd"] },
+
+      { id:"H4-4", name:"Pompes inclinées sur banc", icon:"incline_pushup_bench", muscle:"Haut du corps + tronc", sets:3, reps:"12–15", work:45, rest:75,
+        desc:"Pressing + gainage (sans se cramer).",
+        steps:["Gainage solide.","Descends poitrine vers le banc.","Pousse, expire."],
+        mistakes:["Hanches qui tombent","Coudes trop ouverts","Amplitude courte"] },
+
+      { id:"H4-5", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60,
+        desc:"Stabilité tronc (répétition d’efforts).",
+        steps:["Bassin neutre.","Fessiers serrés.","Respire."],
+        mistakes:["Bassin bas","Apnée","Épaules hautes"] },
+
+      { id:"H4-6", name:"Kettlebell swing (finisher)", icon:"swing", muscle:"Effort répété type shift", sets:3, reps:"15", work:45, rest:75,
+        desc:"Finisher : qualité + explosivité, pas à l’échec.",
+        steps:["Hinge propre.","Explose hanches.","Contrôle le retour."],
+        mistakes:["Lever avec les bras","Dos rond","Squat"] }
+    ]
+  }
+
+
   ,
 
   /* =====================
