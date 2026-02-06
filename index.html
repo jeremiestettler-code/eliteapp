@@ -1893,8 +1893,54 @@
 
         div.appendChild(img);
         div.appendChild(lbl);
+        div.addEventListener("click", ()=>{
+          try{ openTrophyInfoModal(t, state, all); }catch(e){}
+        });
+
         grid.appendChild(div);
       });
+    }
+
+
+    function formatNumberFR(n){
+      try{ return new Intl.NumberFormat("fr-CH").format(n); }catch(e){ return String(n); }
+    }
+
+    function computeTrophyCurrentValue(t, all){
+      const prog = getTrophyProgress(all);
+      return (t.type === "sessions") ? prog.sessions :
+             (t.type === "streak") ? prog.streak :
+             (t.type === "tonnageKg") ? prog.tonnageKg : 0;
+    }
+
+    function openTrophyInfoModal(t, state, all){
+      const modal = $("trophyModal");
+      if(!modal) return;
+
+      const unlocked = !!state[t.id];
+      const cur = computeTrophyCurrentValue(t, all);
+      const need = t.threshold;
+
+      setImg($("trophyModalImg"), t.iconKey);
+      $("trophyModalTitle").textContent = t.title || t.label;
+      // If locked, show progress line appended
+      const progressLine = unlocked ? "" : `\n\nProgression : ${formatNumberFR(cur)} / ${formatNumberFR(need)}`;
+      $("trophyModalDesc").textContent = (t.desc || "") + progressLine;
+      $("trophyModalMini").textContent = unlocked ? "Trophée débloqué" : "Trophée verrouillé";
+
+      // When opening from history, OK just closes (doesn't consume queue)
+      __trophyQueue = [];
+      const nextBtn = $("trophyModalNext");
+      if(nextBtn) nextBtn.style.display = "none";
+
+      // Set OK button to close (temporary override)
+      const ok = $("trophyModalOk");
+      if(ok){
+        ok.textContent = "Fermer";
+        ok.onclick = ()=>{ clearAllPendingAndClose(); ok.textContent="OK"; ok.onclick=null; };
+      }
+
+      modal.classList.remove("hidden");
     }
 
     // --- Modal / popup ---
@@ -1950,6 +1996,9 @@
     function clearAllPendingAndClose(){
       savePendingTrophies([]);
       __trophyQueue = [];
+      // Restore modal button label if it was overridden
+      const ok = $("trophyModalOk");
+      if(ok){ ok.textContent = "OK"; ok.onclick = null; }
       closeTrophyModal();
     }
 
