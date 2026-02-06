@@ -1661,6 +1661,29 @@
 
     let currentExoIdForLoad = null;
 
+
+    function rememberLoadInSession(session, exoId, v){
+      try{
+        if(!session || !exoId) return;
+        const items = session.items || [];
+        for(const it of items){
+          if(it?.id === exoId || it?.name === exoId){
+            it._usedLoad = v;
+          }
+        }
+      }catch(e){}
+    }
+
+    function captureCurrentInputToSessionLoads(){
+      try{
+        if(!currentExoIdForLoad) return;
+        const v = ($("loadInput")?.value || "").trim();
+        if(!v) return;
+        sessionLoadsUsed[currentExoIdForLoad] = v;
+        rememberLoadInSession(curSession, currentExoIdForLoad, v);
+      }catch(e){}
+    }
+
     function formatDateFR(iso){
       if(!iso) return "";
       const [y,m,d] = iso.split("-");
@@ -1709,6 +1732,7 @@
       saveLoad(currentExoIdForLoad, v);
       
       try{ sessionLoadsUsed[currentExoIdForLoad] = v; }catch(e){}
+      try{ rememberLoadInSession(curSession, currentExoIdForLoad, v); }catch(e){}
 updateLoadBadge();
       renderLoadHistory();
     }
@@ -1845,7 +1869,8 @@ updateLoadBadge();
           const reps = parseRepsToNumber(e?.reps || "");
           const exoId = e?.id || e?.name || "exo";
           // ✅ Priorité: charge saisie pendant CETTE séance, sinon dernière charge connue
-          const loadStr = (map[exoId] != null && String(map[exoId]).trim() !== "") ? map[exoId] : (getLastLoad(exoId) || "");
+          const loadStr = (e?._usedLoad != null && String(e._usedLoad).trim() !== "") ? e._usedLoad
+            : ((map[exoId] != null && String(map[exoId]).trim() !== "") ? map[exoId] : (getLastLoad(exoId) || ""));
           const kg = parseLoadToKg(loadStr);
           if(kg > 0) total += kg * reps * sets;
         });
