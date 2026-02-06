@@ -1707,7 +1707,9 @@
       const v = (input?.value || "").trim();
       if(!v) return;
       saveLoad(currentExoIdForLoad, v);
-      updateLoadBadge();
+      
+      try{ sessionLoadsUsed[currentExoIdForLoad] = v; }catch(e){}
+updateLoadBadge();
       renderLoadHistory();
     }
 
@@ -1833,22 +1835,25 @@
       return m ? Math.max(1, parseInt(m[1],10)) : 10;
     }
 
-    function computeSessionTonnageKg(session){
+    function computeSessionTonnageKg(session, usedLoads){
       try{
         const items = session?.items || [];
         let total = 0;
+        const map = (usedLoads && typeof usedLoads === "object") ? usedLoads : {};
         items.forEach(e=>{
           const sets = Number(e?.sets || 1);
           const reps = parseRepsToNumber(e?.reps || "");
-          const exoId = e.id || e.name || e?.icon || "exo";
-          const last = getLastLoad(exoId) || "";
-          const kg = parseLoadToKg(last);
+          const exoId = e?.id || e?.name || "exo";
+          // ✅ Priorité: charge saisie pendant CETTE séance, sinon dernière charge connue
+          const loadStr = (map[exoId] != null && String(map[exoId]).trim() !== "") ? map[exoId] : (getLastLoad(exoId) || "");
+          const kg = parseLoadToKg(loadStr);
           if(kg > 0) total += kg * reps * sets;
         });
         return Math.round(total);
       }catch(e){
         return 0;
       }
+    }
     }
 
     function getTrophyProgress(all){
@@ -1932,7 +1937,8 @@
     function computeTrophyCurrentValue(t, all){
       const prog = getTrophyProgress(all);
       return (t.type === "sessions") ? prog.sessions :
-             (t.type === "streak") ? prog.streak :
+             (t.type === "weeks") ? prog.weeksStreak :
+             (t.type === "streak") ? prog.streakDays :
              (t.type === "tonnageKg") ? prog.tonnageKg : 0;
     }
 
@@ -2169,7 +2175,7 @@
       const workouts = period.length;
       const timeSec = period.reduce((a,x)=>a+(x.durationSec||0),0);
       const sets = period.reduce((a,x)=>a+(x.setsCount||0),0);
-      const streak = computeStreakFromHistory(all);
+      const streak = computeWeeklyStreakFromHistory(all);
 
       $("kpiWorkouts").textContent = workouts;
       $("kpiWorkoutsSub").textContent = `sur ${historyRangeDays} semaines`;
@@ -2231,6 +2237,8 @@
     let workoutLogged = false;
 
     let curSession = null;
+    let sessionLoadsUsed = {}; // exoId -> charge utilisée pendant CETTE séance
+
     let seq = [];
     let idx = 0;
 
@@ -2491,7 +2499,8 @@ function buildSequence(session){
               sessionName: curSession?.name || "Séance",
               durationSec,
               exercisesCount,
-              setsCount
+              setsCount,
+              tonnageKg: computeSessionTonnageKg(curSession, sessionLoadsUsed)
             });
             saveWorkoutHistory(all.slice(0, 200)); // keep last 200
 
@@ -2633,6 +2642,8 @@ function buildSequence(session){
     function startSession(sessionId){
       __endSpoken = false;
       curSessionId = sessionId;
+      sessionLoadsUsed = {}; // reset
+
       curSession = (window.SESSIONS || {})[sessionId];
       workoutStartMs = Date.now();
       workoutLogged = false;
