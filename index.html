@@ -998,7 +998,7 @@
           <div class="kpiCard">
             <div class="kpiLabel">Streak</div>
             <div class="kpiValue" id="kpiStreak">—</div>
-            <div class="kpiSub">jours</div>
+            <div class="kpiSub">semaines</div>
           </div>
         </div>
 
@@ -1174,7 +1174,7 @@
   "Tu es sur le chemin pour devenir la meilleure version de toi-même.",
   "Aujourd’hui tu as gagné contre le canapé.",
   "Si c’était facile, tout le monde le ferait.",
-  "La discipline bat la motivation. Toujours.",
+  "La discipline bat la motivation. Tousemaines.",
   "Bravo. Tu peux maintenant marcher comme un robot avec fierté.",
   "Chaque répétition te rapproche de ton objectif.",
   "Train insane or remain the same.",
@@ -2089,7 +2089,7 @@
       const streak = computeStreakFromHistory(all);
 
       $("kpiWorkouts").textContent = workouts;
-      $("kpiWorkoutsSub").textContent = `sur ${historyRangeDays} jours`;
+      $("kpiWorkoutsSub").textContent = `sur ${historyRangeDays} semaines`;
       $("kpiTime").textContent = formatHhMmFromSec(timeSec);
       $("kpiSets").textContent = sets ? String(sets) : "—";
       $("kpiStreak").textContent = String(streak);
