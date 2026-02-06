@@ -1,104 +1,88 @@
-// Programme Force / EliteTraining - Service Worker
-// Update-friendly caching strategy (iOS PWA friendly)
+// programme-force PWA service worker (mise à jour propre)
+const CACHE_PREFIX = "programme-force";
+const CACHE_VERSION = "v2"; // <-- incrémente à chaque release: v3, v4...
+const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
-const CACHE_VERSION = "v2"; // <-- increment this on each release
-const CACHE_NAME = `programme-force-${CACHE_VERSION}`;
-const RUNTIME_CACHE = `programme-force-runtime-${CACHE_VERSION}`;
-
-const PRECACHE_URLS = [
+// App shell (petit et stable)
+const CORE = [
   "./",
   "./index.html",
   "./manifest.json",
   "./images.js",
   "./sessions.js",
   "./sessions_femme.js",
-  "./images/icon-192.png",
-  "./images/icon-512.png"
+  "./service-worker.js"
 ];
 
+// Install: precache core, but do NOT force activate (we let the app show the banner)
 self.addEventListener("install", (event) => {
-  self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_URLS)).catch(()=>{})
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE))
   );
 });
 
+// Activate: cleanup old caches + take control quickly
 self.addEventListener("activate", (event) => {
   event.waitUntil((async ()=>{
-    // Remove old caches
     const keys = await caches.keys();
     await Promise.all(
-      keys.map((k)=>{
-        if(k !== CACHE_NAME && k !== RUNTIME_CACHE){
-          return caches.delete(k);
-        }
-      })
+      keys
+        .filter(k => k.startsWith(CACHE_PREFIX + "-") && k !== CACHE_NAME)
+        .map(k => caches.delete(k))
     );
     await self.clients.claim();
   })());
 });
 
-// Allow the page to trigger immediate activation of an updated SW
+// Allow the page to trigger immediate activation
 self.addEventListener("message", (event) => {
   if(event?.data?.type === "SKIP_WAITING"){
     self.skipWaiting();
   }
 });
 
-async function networkFirst(request){
-  try{
-    const response = await fetch(request);
-    // Cache successful GETs
-    if(request.method === "GET" && response && response.status === 200){
-      const cache = await caches.open(CACHE_NAME);
-      cache.put(request, response.clone()).catch(()=>{});
-    }
-    return response;
-  }catch(e){
-    const cached = await caches.match(request);
-    return cached || caches.match("./index.html");
-  }
-}
-
-async function cacheFirst(request){
-  const cached = await caches.match(request);
-  if(cached) return cached;
-  try{
-    const response = await fetch(request);
-    if(request.method === "GET" && response && response.status === 200){
-      const cache = await caches.open(RUNTIME_CACHE);
-      cache.put(request, response.clone()).catch(()=>{});
-    }
-    return response;
-  }catch(e){
-    return cached;
-  }
-}
-
+// Fetch strategy:
+// - index.html (navigations): network-first (always try to get the latest), fallback to cache
+// - other: cache-first with runtime caching
 self.addEventListener("fetch", (event) => {
   const req = event.request;
-
-  // Only handle GET
-  if(req.method !== "GET") return;
-
   const url = new URL(req.url);
 
-  // Navigations: always try network first to get latest index.html (update-friendly)
-  if(req.mode === "navigate"){
-    event.respondWith(networkFirst(req));
+  // Only handle same-origin
+  if(url.origin !== self.location.origin) return;
+
+  const isHTMLNav = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html") || url.pathname.endsWith("/index.html");
+
+  if(isHTMLNav){
+    event.respondWith((async ()=>{
+      try{
+        const fresh = await fetch(req, { cache: "no-store" });
+        const cache = await caches.open(CACHE_NAME);
+        cache.put("./index.html", fresh.clone());
+        return fresh;
+      }catch(e){
+        const cached = await caches.match("./index.html");
+        return cached || caches.match("./") || Response.error();
+      }
+    })());
     return;
   }
 
-  // Only cache same-origin assets
-  if(url.origin === self.location.origin){
-    // HTML should be network-first (safety)
-    const accept = req.headers.get("accept") || "";
-    if(accept.includes("text/html")){
-      event.respondWith(networkFirst(req));
-      return;
-    }
+  // Cache-first for static assets (including images/gifs)
+  event.respondWith((async ()=>{
+    const cached = await caches.match(req);
+    if(cached) return cached;
 
-    // Assets: cache-first (fast)
-    event.respondWith(cacheFirst(req));
-  }
+    try{
+      const res = await fetch(req);
+      const cache = await caches.open(CACHE_NAME);
+      // Only cache successful basic/opaque responses
+      if(res && (res.status === 200 || res.type === "opaque")){
+        cache.put(req, res.clone());
+      }
+      return res;
+    }catch(e){
+      return cached || Response.error();
+    }
+  })());
 });
