@@ -61,7 +61,7 @@
       gap:10px;
       margin: 0 0 12px;
       padding: calc(10px + var(--safe-top)) 12px 10px;
-      border-radius: 18px;
+      border-radius: 22px;
       background: rgba(18,26,41,.72);
       border: 1px solid rgba(255,255,255,.10);
       box-shadow: 0 10px 22px rgba(0,0,0,.18);
@@ -86,7 +86,7 @@
     .brandWrap{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
       min-width: 0;
     }
     .appLogo{
@@ -157,7 +157,7 @@
     .btn.icon.big{width:64px; height:64px; border-radius:22px}
 
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
-    .sessionItem{display:flex; gap:12px; align-items:center}
+    .sessionItem{display:flex; gap:14px; align-items:center}
     .badge{
       font-size:12px; color:var(--muted);
       background: rgba(255,255,255,.06);
@@ -518,7 +518,7 @@
     .modal-content{
       width:min(520px, 100%);
       background: var(--card);
-      border-radius: 18px;
+      border-radius: 22px;
       box-shadow: var(--shadow);
       padding: 14px 14px 10px;
       border: 1px solid rgba(255,255,255,.06);
@@ -560,7 +560,7 @@
       color: inherit;
       padding: 8px 12px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 16px;
       white-space: nowrap;
       opacity: .85;
     }
@@ -582,7 +582,7 @@
     }
     .kpiCard{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.04);
     }
@@ -590,9 +590,9 @@
       border-color: rgba(10,20,40,.10);
       background: rgba(10,20,40,.03);
     }
-    .kpiLabel{ font-size: 12px; opacity:.75; }
+    .kpiLabel{ font-size: 13px; opacity:.75; }
     .kpiValue{ font-size: 24px; font-weight: 900; margin-top: 6px; letter-spacing:-.2px; }
-    .kpiSub{ font-size: 12px; opacity:.7; margin-top: 2px; }
+    .kpiSub{ font-size: 13px; opacity:.7; margin-top: 2px; }
 
     .charts{
       display:grid;
@@ -600,7 +600,7 @@
     }
     .chartCard{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.04);
     }
@@ -614,7 +614,7 @@
       display:flex;
       justify-content: space-between;
       align-items:center;
-      gap:12px;
+      gap:14px;
     }
     .dangerTextBtn{
       background: transparent;
@@ -634,7 +634,7 @@
     }
     .historyItem{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.03);
     }
@@ -649,7 +649,7 @@
       align-items: baseline;
     }
     .historyName{ font-weight: 950; letter-spacing:-.2px; }
-    .historyMeta{ opacity: .75; font-size: 12px; }
+    .historyMeta{ opacity: .75; font-size: 13px; }
     .historyLine{ margin-top: 6px; opacity: .90; font-size: 13px; }
 
 
@@ -671,7 +671,7 @@
       background: transparent;
       border: none;
       color: var(--danger);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
       padding: 6px 10px;
       border-radius: 12px;
@@ -709,76 +709,164 @@
     }
 
 
-    /* ===== PWA UPDATE BANNER ===== */
-    .updateBanner{
-      position: fixed;
-      left: 12px;
-      right: 12px;
-      top: calc(var(--safe-top) + 10px);
-      z-index: 10001;
-      display: none;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(20,20,20,.92);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 18px 60px rgba(0,0,0,.35);
+
+    /* ===== TROPHÉES ===== */
+    .trophySection{
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 22px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
     }
-    [data-theme="light"] .updateBanner{
-      background: rgba(255,255,255,.92);
-      border-color: rgba(10,20,40,.14);
-      box-shadow: 0 18px 60px rgba(10,20,40,.18);
+    [data-theme="light"] .trophySection{
+      border-color: rgba(10,20,40,.10);
+      background: rgba(10,20,40,.03);
     }
-    .updateBanner .txt{
+    .trophyHdr{
       display:flex;
-      flex-direction: column;
-      gap: 2px;
-      min-width: 0;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom: 10px;
     }
-    .updateBanner .txt .t1{
-      font-size: 13px;
+    .trophyHdr .trophyTitle{
+      font-size: 14px;
       font-weight: 950;
-      letter-spacing: -.2px;
-      line-height: 1.1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      margin: 0;
+      letter-spacing: .2px;
+      opacity: .92;
     }
-    .updateBanner .txt .t2{
+    .trophyHdr .trophyCount{
       font-size: 12px;
-      opacity: .78;
-      line-height: 1.2;
+      opacity: .75;
+      font-weight: 800;
       white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
     }
-    .updateBanner .actions{
+    .trophyGrid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:10px;
+    }
+    .trophyBadge{
       display:flex;
-      gap: 8px;
-      align-items: center;
+      flex-direction:column;
+      align-items:center;
+      gap:6px;
+      padding:10px 8px;
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      user-select:none;
+    }
+    [data-theme="light"] .trophyBadge{
+      border-color: rgba(10,20,40,.10);
+      background: rgba(10,20,40,.02);
+    }
+    .trophyBadge img{
+      width: 56px;
+      height: 56px;
+      object-fit: contain;
+      display:block;
+    }
+    .trophyBadge .trophyLbl{
+      font-size: 11px;
+      line-height: 1.1;
+      text-align:center;
+      opacity:.92;
+    }
+    .trophyBadge.locked{ opacity:.45; }
+    .trophyBadge.locked img{ filter: grayscale(1); }
+
+    /* ===== POPUP TROPHÉE (persistante) ===== */
+    .trophyModal.hidden{ display:none; }
+    .trophyModal{
+      position:fixed;
+      inset:0;
+      z-index: 10000;
+      background: rgba(0,0,0,.55);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: calc(var(--safe-top) + 16px) 16px calc(var(--safe-bot) + 16px);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+    .trophyModalCard{
+      width: min(460px, 100%);
+      border-radius: 26px;
+      background: rgba(18,26,41,.96);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow: 0 18px 60px rgba(0,0,0,.50);
+      padding: 16px 16px 14px;
+      position: relative;
+    }
+    [data-theme="light"] .trophyModalCard{
+      background: rgba(255,255,255,.96);
+      border-color: rgba(10,20,40,.14);
+      box-shadow: 0 18px 60px rgba(10,20,40,.20);
+    }
+    .trophyModalClose{
+      position:absolute;
+      top: 10px;
+      right: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      border: 0;
+      background: rgba(255,255,255,.10);
+      color: var(--text);
+      font-weight: 950;
+      font-size: 18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    [data-theme="light"] .trophyModalClose{ background: rgba(10,20,40,.06); }
+    .trophyModalTop{
+      display:flex;
+      gap:14px;
+      align-items:center;
+      padding-right: 44px;
+    }
+    .trophyModalTop img{
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
       flex: 0 0 auto;
     }
-    .updateBanner .btnMini{
-      border: 0;
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-weight: 950;
+    .trophyModalTxt{
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      min-width:0;
+    }
+    .trophyModalTxt .mini{
       font-size: 12px;
-      background: rgba(255,255,255,.12);
-      color: var(--text);
-      white-space: nowrap;
+      opacity: .75;
+      font-weight: 850;
+      letter-spacing: .2px;
     }
-    [data-theme="light"] .updateBanner .btnMini{
-      background: rgba(10,20,40,.08);
+    .trophyModalTxt .big{
+      font-size: 18px;
+      font-weight: 950;
+      letter-spacing: -.2px;
+      line-height: 1.05;
     }
-    .updateBanner .btnMini.primary{
-      background: linear-gradient(135deg, rgba(122,92,255,1), rgba(91,159,255,1));
-      color: #fff;
+    .trophyModalTxt .desc{
+      margin-top: 4px;
+      font-size: 13px;
+      opacity: .88;
+      line-height: 1.35;
+      white-space: pre-line;
     }
+    .trophyModalActions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top: 14px;
+    }
+    .trophyModalActions .btn{ box-shadow:none; }
+    .trophyModalActions .btn.secondary{ background: rgba(255,255,255,.08); }
 
 </style>
 
@@ -789,21 +877,7 @@
 </head>
 
 <body>
-  
-
-  <!-- PWA UPDATE BANNER -->
-  <div id="updateBanner" class="updateBanner" role="status" aria-live="polite">
-    <div class="txt">
-      <div class="t1">Mise à jour disponible</div>
-      <div class="t2">Appuie pour charger la dernière version.</div>
-    </div>
-    <div class="actions">
-      <button id="updateDismiss" class="btnMini" type="button" aria-label="Fermer">✕</button>
-      <button id="updateReload" class="btnMini primary" type="button">Mettre à jour</button>
-    </div>
-  </div>
-
-<div class="app">
+  <div class="app">
     <!-- TOPBAR -->
     <div class="topbar">
       <div class="brandWrap">
@@ -876,7 +950,7 @@
         </div>
         <div style="height:10px"></div>
         <div class="row">
-          <button class="btn wide" id="btnHistory"><span class="icoHistory" aria-hidden="true"></span>Ouvrir l'historique</button>
+          <button class="btn wide" id="btnHistory"><span class="icoHistory" aria-hidden="true"></span>Ouvrir l\'historique</button>
         </div>
       </div>
 
@@ -928,6 +1002,16 @@
           </div>
         </div>
 
+        <!-- TROPHÉES -->
+        <div class="trophySection" id="trophySection" style="display:none;">
+          <div class="trophyHdr">
+            <h3 class="trophyTitle">Trophées</h3>
+            <div class="trophyCount" id="trophyCount">0/6</div>
+          </div>
+          <div class="trophyGrid" id="trophyGrid"></div>
+        </div>
+
+        <div style="height:12px"></div>
         <div style="height:12px"></div>
 
         <div style="height:14px"></div>
@@ -1565,99 +1649,275 @@
     function saveWorkoutHistory(arr){
       localStorage.setItem(workoutHistKey(), JSON.stringify(arr));
     }
+    
+    /***********************
+     * TROPHÉES (per-user)
+     ***********************/
+    const TROPHY_KEY = ()=> ukey("trophies_v1");
+    const TROPHY_PENDING_KEY = ()=> ukey("trophies_pending_v1");
 
-    function formatDateShort(ts){
-      const d = new Date(ts);
-      return d.toLocaleDateString(undefined, { weekday:"short", day:"2-digit", month:"short" });
-    }
-    function formatHhMmFromSec(sec){
-      const m = Math.round((sec||0)/60);
-      const h = Math.floor(m/60);
-      const mm = m%60;
-      if(h<=0) return `${mm} min`;
-      return `${h}h${String(mm).padStart(2,"0")}`;
-    }
+    // Migration de clés (si tu as eu une version précédente)
+    function migrateTrophyStorageIfNeeded(){
+      try{
+        const cur = localStorage.getItem(TROPHY_KEY());
+        const curPending = localStorage.getItem(TROPHY_PENDING_KEY());
 
-    function computeStreakFromHistory(all){
-      const days = new Set(all.map(x=>{
-        const d = new Date(x.ts);
-        d.setHours(0,0,0,0);
-        return d.getTime();
-      }));
-      let streak = 0;
-      const cur = new Date();
-      cur.setHours(0,0,0,0);
-      while(days.has(cur.getTime())){
-        streak++;
-        cur.setDate(cur.getDate()-1);
-      }
-      return streak;
-    }
+        // Si déjà présent, rien à faire
+        if(cur && cur !== "{}") return;
 
-    function weeklyBuckets8(all){
-      const now = new Date();
-      now.setHours(0,0,0,0);
-      const buckets = Array.from({length:8}, ()=>({ workouts:0, timeSec:0 }));
+        const legacyKeys = [
+          ukey("coach_trophies_v1"),
+          "coach_trophies_v1",
+          ukey("coach_trophies"),
+          "coach_trophies"
+        ];
+        const legacyPendingKeys = [
+          ukey("coach_trophies_pending_v1"),
+          "coach_trophies_pending_v1",
+          ukey("coach_trophies_pending"),
+          "coach_trophies_pending"
+        ];
 
-      // bucket 0 oldest, 7 newest
-      for(let i=0;i<8;i++){
-        const start = new Date(now);
-        start.setDate(start.getDate() - (7*(7-i)) - 6);
-        const end = new Date(now);
-        end.setDate(end.getDate() - (7*(7-i)) + 1); // exclusive
-
-        all.forEach(x=>{
-          if(x.ts >= start.getTime() && x.ts < end.getTime()){
-            buckets[i].workouts += 1;
-            buckets[i].timeSec += (x.durationSec || 0);
+        for(const k of legacyKeys){
+          const v = localStorage.getItem(k);
+          if(v && v !== "{}"){
+            localStorage.setItem(TROPHY_KEY(), v);
+            break;
           }
+        }
+        if(!curPending){
+          for(const k of legacyPendingKeys){
+            const v = localStorage.getItem(k);
+            if(v){
+              localStorage.setItem(TROPHY_PENDING_KEY(), v);
+              break;
+            }
+          }
+        }
+      }catch(e){}
+    }
+
+    const TROPHIES = [
+      { id:"first_session", iconKey:"trophy_first", label:"Première séance",
+        title:"Première victoire",
+        desc:"Tu viens de terminer ta première séance.\nLe plus dur, c’était de commencer.",
+        type:"sessions", threshold:1
+      },
+      { id:"sessions_10", iconKey:"trophy_10", label:"10 séances",
+        title:"La régularité paie",
+        desc:"10 séances complétées.\nCe n’est plus un hasard, c’est une habitude.",
+        type:"sessions", threshold:10
+      },
+      { id:"sessions_30", iconKey:"trophy_30", label:"30 séances",
+        title:"Discipline installée",
+        desc:"30 séances au compteur.\nTu construis quelque chose de solide.",
+        type:"sessions", threshold:30
+      },
+      { id:"ton_1", iconKey:"trophy_1t", label:"1 tonne",
+        title:"Première tonne",
+        desc:"1 000 kg soulevés au total.\nBrique après brique, tu progresses.",
+        type:"tonnageKg", threshold:1000
+      },
+      { id:"ton_10", iconKey:"trophy_10t", label:"10 tonnes",
+        title:"Force cumulée",
+        desc:"10 tonnes déplacées.\nLa constance fait la différence.",
+        type:"tonnageKg", threshold:10000
+      },
+      { id:"streak_7", iconKey:"trophy_streak7", label:"7 jours",
+        title:"Semaine parfaite",
+        desc:"7 jours d’affilée sans abandon.\nLe mental suit le corps.",
+        type:"streak", threshold:7
+      },
+    ];
+
+    function loadTrophyState(){
+      migrateTrophyStorageIfNeeded();
+      try{ return JSON.parse(localStorage.getItem(TROPHY_KEY()) || "{}") || {}; }
+      catch(e){ return {}; }
+    }
+    function saveTrophyState(s){
+      localStorage.setItem(TROPHY_KEY(), JSON.stringify(s || {}));
+    }
+
+    function loadPendingTrophies(){
+      migrateTrophyStorageIfNeeded();
+      try{
+        const arr = JSON.parse(localStorage.getItem(TROPHY_PENDING_KEY()) || "[]");
+        return Array.isArray(arr) ? arr : [];
+      }catch(e){ return []; }
+    }
+    function savePendingTrophies(ids){
+      localStorage.setItem(TROPHY_PENDING_KEY(), JSON.stringify(Array.isArray(ids) ? ids : []));
+    }
+
+    function parseLoadToKg(loadStr){
+      const s = String(loadStr||"").trim().toLowerCase();
+      if(!s) return 0;
+
+      // "2x16" => 32
+      let m = s.match(/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/);
+      if(m){
+        const a = parseFloat(m[1]);
+        const b = parseFloat(m[2]);
+        if(isFinite(a) && isFinite(b)) return a*b;
+      }
+
+      // "80kg" or "80" => 80
+      m = s.match(/(\d+(?:\.\d+)?)/);
+      if(m){
+        const v = parseFloat(m[1]);
+        return isFinite(v) ? v : 0;
+      }
+      return 0;
+    }
+
+    function parseRepsToNumber(reps){
+      const s = String(reps||"").trim();
+      // "8-10" -> 8, "12" -> 12
+      const m = s.match(/(\d+)/);
+      return m ? Math.max(1, parseInt(m[1],10)) : 10;
+    }
+
+    function computeSessionTonnageKg(session){
+      try{
+        const items = session?.items || [];
+        let total = 0;
+        items.forEach(e=>{
+          const sets = Number(e?.sets || 1);
+          const reps = parseRepsToNumber(e?.reps || "");
+          const exoId = e.id || e.name || e?.icon || "exo";
+          const last = getLastLoad(exoId) || "";
+          const kg = parseLoadToKg(last);
+          if(kg > 0) total += kg * reps * sets;
         });
+        return Math.round(total);
+      }catch(e){ return 0; }
+    }
+
+    function getTrophyProgress(all){
+      const sessions = all.length;
+      const streak = computeStreakFromHistory(all);
+      const tonnageKg = all.reduce((a,x)=>a + (Number(x.tonnageKg||0) || 0), 0);
+      return { sessions, streak, tonnageKg };
+    }
+
+    function evaluateAndUnlockTrophies(all){
+      const state = loadTrophyState();
+      const prog = getTrophyProgress(all);
+
+      const newly = [];
+      TROPHIES.forEach(t=>{
+        if(state[t.id]) return;
+
+        const cur =
+          (t.type === "sessions") ? prog.sessions :
+          (t.type === "streak") ? prog.streak :
+          (t.type === "tonnageKg") ? prog.tonnageKg : 0;
+
+        if(cur >= t.threshold){
+          state[t.id] = true;
+          newly.push(t.id);
+        }
+      });
+
+      if(newly.length){
+        saveTrophyState(state);
+        const pending = loadPendingTrophies();
+        const merged = [...pending, ...newly].filter((v,i,a)=>a.indexOf(v)===i);
+        savePendingTrophies(merged);
       }
-      return buckets;
+      return newly;
     }
 
-    function drawBars(canvas, values){
-      if(!canvas) return;
-      const ctx = canvas.getContext("2d");
-      const dpr = window.devicePixelRatio || 1;
+    function renderTrophiesSection(all){
+      const section = $("trophySection");
+      const grid = $("trophyGrid");
+      const count = $("trophyCount");
+      if(!section || !grid || !count) return;
 
-      // Resize (this also clears the canvas)
-      const cw = Math.max(1, Math.floor(canvas.clientWidth));
-      const ch = Math.max(1, Math.floor(canvas.clientHeight));
-      canvas.width  = Math.floor(cw * dpr);
-      canvas.height = Math.floor(ch * dpr);
+      const state = loadTrophyState();
+      const unlocked = TROPHIES.filter(t=>!!state[t.id]).length;
 
-      // Reset transform + clear
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.clearRect(0,0,canvas.width,canvas.height);
+      section.style.display = "block";
+      count.textContent = `${unlocked}/${TROPHIES.length}`;
 
-      const w = canvas.width, h = canvas.height;
-      const pad = 10*dpr;
-      const max = Math.max(1, ...values);
-      const n = values.length;
-      const gap = 6*dpr;
-      const barW = (w - pad*2 - gap*(n-1)) / n;
+      grid.innerHTML = "";
+      TROPHIES.forEach(t=>{
+        const div = document.createElement("div");
+        div.className = "trophyBadge" + (state[t.id] ? "" : " locked");
 
-      const color = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff";
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.9;
+        const img = document.createElement("img");
+        img.alt = t.label;
+        setImg(img, t.iconKey);
 
-      for(let i=0;i<n;i++){
-        const v = values[i];
-        const bh = (h - pad*2) * (v / max);
-        const x = pad + i*(barW+gap);
-        const y = h - pad - bh;
-        ctx.fillRect(x, y, barW, bh);
+        const lbl = document.createElement("div");
+        lbl.className = "trophyLbl";
+        lbl.textContent = t.label;
+
+        div.appendChild(img);
+        div.appendChild(lbl);
+        grid.appendChild(div);
+      });
+    }
+
+    // --- Modal / popup ---
+    let __trophyQueue = [];
+    function openTrophyModalFor(id){
+      const t = TROPHIES.find(x=>x.id===id);
+      if(!t) return;
+
+      const modal = $("trophyModal");
+      if(!modal) return;
+
+      setImg($("trophyModalImg"), t.iconKey);
+      $("trophyModalTitle").textContent = t.title || t.label;
+      $("trophyModalDesc").textContent = t.desc || "";
+      $("trophyModalMini").textContent = "Nouveau trophée débloqué";
+
+      const nextBtn = $("trophyModalNext");
+      if(nextBtn) nextBtn.style.display = (__trophyQueue.length > 0) ? "inline-flex" : "none";
+
+      modal.classList.remove("hidden");
+    }
+
+    function closeTrophyModal(){
+      const modal = $("trophyModal");
+      if(modal) modal.classList.add("hidden");
+    }
+
+    function showPendingTrophiesModal(){
+      const ids = loadPendingTrophies();
+      if(!ids.length) return;
+
+      __trophyQueue = ids.slice(1);
+      openTrophyModalFor(ids[0]);
+    }
+
+    function consumeCurrentAndShowNext(){
+      const ids = loadPendingTrophies();
+      if(ids.length) ids.shift();
+      savePendingTrophies(ids);
+
+      if(__trophyQueue.length){
+        const nextId = __trophyQueue.shift();
+        openTrophyModalFor(nextId);
+        const nextBtn = $("trophyModalNext");
+        if(nextBtn) nextBtn.style.display = (__trophyQueue.length > 0) ? "inline-flex" : "none";
+      }else{
+        closeTrophyModal();
       }
-      ctx.globalAlpha = 1;
     }
 
-    let historyRangeDays = 30;
-
-    function filterHistoryByRange(all){
-      const cutoff = Date.now() - historyRangeDays*24*3600*1000;
-      return all.filter(x => x.ts >= cutoff);
+    function clearAllPendingAndClose(){
+      savePendingTrophies([]);
+      __trophyQueue = [];
+      closeTrophyModal();
     }
+
+    $("trophyModalClose")?.addEventListener("click", clearAllPendingAndClose);
+    $("trophyModalOk")?.addEventListener("click", consumeCurrentAndShowNext);
+    $("trophyModalNext")?.addEventListener("click", consumeCurrentAndShowNext);
+
 
     function renderHistory(){
       const all = loadWorkoutHistory();
@@ -1678,11 +1938,16 @@
       drawBars($("chartWorkouts"), buckets.map(b=>b.workouts));
       drawBars($("chartTime"), buckets.map(b=>Math.round((b.timeSec||0)/60))); // minutes
 
+      // Render trophies grid
+      try{ renderTrophiesSection(all); }catch(e){}
+
       const list = $("historyList");
       if(!list) return;
 
       if(period.length === 0){
         list.innerHTML = `<div class="historyItem"><div class="historyName">Aucune séance</div><div class="historyMeta">Commence une séance, elle apparaîtra ici.</div></div>`;
+        // Render trophies even if no sessions in selected range
+        try{ renderTrophiesSection(all); }catch(e){}
         return;
       }
 
@@ -1980,9 +2245,13 @@ function buildSequence(session){
               sessionName: curSession?.name || "Séance",
               durationSec,
               exercisesCount,
-              setsCount
+              setsCount,
+              tonnageKg: computeSessionTonnageKg(curSession)
             });
             saveWorkoutHistory(all.slice(0, 200)); // keep last 200
+
+            // Check & unlock trophies (store pending for popup later)
+            try{ evaluateAndUnlockTrophies(all); }catch(e){}
           }
           workoutLogged = true;
         }
@@ -2155,9 +2424,11 @@ function buildSequence(session){
     $("btnFinishHome")?.addEventListener("click", ()=>{
       stopTimer();
       showScreen("home");
+      // Popup trophées (persistante) après retour accueil
+      try{ setTimeout(()=>showPendingTrophiesModal(), 120); }catch(e){}
     });
 
-    $("btnBackHome").addEventListener("click", ()=>{
+$("btnBackHome").addEventListener("click", ()=>{
       stopTimer();
       // Log partial workout if user exits early (optional)
       if(!workoutLogged && workoutStartMs){
@@ -2290,55 +2561,54 @@ function buildSequence(session){
       }
     });
 
+    
+    // ===== PWA / Service Worker (mise à jour propre) =====
     if("serviceWorker" in navigator){
-      let refreshing = false;
+      (async ()=>{
+        try{
+          const reg = await navigator.serviceWorker.register("./service-worker.js");
 
-      function showUpdateBanner(reg){
-        const b = $("updateBanner");
-        if(!b) return;
-        b.style.display = "flex";
+          // Force an update check on each launch (helps iOS)
+          try{ await reg.update(); }catch(e){}
 
-        $("updateDismiss")?.addEventListener("click", ()=>{
-          b.style.display = "none";
-        }, { once:true });
+          const banner = $("updateBanner");
+          const btnNow = $("updateNow");
+          const btnLater = $("updateLater");
 
-        $("updateReload")?.addEventListener("click", ()=>{
-          // Ask the waiting SW to activate immediately
-          try{
-            if(reg && reg.waiting){
-              reg.waiting.postMessage({ type: "SKIP_WAITING" });
-            }
-          }catch(e){}
-        });
-      }
+          function showBanner(){ if(banner) banner.style.display = "block"; }
+          function hideBanner(){ if(banner) banner.style.display = "none"; }
 
-      navigator.serviceWorker.register("./service-worker.js").then((reg)=>{
-        // If there's already an updated SW waiting, show banner immediately
-        if(reg.waiting){
-          showUpdateBanner(reg);
-        }
+          if(reg.waiting) showBanner();
 
-        reg.addEventListener("updatefound", ()=>{
-          const nw = reg.installing;
-          if(!nw) return;
-          nw.addEventListener("statechange", ()=>{
-            // When the new SW is installed and we already have a controller, it's an update
-            if(nw.state === "installed" && navigator.serviceWorker.controller){
-              showUpdateBanner(reg);
-            }
+          reg.addEventListener("updatefound", ()=>{
+            const nw = reg.installing;
+            if(!nw) return;
+            nw.addEventListener("statechange", ()=>{
+              if(nw.state === "installed" && navigator.serviceWorker.controller){
+                showBanner();
+              }
+            });
           });
-        });
-      }).catch(()=>{});
 
-      navigator.serviceWorker.addEventListener("controllerchange", ()=>{
-        if(refreshing) return;
-        refreshing = true;
-        // Reload to get the new assets
-        window.location.reload();
-      });
+          btnLater?.addEventListener("click", hideBanner);
+
+          btnNow?.addEventListener("click", ()=>{
+            const w = reg.waiting;
+            if(w) w.postMessage({ type:"SKIP_WAITING" });
+          });
+
+          let refreshing = false;
+          navigator.serviceWorker.addEventListener("controllerchange", ()=>{
+            if(refreshing) return;
+            refreshing = true;
+            hideBanner();
+            location.reload();
+          });
+
+        }catch(e){}
+      })();
     }
-
-    let lastTouchEnd = 0;
+let lastTouchEnd = 0;
     document.addEventListener("touchend", function (event) {
       const now = Date.now();
       if (now - lastTouchEnd <= 300) event.preventDefault();
@@ -2368,6 +2638,50 @@ function buildSequence(session){
         <input type="checkbox" id="coachToggleModal">
         <span class="slider"></span>
       </label>
+    </div>
+  </div>
+</div>
+
+
+<!-- TROPHY POPUP -->
+<div id="trophyModal" class="trophyModal hidden" role="dialog" aria-modal="true" aria-label="Trophée débloqué">
+  <div class="trophyModalCard">
+    <button class="trophyModalClose" id="trophyModalClose" aria-label="Fermer">✕</button>
+
+    <div class="trophyModalTop">
+      <img id="trophyModalImg" alt="Trophée" />
+      <div class="trophyModalTxt">
+        <div class="mini" id="trophyModalMini">Nouveau trophée</div>
+        <div class="big" id="trophyModalTitle">—</div>
+        <div class="desc" id="trophyModalDesc">—</div>
+      </div>
+    </div>
+
+    <div class="trophyModalActions">
+      <button class="btn secondary" id="trophyModalNext" style="display:none;">Suivant</button>
+      <button class="btn primary" id="trophyModalOk">OK</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- PWA UPDATE BANNER -->
+<div id="updateBanner" style="display:none; position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:9999;">
+  <div style="
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    padding:12px 12px; border-radius:18px;
+    border:1px solid rgba(255,255,255,.14);
+    background: rgba(20,20,20,.92);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    box-shadow: 0 18px 60px rgba(0,0,0,.35);
+  ">
+    <div style="display:flex; flex-direction:column; gap:2px; min-width:0;">
+      <div style="font-weight:950; font-size:13px; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Mise à jour disponible</div>
+      <div style="font-size:12px; opacity:.8;">Appuie pour charger la nouvelle version.</div>
+    </div>
+    <div style="display:flex; gap:8px; flex:0 0 auto;">
+      <button class="btn secondary" id="updateLater" style="padding:10px 12px;">Plus tard</button>
+      <button class="btn primary" id="updateNow" style="padding:10px 12px;">Mettre à jour</button>
     </div>
   </div>
 </div>
