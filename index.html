@@ -2682,11 +2682,15 @@ function buildSequence(session){
     }
 
     function stepPrev(){
+      // Count typed load even if not explicitly saved
+      try{ captureCurrentInputToSessionLoads(); }catch(e){}
       stopTimer();
       idx = Math.max(0, idx-1);
       renderWorkoutStep();
     }
     function stepNext(){
+      // Count typed load even if not explicitly saved
+      try{ captureCurrentInputToSessionLoads(); }catch(e){}
       stopTimer();
       // allow going one step past the last item to reach the end screen
       idx = Math.min(seq.length, idx+1);
