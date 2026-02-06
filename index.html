@@ -61,7 +61,7 @@
       gap:10px;
       margin: 0 0 12px;
       padding: calc(10px + var(--safe-top)) 12px 10px;
-      border-radius: 18px;
+      border-radius: 22px;
       background: rgba(18,26,41,.72);
       border: 1px solid rgba(255,255,255,.10);
       box-shadow: 0 10px 22px rgba(0,0,0,.18);
@@ -86,7 +86,7 @@
     .brandWrap{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:14px;
       min-width: 0;
     }
     .appLogo{
@@ -157,7 +157,7 @@
     .btn.icon.big{width:64px; height:64px; border-radius:22px}
 
     .grid{display:grid; grid-template-columns:1fr; gap:12px}
-    .sessionItem{display:flex; gap:12px; align-items:center}
+    .sessionItem{display:flex; gap:14px; align-items:center}
     .badge{
       font-size:12px; color:var(--muted);
       background: rgba(255,255,255,.06);
@@ -518,7 +518,7 @@
     .modal-content{
       width:min(520px, 100%);
       background: var(--card);
-      border-radius: 18px;
+      border-radius: 22px;
       box-shadow: var(--shadow);
       padding: 14px 14px 10px;
       border: 1px solid rgba(255,255,255,.06);
@@ -560,7 +560,7 @@
       color: inherit;
       padding: 8px 12px;
       border-radius: 999px;
-      font-size: 14px;
+      font-size: 16px;
       white-space: nowrap;
       opacity: .85;
     }
@@ -582,7 +582,7 @@
     }
     .kpiCard{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.04);
     }
@@ -590,9 +590,9 @@
       border-color: rgba(10,20,40,.10);
       background: rgba(10,20,40,.03);
     }
-    .kpiLabel{ font-size: 12px; opacity:.75; }
+    .kpiLabel{ font-size: 13px; opacity:.75; }
     .kpiValue{ font-size: 24px; font-weight: 900; margin-top: 6px; letter-spacing:-.2px; }
-    .kpiSub{ font-size: 12px; opacity:.7; margin-top: 2px; }
+    .kpiSub{ font-size: 13px; opacity:.7; margin-top: 2px; }
 
     .charts{
       display:grid;
@@ -600,7 +600,7 @@
     }
     .chartCard{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.04);
     }
@@ -614,7 +614,7 @@
       display:flex;
       justify-content: space-between;
       align-items:center;
-      gap:12px;
+      gap:14px;
     }
     .dangerTextBtn{
       background: transparent;
@@ -634,7 +634,7 @@
     }
     .historyItem{
       border: 1px solid rgba(255,255,255,.10);
-      border-radius: 18px;
+      border-radius: 22px;
       padding: 12px;
       background: rgba(255,255,255,.03);
     }
@@ -649,7 +649,7 @@
       align-items: baseline;
     }
     .historyName{ font-weight: 950; letter-spacing:-.2px; }
-    .historyMeta{ opacity: .75; font-size: 12px; }
+    .historyMeta{ opacity: .75; font-size: 13px; }
     .historyLine{ margin-top: 6px; opacity: .90; font-size: 13px; }
 
 
@@ -671,7 +671,7 @@
       background: transparent;
       border: none;
       color: var(--danger);
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 900;
       padding: 6px 10px;
       border-radius: 12px;
@@ -706,138 +706,6 @@
       border-left: 2px solid currentColor;
       transform: translateX(-1px);
       opacity: .8;
-    }
-
-
-    /* ===== TROPHÉES ===== */
-    .trophy-section{
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    [data-theme="light"] .trophy-section{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.03);
-    }
-    .trophy-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      margin-bottom: 10px;
-    }
-    .trophy-title h3{
-      margin:0;
-      font-size:14px;
-      font-weight: 950;
-      letter-spacing:.2px;
-      opacity:.92;
-    }
-    .trophy-count{
-      font-size:12px;
-      opacity:.75;
-      font-weight: 850;
-    }
-    .trophy-grid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:10px;
-    }
-    .trophy-badge{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      padding:10px 8px;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      user-select:none;
-    }
-    [data-theme="light"] .trophy-badge{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.02);
-    }
-    .trophy-badge img{
-      width: 44px;
-      height: 44px;
-      object-fit: contain;
-    }
-    .trophy-badge .label{
-      font-size: 11px;
-      line-height: 1.1;
-      text-align:center;
-      opacity: .92;
-    }
-    .trophy-badge.locked{
-      opacity: .42;
-    }
-    .trophy-badge.locked img{
-      filter: grayscale(1);
-    }
-
-    /* Toast animation (après retour accueil) */
-    .trophy-toast{
-      position: fixed;
-      left: 50%;
-      bottom: calc(16px + env(safe-area-inset-bottom));
-      transform: translateX(-50%) translateY(12px) scale(.98);
-      width: min(380px, calc(100vw - 24px));
-      z-index: 9999;
-
-      display:flex;
-      align-items:center;
-      gap:12px;
-
-      padding: 12px 14px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(18,26,41,.92);
-      box-shadow: 0 18px 44px rgba(0,0,0,.35);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-
-      opacity: 0;
-      pointer-events:none;
-    }
-    [data-theme="light"] .trophy-toast{
-      background: rgba(255,255,255,.92);
-      border-color: rgba(10,20,40,.12);
-      box-shadow: 0 18px 44px rgba(10,20,40,.14);
-    }
-    .trophy-toast.show{
-      animation: trophyToastInOut 2.8s ease forwards;
-    }
-    .trophy-toast img{
-      width: 46px;
-      height: 46px;
-      object-fit: contain;
-      flex: 0 0 auto;
-    }
-    .trophy-toast .txt{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width: 0;
-    }
-    .trophy-toast .txt .small{
-      font-size: 12px;
-      opacity: .8;
-      font-weight: 800;
-    }
-    .trophy-toast .txt .big{
-      font-size: 14px;
-      font-weight: 950;
-      letter-spacing: -.1px;
-    }
-
-    @keyframes trophyToastInOut{
-      0%   { opacity:0; transform: translateX(-50%) translateY(14px) scale(.98); }
-      12%  { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
-      80%  { opacity:1; transform: translateX(-50%) translateY(0) scale(1); }
-      100% { opacity:0; transform: translateX(-50%) translateY(10px) scale(.99); }
     }
 
 </style>
@@ -975,14 +843,6 @@
         </div>
 
         <div style="height:12px"></div>
-
-                <div class="trophy-section" id="trophySection" style="display:none;">
-          <div class="trophy-title">
-            <h3>Trophées</h3>
-            <span class="trophy-count" id="trophyCount">—</span>
-          </div>
-          <div class="trophy-grid" id="trophyGrid"></div>
-        </div>
 
         <div style="height:14px"></div>
 
@@ -1706,230 +1566,6 @@
       ctx.globalAlpha = 1;
     }
 
-    /***********************
-     * Trophées (PNG) — safe & isolé
-     * - Déblocage: fin de séance (écran "Félicitations")
-     * - Animation: uniquement après retour à l'accueil
-     ***********************/
-    const TROPHY_KEY = "coach_trophies_v1";
-    const TROPHY_PENDING_KEY = "coach_trophies_pending_v1";
-
-    const TROPHIES = [
-      { id:"first_session", iconKey:"trophy_first", title:"Première séance",      short:"1 séance",        type:"sessions",  threshold:1 },
-      { id:"sessions_10",   iconKey:"trophy_10",    title:"10 séances",           short:"10 séances",      type:"sessions",  threshold:10 },
-      { id:"sessions_30",   iconKey:"trophy_30",    title:"30 séances",           short:"30 séances",      type:"sessions",  threshold:30 },
-      { id:"ton_1",         iconKey:"trophy_1t",    title:"1 tonne soulevée",     short:"1 000 kg",        type:"tonnageKg", threshold:1000 },
-      { id:"ton_10",        iconKey:"trophy_10t",   title:"10 tonnes soulevées",  short:"10 000 kg",       type:"tonnageKg", threshold:10000 },
-      { id:"streak7",       iconKey:"trophy_streak7", title:"Streak 7 jours",     short:"7 jours",         type:"streak",    threshold:7 }
-    ];
-
-    function loadTrophiesState(){
-      try{
-        return JSON.parse(localStorage.getItem(ukey(TROPHY_KEY)) || "{}") || {};
-      }catch(e){
-        return {};
-      }
-    }
-    function saveTrophiesState(state){
-      try{
-        localStorage.setItem(ukey(TROPHY_KEY), JSON.stringify(state || {}));
-      }catch(e){}
-    }
-    function getPendingTrophies(){
-      try{
-        const raw = localStorage.getItem(ukey(TROPHY_PENDING_KEY)) || "[]";
-        const arr = JSON.parse(raw);
-        return Array.isArray(arr) ? arr : [];
-      }catch(e){
-        return [];
-      }
-    }
-    function setPendingTrophies(arr){
-      try{
-        localStorage.setItem(ukey(TROPHY_PENDING_KEY), JSON.stringify(Array.isArray(arr) ? arr : []));
-      }catch(e){}
-    }
-
-    // Heuristique de parsing de charge (kg) depuis l'input utilisateur
-    // Ex:
-    // - "80kg" => 80
-    // - "2x16" => 32 (haltères)
-    // - "16" => 16
-    function parseLoadKg(str){
-      const s = String(str || "").trim().toLowerCase();
-      if(!s) return 0;
-
-      const nums = (s.match(/(\d+(\.\d+)?)/g) || []).map(n=>parseFloat(n)).filter(n=>isFinite(n));
-      if(nums.length === 0) return 0;
-
-      // format haltères "2x16" ou "2*16"
-      if((s.includes("x") || s.includes("*")) && nums.length >= 2 && !s.includes("kg") && !s.includes("lb")){
-        const a = nums[0], b = nums[1];
-        if(a > 0 && b > 0) return a * b;
-      }
-
-      // sinon: premier nombre comme kg
-      return nums[0] > 0 ? nums[0] : 0;
-    }
-
-    function parseRepsCount(reps){
-      // "8-10" => 8 ; "12" => 12 ; null => 0
-      const m = String(reps || "").match(/(\d+)/);
-      if(!m) return 0;
-      const n = parseInt(m[1], 10);
-      return isFinite(n) ? n : 0;
-    }
-
-    function computeSessionTonnageKg(session){
-      try{
-        const items = session?.items || [];
-        let total = 0;
-
-        items.forEach(e=>{
-          if(!e) return;
-          // Ignore time-based / cardio
-          const reps = parseRepsCount(e.reps);
-          const sets = parseInt(e.sets || 0, 10) || 0;
-          if(reps <= 0 || sets <= 0) return;
-
-          const exoId = e.id || e.name || "";
-          const last = exoId ? getLastLoad(exoId) : "";
-          const kg = parseLoadKg(last);
-          if(kg <= 0) return;
-
-          total += kg * reps * sets;
-        });
-
-        return Math.round(total);
-      }catch(e){
-        return 0;
-      }
-    }
-
-    function renderTrophiesSection(allHistory){
-      const sec = $("trophySection");
-      const grid = $("trophyGrid");
-      const count = $("trophyCount");
-      if(!sec || !grid || !count) return;
-
-      const state = loadTrophiesState();
-      const unlockedCount = TROPHIES.reduce((a,t)=>a + (state[t.id] ? 1 : 0), 0);
-      count.textContent = `${unlockedCount}/${TROPHIES.length}`;
-      sec.style.display = "";
-
-      const map = window.IMG || {};
-      grid.innerHTML = "";
-
-      TROPHIES.forEach(t=>{
-        const unlocked = !!state[t.id];
-        const card = document.createElement("div");
-        card.className = "trophy-badge" + (unlocked ? "" : " locked");
-
-        const img = document.createElement("img");
-        img.alt = t.title;
-        img.src = map[t.iconKey] || "";
-
-        const lab = document.createElement("div");
-        lab.className = "label";
-        lab.textContent = t.short;
-
-        card.appendChild(img);
-        card.appendChild(lab);
-        grid.appendChild(card);
-      });
-    }
-
-    function evaluateTrophiesFromHistory(allHistory){
-      const state = loadTrophiesState();
-      const newlyUnlocked = [];
-
-      const totalSessions = allHistory.length;
-      const totalTonnage = allHistory.reduce((a,x)=>a + (x.tonnageKg || 0), 0);
-      const streak = computeStreakFromHistory(allHistory);
-
-      function shouldUnlock(t){
-        if(t.type === "sessions") return totalSessions >= t.threshold;
-        if(t.type === "tonnageKg") return totalTonnage >= t.threshold;
-        if(t.type === "streak") return streak >= t.threshold;
-        return false;
-      }
-
-      TROPHIES.forEach(t=>{
-        if(!state[t.id] && shouldUnlock(t)){
-          state[t.id] = true;
-          newlyUnlocked.push(t.id);
-        }
-      });
-
-      if(newlyUnlocked.length){
-        saveTrophiesState(state);
-      }
-
-      return newlyUnlocked;
-    }
-
-    function queuePendingTrophies(ids){
-      if(!ids || !ids.length) return;
-      const pending = getPendingTrophies();
-      const next = pending.concat(ids.filter(id=>!pending.includes(id)));
-      setPendingTrophies(next);
-    }
-
-    function showPendingTrophyToasts(){
-      const pending = getPendingTrophies();
-      if(!pending.length) return;
-
-      // consume immediately so it doesn't replay
-      setPendingTrophies([]);
-
-      const map = window.IMG || {};
-      const toast = document.createElement("div");
-      toast.className = "trophy-toast";
-      toast.innerHTML = `
-        <img alt="Trophée" />
-        <div class="txt">
-          <div class="small">Nouveau trophée débloqué</div>
-          <div class="big">—</div>
-        </div>
-      `;
-      document.body.appendChild(toast);
-
-      const img = toast.querySelector("img");
-      const big = toast.querySelector(".big");
-
-      const byId = Object.fromEntries(TROPHIES.map(t=>[t.id, t]));
-
-      let i = 0;
-      const playOne = ()=>{
-        const id = pending[i];
-        const t = byId[id];
-        if(!t){
-          i++;
-          if(i < pending.length) return playOne();
-          toast.remove();
-          return;
-        }
-        if(img) img.src = map[t.iconKey] || "";
-        if(big) big.textContent = t.title;
-
-        // trigger animation
-        toast.classList.remove("show");
-        // reflow
-        void toast.offsetHeight;
-        toast.classList.add("show");
-
-        i++;
-        if(i < pending.length){
-          setTimeout(playOne, 2900);
-        }else{
-          setTimeout(()=>toast.remove(), 2900);
-        }
-      };
-
-      // slight delay to ensure we are on home screen visually
-      setTimeout(playOne, 120);
-    }
-
     let historyRangeDays = 30;
 
     function filterHistoryByRange(all){
@@ -1956,11 +1592,16 @@
       drawBars($("chartWorkouts"), buckets.map(b=>b.workouts));
       drawBars($("chartTime"), buckets.map(b=>Math.round((b.timeSec||0)/60))); // minutes
 
+      // Render trophies grid
+      try{ renderTrophiesSection(all); }catch(e){}
+
       const list = $("historyList");
       if(!list) return;
 
       if(period.length === 0){
         list.innerHTML = `<div class="historyItem"><div class="historyName">Aucune séance</div><div class="historyMeta">Commence une séance, elle apparaîtra ici.</div></div>`;
+        // Render trophies even if no sessions in selected range
+        try{ renderTrophiesSection(all); }catch(e){}
         return;
       }
 
@@ -2261,12 +1902,6 @@ function buildSequence(session){
               setsCount
             });
             saveWorkoutHistory(all.slice(0, 200)); // keep last 200
-
-            // Déblocage trophées (on stocke en pending, toast seulement après retour accueil)
-            try{
-              const newIds = evaluateTrophiesFromHistory(all);
-              queuePendingTrophies(newIds);
-            }catch(e){}
           }
           workoutLogged = true;
         }
@@ -2439,8 +2074,6 @@ function buildSequence(session){
     $("btnFinishHome")?.addEventListener("click", ()=>{
       stopTimer();
       showScreen("home");
-      // Animation trophées (uniquement après retour accueil)
-      try{ showPendingTrophyToasts(); }catch(e){}
     });
 
     $("btnBackHome").addEventListener("click", ()=>{
