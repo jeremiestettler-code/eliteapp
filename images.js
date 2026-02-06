@@ -118,5 +118,13 @@
     wu_squat: "images/warmup_bodyweight_squat.gif",
     wu_tspine_open: "images/wu_tspine_open.gif",
     wu_wrist_shoulder: "images/wu_wrist_shoulder.gif",
+    // ===== TROPHÉES =====
+    trophy_first:   "images/trophies/trophy_first.png",
+    trophy_10:      "images/trophies/trophy_10.png",
+    trophy_30:      "images/trophies/trophy_30.png",
+    trophy_1t:      "images/trophies/trophy_1t.png",
+    trophy_10t:     "images/trophies/trophy_10t.png",
+    trophy_streak7: "images/trophies/trophy_streak7.png",
+
   };
 })();
