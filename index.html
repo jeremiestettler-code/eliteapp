@@ -1953,6 +1953,7 @@
 
       // When opening from history, OK just closes (doesn't consume queue)
       __trophyQueue = [];
+      __trophyInfoMode = true;
       const nextBtn = $("trophyModalNext");
       if(nextBtn) nextBtn.style.display = "none";
 
@@ -1960,7 +1961,7 @@
       const ok = $("trophyModalOk");
       if(ok){
         ok.textContent = "Fermer";
-        ok.onclick = ()=>{ clearAllPendingAndClose(); ok.textContent="OK"; ok.onclick=null; };
+        
       }
 
       modal.classList.remove("hidden");
@@ -1968,7 +1969,9 @@
 
     // --- Modal / popup ---
     let __trophyQueue = [];
+    let __trophyInfoMode = false;
     function openTrophyModalFor(id){
+      __trophyInfoMode = false;
       const t = TROPHIES.find(x=>x.id===id);
       if(!t) return;
 
@@ -1979,6 +1982,10 @@
       $("trophyModalTitle").textContent = t.title || t.label;
       $("trophyModalDesc").textContent = t.desc || "";
       $("trophyModalMini").textContent = "Nouveau trophée débloqué";
+
+      // Ensure modal buttons are in "reward" mode
+      const ok = $("trophyModalOk");
+      if(ok){ ok.textContent = "OK"; ok.onclick = null; }
 
       const nextBtn = $("trophyModalNext");
       if(nextBtn) nextBtn.style.display = (__trophyQueue.length > 0) ? "inline-flex" : "none";
@@ -2017,6 +2024,7 @@
     }
 
     function clearAllPendingAndClose(){
+      __trophyInfoMode = false;
       savePendingTrophies([]);
       __trophyQueue = [];
       // Restore modal button label if it was overridden
@@ -2026,7 +2034,10 @@
     }
 
     $("trophyModalClose")?.addEventListener("click", clearAllPendingAndClose);
-    $("trophyModalOk")?.addEventListener("click", consumeCurrentAndShowNext);
+    $("trophyModalOk")?.addEventListener("click", ()=>{
+      if(__trophyInfoMode){ clearAllPendingAndClose(); return; }
+      consumeCurrentAndShowNext();
+    });
     $("trophyModalNext")?.addEventListener("click", consumeCurrentAndShowNext);
 
 
