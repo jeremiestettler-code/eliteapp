@@ -125,6 +125,10 @@
     trophy_1t:      "images/trophies/trophy_1t.png",
     trophy_10t:     "images/trophies/trophy_10t.png",
     trophy_streak7: "images/trophies/trophy_streak7.png",
+    trophy_weeks_3:  "images/trophies/trophy_weeks_3.png",
+    trophy_weeks_10: "images/trophies/trophy_weeks_10.png",
+    trophy_weeks_26: "images/trophies/trophy_weeks_26.png",
+    trophy_weeks_52: "images/trophies/trophy_weeks_52.png",
 
   };
 })();

@@ -1006,7 +1006,7 @@
         <div class="trophySection" id="trophySection" style="display:none;">
           <div class="trophyHdr">
             <h3 class="trophyTitle">Trophées</h3>
-            <div class="trophyCount" id="trophyCount">0/6</div>
+            <div class="trophyCount" id="trophyCount">0/9</div>
           </div>
           <div class="trophyGrid" id="trophyGrid"></div>
         </div>
@@ -1719,7 +1719,7 @@
     const TROPHY_PENDING_KEY = ()=> ukey("trophies_pending_v1");
 
     const TROPHIES = [
-      { id:"first_session", iconKey:"trophy_first", label:"Première séance",
+{ id:"first_session", iconKey:"trophy_first", label:"Première séance",
         title:"Première victoire",
         desc:"Tu viens de terminer ta première séance.\nLe plus dur, c’était de commencer.",
         type:"sessions", threshold:1
@@ -1744,11 +1744,26 @@
         desc:"10 tonnes déplacées.\nLa constance fait la différence.",
         type:"tonnageKg", threshold:10000
       },
-      { id:"streak_7", iconKey:"trophy_streak7", label:"7 jours",
-        title:"Semaine parfaite",
-        desc:"7 jours d’affilée sans abandon.\nLe mental suit le corps.",
-        type:"streak", threshold:7
-      },
+{ id:"weeks_3", iconKey:"trophy_weeks_3", label:"3 semaines",
+  title:"Le rythme est lancé",
+  desc:"3 semaines avec au moins une séance.\nLa régularité commence à s’installer.",
+  type:"weeks", threshold:3
+},
+{ id:"weeks_10", iconKey:"trophy_weeks_10", label:"10 semaines",
+  title:"Habitude solide",
+  desc:"10 semaines actives.\nTu tiens le cap.",
+  type:"weeks", threshold:10
+},
+{ id:"weeks_26", iconKey:"trophy_weeks_26", label:"26 semaines",
+  title:"Mi-année de constance",
+  desc:"26 semaines actives.\nLa constance devient ta norme.",
+  type:"weeks", threshold:26
+},
+{ id:"weeks_52", iconKey:"trophy_weeks_52", label:"52 semaines",
+  title:"Année complète",
+  desc:"52 semaines actives.\nTu as construit une vraie discipline.",
+  type:"weeks", threshold:52
+},
     ];
 
     function loadTrophyState(){
@@ -1815,9 +1830,10 @@
 
     function getTrophyProgress(all){
       const sessions = all.length;
-      const streak = computeStreakFromHistory(all);
+      const streakDays = computeStreakFromHistory(all);
+      const weeksStreak = computeWeeklyStreakFromHistory(all);
       const tonnageKg = all.reduce((a,x)=>a + (Number(x.tonnageKg||0) || 0), 0);
-      return { sessions, streak, tonnageKg };
+      return { sessions, streakDays, weeksStreak, tonnageKg };
     }
 
     function evaluateAndUnlockTrophies(all){
@@ -1830,7 +1846,8 @@
 
         const cur =
           (t.type === "sessions") ? prog.sessions :
-          (t.type === "streak") ? prog.streak :
+          (t.type === "weeks") ? prog.weeksStreak :
+          (t.type === "streak") ? prog.streakDays :
           (t.type === "tonnageKg") ? prog.tonnageKg : 0;
 
         if(cur >= t.threshold){
@@ -1965,6 +1982,34 @@
       while(days.has(cur.getTime())){
         streak++;
         cur.setDate(cur.getDate()-1);
+      }
+      return streak;
+    }
+
+
+    function startOfISOWeekMs(ts){
+      const d = new Date(ts);
+      d.setHours(0,0,0,0);
+      // Convert JS Sunday=0..Saturday=6 to Monday=0..Sunday=6
+      const day = (d.getDay() + 6) % 7;
+      d.setDate(d.getDate() - day);
+      return d.getTime();
+    }
+
+    function computeWeeklyStreakFromHistory(all){
+      const weeks = new Set(all.map(x=>startOfISOWeekMs(x.ts)));
+      if(weeks.size === 0) return 0;
+
+      let latest = 0;
+      weeks.forEach(v=>{ if(v > latest) latest = v; });
+
+      let streak = 0;
+      let cur = latest;
+      const WEEK_MS = 7*24*3600*1000;
+
+      while(weeks.has(cur)){
+        streak++;
+        cur -= WEEK_MS;
       }
       return streak;
     }
