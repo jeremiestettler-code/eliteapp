@@ -677,6 +677,37 @@
       border-radius: 12px;
     }
     .historyDelBtn:active{ transform: translateY(1px); }
+    /* Icones (sans emojis) */
+    .icoHistory{
+      width: 18px;
+      height: 18px;
+      display:inline-block;
+      position: relative;
+      margin-right: 10px;
+      border: 2px solid currentColor;
+      border-radius: 6px;
+      opacity: .9;
+      flex: 0 0 auto;
+    }
+    .icoHistory::before{
+      content:"";
+      position:absolute;
+      left:4px; right:4px; top:4px; bottom:4px;
+      border-top: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      opacity: .8;
+    }
+    .icoHistory::after{
+      content:"";
+      position:absolute;
+      top:4px; bottom:4px;
+      left:50%;
+      width:0;
+      border-left: 2px solid currentColor;
+      transform: translateX(-1px);
+      opacity: .8;
+    }
+
 </style>
 
   <!-- Favicon -->
@@ -759,7 +790,7 @@
         </div>
         <div style="height:10px"></div>
         <div class="row">
-          <button class="btn wide" id="btnHistory">📊 Ouvrir l'historique</button>
+          <button class="btn wide" id="btnHistory"><span class="icoHistory" aria-hidden="true"></span>Ouvrir l\'historique</button>
         </div>
       </div>
 
@@ -1639,7 +1670,7 @@
         return;
       }
       running = true;
-      $("btnPlayPause").textContent = "⏸";
+      $("btnPlayPause").textContent = "II";
       let lastTick = Date.now();
 
       timer = setInterval(()=>{
