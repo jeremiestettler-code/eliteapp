@@ -3,7 +3,7 @@ const CACHE_PREFIX = "programme-force";
 const CACHE_VERSION = "v2"; // <-- incrémente à chaque release: v3, v4...
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
-// App shell (petit et stable)
+// App shell (stable)
 const CORE = [
   "./",
   "./index.html",
@@ -14,14 +14,12 @@ const CORE = [
   "./service-worker.js"
 ];
 
-// Install: precache core, but do NOT force activate (we let the app show the banner)
 self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => cache.addAll(CORE))
   );
 });
 
-// Activate: cleanup old caches + take control quickly
 self.addEventListener("activate", (event) => {
   event.waitUntil((async ()=>{
     const keys = await caches.keys();
@@ -34,26 +32,22 @@ self.addEventListener("activate", (event) => {
   })());
 });
 
-// Allow the page to trigger immediate activation
 self.addEventListener("message", (event) => {
   if(event?.data?.type === "SKIP_WAITING"){
     self.skipWaiting();
   }
 });
 
-// Fetch strategy:
-// - index.html (navigations): network-first (always try to get the latest), fallback to cache
-// - other: cache-first with runtime caching
+// Network-first for navigations (index.html), cache-first for everything else
 self.addEventListener("fetch", (event) => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // Only handle same-origin
   if(url.origin !== self.location.origin) return;
 
-  const isHTMLNav = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html") || url.pathname.endsWith("/index.html");
+  const isNav = req.mode === "navigate" || (req.headers.get("accept") || "").includes("text/html");
 
-  if(isHTMLNav){
+  if(isNav){
     event.respondWith((async ()=>{
       try{
         const fresh = await fetch(req, { cache: "no-store" });
@@ -61,14 +55,12 @@ self.addEventListener("fetch", (event) => {
         cache.put("./index.html", fresh.clone());
         return fresh;
       }catch(e){
-        const cached = await caches.match("./index.html");
-        return cached || caches.match("./") || Response.error();
+        return (await caches.match("./index.html")) || (await caches.match("./")) || Response.error();
       }
     })());
     return;
   }
 
-  // Cache-first for static assets (including images/gifs)
   event.respondWith((async ()=>{
     const cached = await caches.match(req);
     if(cached) return cached;
@@ -76,7 +68,6 @@ self.addEventListener("fetch", (event) => {
     try{
       const res = await fetch(req);
       const cache = await caches.open(CACHE_NAME);
-      // Only cache successful basic/opaque responses
       if(res && (res.status === 200 || res.type === "opaque")){
         cache.put(req, res.clone());
       }
