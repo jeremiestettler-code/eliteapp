@@ -1,6 +1,6 @@
 // programme-force PWA service worker (mise à jour propre)
 const CACHE_PREFIX = "programme-force";
-const CACHE_VERSION = "v4"; // <-- incrémente à chaque release: v3, v4...3
+const CACHE_VERSION = "v5"; // <-- incrémente à chaque release: v3, v4...3
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VERSION}`;
 
 // App shell (stable)
