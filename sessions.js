@@ -1,3 +1,4 @@
+
 // sessions.js
 // =======================
 // DONNÉES DES SÉANCES — Programme Force (compatibles index.html)
@@ -514,7 +515,191 @@ window.SESSIONS = {
     ]
   },
 
+/* =====================
+   SUMMER — intégré après H4
+   ===================== */
 
+  H5: {
+    name: "H5 — Push fondation",
+    warmup: [
+      { id:"WU-H5-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Monte doucement la température corporelle." },
+      { id:"WU-H5-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Cercles d’épaules + ouverture thoracique." },
+      { id:"WU-H5-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"2×15", seconds:60, desc:"Active le haut du dos." },
+      { id:"WU-H5-4", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Activation progressive." }
+    ],
+    cooldown: [
+      { id:"CD-H5-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s." },
+      { id:"CD-H5-2", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Relâche les deltoïdes." },
+      { id:"CD-H5-3", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"75 s", seconds:75, desc:"Respire lentement." }
+    ],
+    items: [
+      { id:"H5-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"6–8", work:45, rest:120 },
+      { id:"H5-2", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pectoraux + épaules", sets:3, reps:"8–10", work:45, rest:90 },
+      { id:"H5-3", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H5-4", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H5-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12", work:45, rest:60 },
+      { id:"H5-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 }
+    ]
+  },
+
+  H6: {
+    name: "H6 — Pull fondation",
+    warmup: [
+      { id:"WU-H6-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H6-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Active les omoplates." },
+      { id:"WU-H6-3", name:"Rotations externes", icon:"wu_external", todo:"2×12", seconds:60, desc:"Prépare les épaules." },
+      { id:"WU-H6-4", name:"Hip hinge léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Place le dos." }
+    ],
+    cooldown: [
+      { id:"CD-H6-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Redescends progressivement." },
+      { id:"CD-H6-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Relâche le haut du dos." },
+      { id:"CD-H6-3", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Amplitude confortable." }
+    ],
+    items: [
+      { id:"H6-1", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:4, reps:"8", work:45, rest:90 },
+      { id:"H6-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H6-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Grand dorsal", sets:3, reps:"10 / côté", work:45, rest:90 },
+      { id:"H6-4", name:"Reverse fly", icon:"reversefly", muscle:"Arrière d’épaules", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H6-5", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12", work:45, rest:60 },
+      { id:"H6-6", name:"Dead bug", icon:"deadbug", muscle:"Gainage profond", sets:3, reps:"10 / côté", work:45, rest:60 }
+    ]
+  },
+
+  H7: {
+    name: "H7 — Push intensification",
+    warmup: [
+      { id:"WU-H7-1", name:"Tapis de course léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Très facile." },
+      { id:"WU-H7-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"90 s", seconds:90, desc:"Prépare le pressing." },
+      { id:"WU-H7-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"2×15", seconds:60, desc:"Scapula actives." },
+      { id:"WU-H7-4", name:"Pompes tempo", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Descente lente." }
+    ],
+    cooldown: [
+      { id:"CD-H7-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme progressif." },
+      { id:"CD-H7-2", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Déverrouille la cage." },
+      { id:"CD-H7-3", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Relâche sans forcer." }
+    ],
+    items: [
+      { id:"H7-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:5, reps:"5", work:45, rest:120 },
+      { id:"H7-2", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:4, reps:"8", work:45, rest:90 },
+      { id:"H7-3", name:"Pompes pieds sur banc", icon:"pushup", muscle:"Pectoraux + triceps", sets:3, reps:"10–15", work:45, rest:75 },
+      { id:"H7-4", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:4, reps:"12", work:45, rest:60 },
+      { id:"H7-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"10–12", work:45, rest:60 },
+      { id:"H7-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"35 s / côté", type:"time", seconds:35, work:35, rest:60 }
+    ]
+  },
+
+  H8: {
+    name: "H8 — Pull intensification",
+    warmup: [
+      { id:"WU-H8-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Cardio progressif." },
+      { id:"WU-H8-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Active les dorsaux." },
+      { id:"WU-H8-3", name:"Face pull léger", icon:"wu_facepull", todo:"2×12", seconds:60, desc:"Prépare l’arrière d’épaule." },
+      { id:"WU-H8-4", name:"Hip hinge léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Prépare le gainage." }
+    ],
+    cooldown: [
+      { id:"CD-H8-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme le rythme." },
+      { id:"CD-H8-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Décompresse le haut du dos." },
+      { id:"CD-H8-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Amplitude douce." }
+    ],
+    items: [
+      { id:"H8-1", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:5, reps:"5", work:45, rest:105 },
+      { id:"H8-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:4, reps:"12–15", work:45, rest:60 },
+      { id:"H8-3", name:"Face pull", icon:"facepull_band", muscle:"Arrière épaules + posture", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H8-4", name:"Curl marteau", icon:"hammer", muscle:"Brachial + avant-bras", sets:3, reps:"10–12", work:45, rest:60 },
+      { id:"H8-5", name:"Farmer walk", icon:"farmer", muscle:"Grip + posture + gainage", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:90 },
+      { id:"H8-6", name:"Pallof press", icon:"pallof_press_band", muscle:"Core anti-rotation", sets:3, reps:"10 / côté", work:45, rest:60 }
+    ]
+  },
+
+  H9: {
+    name: "H9 — Spécial course",
+    warmup: [
+      { id:"WU-H9-1", name:"Rameur ou tapis léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Très progressif." },
+      { id:"WU-H9-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Ouvertures contrôlées." },
+      { id:"WU-H9-3", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Prépare les appuis." },
+      { id:"WU-H9-4", name:"Hip hinge", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Charnière hanche propre." }
+    ],
+    cooldown: [
+      { id:"CD-H9-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Récupération active." },
+      { id:"CD-H9-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Relâche le bassin." },
+      { id:"CD-H9-3", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Détends la chaîne postérieure haute." }
+    ],
+    items: [
+      { id:"H9-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance hanche", sets:4, reps:"15", work:45, rest:75 },
+      { id:"H9-2", name:"Hip thrust haltère", icon:"hip_thrust_db", muscle:"Fessiers", sets:3, reps:"12", work:45, rest:90 },
+      { id:"H9-3", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H9-4", name:"Fentes dynamiques", icon:"wu_lunge", muscle:"Appuis + mobilité", sets:3, reps:"10 / jambe", work:45, rest:60 },
+      { id:"H9-5", name:"Dead bug", icon:"deadbug", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 },
+      { id:"H9-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 }
+    ]
+  },
+
+  H10: {
+    name: "H10 — Haut du corps volume",
+    warmup: [
+      { id:"WU-H10-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Mise en route." },
+      { id:"WU-H10-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"90 s", seconds:90, desc:"Épaules libres." },
+      { id:"WU-H10-3", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Scapula actives." },
+      { id:"WU-H10-4", name:"Rotations externes", icon:"wu_external", todo:"2×12", seconds:60, desc:"Prépare le haut du corps." }
+    ],
+    cooldown: [
+      { id:"CD-H10-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Retour au calme." },
+      { id:"CD-H10-2", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Relâche les tensions." },
+      { id:"CD-H10-3", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"75 s", seconds:75, desc:"Respiration ample." }
+    ],
+    items: [
+      { id:"H10-1", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pectoraux", sets:4, reps:"10–12", work:45, rest:90 },
+      { id:"H10-2", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:4, reps:"10–12 / côté", work:45, rest:75 },
+      { id:"H10-3", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12–15", work:45, rest:60 },
+      { id:"H10-4", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12–15", work:45, rest:60 },
+      { id:"H10-5", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:4, reps:"15", work:45, rest:60 },
+      { id:"H10-6", name:"Reverse fly", icon:"reversefly", muscle:"Arrière d’épaules", sets:3, reps:"15", work:45, rest:60 }
+    ]
+  },
+
+  H11: {
+    name: "H11 — Haut du corps rapide",
+    warmup: [
+      { id:"WU-H11-1", name:"Tapis ou rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Rapide mais progressif." },
+      { id:"WU-H11-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Prépare le haut du corps." },
+      { id:"WU-H11-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"1×20", seconds:45, desc:"Active le haut du dos." }
+    ],
+    cooldown: [
+      { id:"CD-H11-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"90 s", seconds:90, desc:"Fais redescendre le rythme." },
+      { id:"CD-H11-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Déverrouille le thorax." }
+    ],
+    items: [
+      { id:"H11-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:3, reps:"8", work:45, rest:90 },
+      { id:"H11-2", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:3, reps:"8", work:45, rest:90 },
+      { id:"H11-3", name:"Landmine press", icon:"landminepress", muscle:"Épaules", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H11-4", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12", work:45, rest:45 },
+      { id:"H11-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12", work:45, rest:45 },
+      { id:"H11-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:45 }
+    ]
+  },
+
+  H12: {
+    name: "H12 — Full body runner",
+    warmup: [
+      { id:"WU-H12-1", name:"Tapis de course léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Montée progressive." },
+      { id:"WU-H12-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"75 s", seconds:75, desc:"Ouvre les hanches." },
+      { id:"WU-H12-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Prépare la poussée." },
+      { id:"WU-H12-4", name:"Hip hinge léger", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Place bien la chaîne postérieure." }
+    ],
+    cooldown: [
+      { id:"CD-H12-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Retour au calme complet." },
+      { id:"CD-H12-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"75 s", seconds:75, desc:"Relâche les appuis." },
+      { id:"CD-H12-3", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Respiration ample." }
+    ],
+    items: [
+      { id:"H12-1", name:"Landmine squat", icon:"landminesquat", muscle:"Jambes + tronc", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H12-2", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H12-3", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H12-4", name:"Kettlebell swing", icon:"swing", muscle:"Puissance hanche", sets:3, reps:"15", work:45, rest:75 },
+      { id:"H12-5", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"30 s / côté", type:"time", seconds:30, work:30, rest:45 },
+      { id:"H12-6", name:"Hollow hold", icon:"hollow_hold", muscle:"Core", sets:3, reps:"30 s", type:"time", seconds:30, work:30, rest:45 }
+    ]
+  },
 
   RUN_WU: {
     name: "Échauffement course — 7 à 10 km",
