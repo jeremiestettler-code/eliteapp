@@ -1,2983 +1,777 @@
-<!doctype html>
-<html lang="fr" data-theme="dark">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#0b0f17" />
-  <link rel="manifest" href="./manifest.json" />
-  <link rel="apple-touch-icon" href="./images/icon-192.png" />
-  <title>EliteTraining</title>
-
-  <style>
-    :root{
-      --bg:#0b0f17; --card:#121a29; --muted:#9fb0c7; --text:#eaf1ff;
-      --accent:#4ea1ff; --accent2:#00d4ff; --danger:#ff4e6a;
-      --btn:#1a2740; --btn2:#223454;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius: 20px;
-      --safe-top: env(safe-area-inset-top);
-      --safe-bot: env(safe-area-inset-bottom);
-    }
-    [data-theme="light"]{
-      --bg:#f5f7fb; --card:#ffffff; --muted:#4f6076; --text:#0b1526;
-      --accent:#1976ff; --accent2:#0aa3c2;
-      --btn:#e9eef9; --btn2:#dde7fb;
-      --shadow: 0 10px 30px rgba(10,20,40,.12);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:var(--bg);
-      color:var(--text);
-      -webkit-tap-highlight-color: transparent;
-      /* Safe-area top is handled by the sticky topbar so it stays clear of the
-         notch/status bar while scrolling (and avoids double-padding). */
-      padding-top: 0;
-      padding-bottom: var(--safe-bot);
-      overscroll-behavior: none;
-      touch-action: manipulation;
-    }
-    a{color:inherit}
-    .app{max-width:520px;margin:0 auto; padding:14px 14px 20px}
-    body.inWorkout .app{ padding-top:8px; padding-bottom:0; }
-    /* Safe-area for workout screen (topbar hidden) */
-    body.inWorkout{ padding-top: var(--safe-top); }
-
-
-    /* Global iOS-like topbar (logo + title + user + logout)
-       - Sticky at the top
-       - Adds safe-area padding so it never goes under the notch/status bar */
-    .topbar{
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      position: relative;
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px;
-      margin: 0 0 12px;
-      padding: calc(10px + var(--safe-top)) 12px 10px;
-      border-radius: 22px;
-      background: rgba(18,26,41,.72);
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow: 0 10px 22px rgba(0,0,0,.18);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-    .topbar::after{
-      content:"";
-      position:absolute;
-      left:12px; right:12px;
-      bottom:-0.5px;
-      height:0.5px;
-      background: rgba(255,255,255,.10);
-      pointer-events:none;
-    }
-    [data-theme="light"] .topbar{
-      background: rgba(255,255,255,.78);
-      border: 1px solid rgba(10,20,40,.10);
-      box-shadow: 0 10px 22px rgba(10,20,40,.10);
-    }
-
-    .brandWrap{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width: 0;
-    }
-    .appLogo{
-      width:42px;
-      height:42px;
-      border-radius: 14px;
-      box-shadow: 0 10px 18px rgba(0,0,0,.25);
-      flex: 0 0 auto;
-    }
-
-    .brand{
-      display:flex; flex-direction:column; gap:2px;
-    }
-    .brand .title{font-size:18px; font-weight:800; letter-spacing:.2px}
-    .brand .sub{font-size:12px; color:var(--muted)}
-
-    .coachSwitch{ display:flex; align-items:center; gap:10px; margin-right:10px; }
-    .coachLabel{ font-size:13px; color:var(--text); opacity:.9; }
-    .switch{ position:relative; display:inline-block; width:46px; height:26px; }
-    .switch input{ opacity:0; width:0; height:0; }
-    .slider{ position:absolute; cursor:pointer; top:0; left:0; right:0; bottom:0;
-      background: rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.14);
-      transition:.2s; border-radius:999px; }
-    .slider:before{ position:absolute; content:""; height:20px; width:20px; left:3px; top:50%;
-      transform:translateY(-50%); background: rgba(255,255,255,.92); transition:.2s; border-radius:999px; }
-    .switch input:checked + .slider{ background: rgba(59,130,246,.55); border-color: rgba(59,130,246,.65); }
-    .switch input:checked + .slider:before{ transform:translate(20px,-50%); }
-
-    .pill{
-      display:inline-flex; align-items:center; gap:8px;
-      padding:10px 12px; border-radius:999px;
-      background:var(--card); box-shadow: var(--shadow);
-      font-size:13px; color:var(--muted);
-    }
-    .pill button{
-      border:0; background:transparent; color:var(--text);
-      font-size:14px; font-weight:700;
-    }
-
-    .card{
-      background:var(--card);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:14px;
-    }
-    .stack{display:flex; flex-direction:column; gap:12px}
-    .row{display:flex; gap:10px; align-items:center}
-    .grow{flex:1}
-    .muted{color:var(--muted)}
-    .h1{font-size:22px; font-weight:900; margin:0 0 4px}
-    .h2{font-size:16px; font-weight:900; margin:0}
-    .small{font-size:12px}
-    .btn{
-      border:0; border-radius: 16px;
-      background:var(--btn);
-      color:var(--text);
-      padding:12px 14px;
-      font-weight:800;
-      box-shadow: var(--shadow);
-      display:inline-flex; align-items:center; justify-content:center; gap:10px;
-    }
-    .btn:active{transform: translateY(1px)}
-    .btn.primary{background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#061224}
-    .btn.danger{background:var(--danger)}
-    .btn.secondary{background:var(--btn2)}
-    .btn.wide{width:100%}
-    .btn.icon{width:54px; height:54px; padding:0; border-radius:18px}
-    .btn.icon.big{width:64px; height:64px; border-radius:22px}
-
-    .grid{display:grid; grid-template-columns:1fr; gap:12px}
-    .sessionItem{display:flex; gap:14px; align-items:center}
-    .badge{
-      font-size:12px; color:var(--muted);
-      background: rgba(255,255,255,.06);
-      padding:6px 10px; border-radius:999px;
-    }
-    [data-theme="light"] .badge{background: rgba(10,20,40,.06)}
-
-    .screen{display:none}
-    .screen.active{display:block}
-
-    .loginBox{margin-top:14px}
-    input{
-      width:100%;
-      border:0; outline:none;
-      background:var(--btn2);
-      color:var(--text);
-      padding:12px 14px;
-      border-radius:16px;
-      font-size:15px;
-    }
-
-    .timerBox{
-      display:flex; flex-direction:column; gap:10px;
-      align-items:center; justify-content:center;
-      padding: 14px;
-    }
-    .phase{
-      font-weight:900; letter-spacing:.3px;
-      padding:8px 12px; border-radius:999px;
-      background: rgba(255,255,255,.08);
-      color: var(--text);
-      font-size:12px;
-    }
-    [data-theme="light"] .phase{background: rgba(10,20,40,.06)}
-    .time{
-      font-variant-numeric: tabular-nums;
-      font-size: 62px;
-      font-weight: 950;
-      line-height: 1;
-      margin: 2px 0 0;
-    }
-    .subline{display:flex; gap:10px; flex-wrap:wrap; justify-content:center}
-
-    /* Next exercise overlay (inside GIF card) */
-    .nextOverlay{
-      position:absolute;
-      inset:0;
-      display:none;
-      z-index: 6;
-      overflow:hidden;
-      border-radius: 22px;
-    }
-    .nextOverlay.active{display:block}
-    .nextOverlay .nextBg{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      filter: grayscale(1) brightness(.55) contrast(.95);
-      transform: scale(1);
-    }
-    .nextOverlay::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      background: radial-gradient(ellipse at center, rgba(0,0,0,.10), rgba(0,0,0,.40));
-      pointer-events:none;
-    }
-    .nextOverlay .nextText{
-      position:absolute;
-      left:50%;
-      top:50%;
-      transform: translate(-50%,-50%);
-      width: min(86%, 520px);
-      padding: 18px 18px 16px;
-      border-radius: 24px;
-      background: rgba(10,18,30,.70);
-      border: 1px solid rgba(120,200,255,.35);
-      box-shadow: 0 16px 40px rgba(0,0,0,.45);
-      text-align:center;
-      backdrop-filter: blur(6px);
-    }
-    .nextOverlay .nextTag{
-      font-weight:950;
-      letter-spacing:.28em;
-      font-size:12px;
-      color: rgba(140,215,255,.95);
-      margin-bottom: 10px;
-    }
-    .nextOverlay .nextName{
-      font-size:20px;
-      font-weight:950;
-      letter-spacing:-.2px;
-      line-height:1.05;
-    }
-    .nextOverlay .nextLast{
-      margin-top: 10px;
-      font-size:18px;
-      font-weight:850;
-      color: rgba(255,255,255,.88);
-    }
-    .nextOverlay .nextLast:empty{ display:none; }
-
-    /* Workout redesign */
-    .srOnly{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
-    body.inWorkout .topbar{ display:none; }
-
-    /* ✅ IMPORTANT: plus de double safe-top ici */
-    #screenWorkout{ gap:5px; padding-top: 0; padding-bottom: calc(104px + var(--safe-bot)); }
-
-    .workoutHeader{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:10px; padding: 4px 2px;
-    }
-    .workoutBack{ width:48px; height:48px; border-radius:16px; }
-    /* iOS-like chevron back icon */
-    .chevronLeft{
-      position: relative;
-      width: 14px;
-      height: 24px;
-      display:block;
-    }
-    .chevronLeft::before,
-    .chevronLeft::after{
-      content:"";
-      position:absolute;
-      left:6px;
-      width:4px;
-      height:16px;
-      background: currentColor;
-      border-radius:4px;
-    }
-    .chevronLeft::before{
-      top:0;
-      transform: rotate(45deg);
-    }
-    .chevronLeft::after{
-      bottom:0;
-      transform: rotate(-45deg);
-    }
-    /* Center the chevron in the square button */
-    .workoutBack{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:0;
-    }
-
-    .workoutHeaderCenter{ flex:1; text-align:center; line-height:1.05; }
-    .workoutTitle{ font-size:26px; font-weight:950; letter-spacing:-.3px; }
-    .workoutSub{ margin-top:4px; font-size:14px; color:var(--muted); }
-    .workoutHeaderRight{ width:56px; display:flex; justify-content:flex-end; }
-
-    .workoutChips{ display:flex; justify-content:center; gap:8px; margin-top:2px; margin-bottom:0; }
-    .chip{
-      padding:8px 12px; border-radius:999px;
-      background: rgba(255,255,255,.07);
-      border:1px solid rgba(255,255,255,.10);
-      color:var(--text); font-size:13px;
-    }
-    [data-theme="light"] .chip{ background: rgba(10,20,40,.06); border-color: rgba(10,20,40,.10); }
-    .chipPhase{ color: #bfe3ff; border-color: rgba(120,210,255,.35); }
-    .chipCoach{ color: #bfffd0; border-color: rgba(90,240,140,.35); }
-    .chipSoft{ opacity:.95; }
-
-    .cardTight{ padding:10px; border-radius: 24px; }
-    .previewCard{
-      position:relative;
-      border-radius:22px;
-      overflow:hidden;
-      background: rgba(0,0,0,.15);
-      border:1px solid rgba(255,255,255,.08);
-    }
-    [data-theme="light"] .previewCard{ background: rgba(10,20,40,.04); border-color: rgba(10,20,40,.10); }
-    .previewCard img{ width:100%; height: min(280px, 34vh); object-fit:contain; background:#fff; display:block; }
-
-    .infoBtn{
-      position:absolute; right:10px; bottom:10px;
-      width:38px; height:38px; border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.35);
-      color:#fff; font-weight:900; font-size:16px;
-      display:flex; align-items:center; justify-content:center;
-    }
-    .infoBtn:active{ transform: scale(.98); }
-
-    .loadBadge{
-      position:absolute;
-      left:10px;
-      bottom:10px;
-      z-index:7;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.40);
-      color:#fff;
-      font-weight:900;
-      font-size:14px;
-      letter-spacing:-.2px;
-      backdrop-filter: blur(6px);
-    }
-    .loadBadge.hidden{ display:none; }
-
-    .setDots{display:flex; gap:10px; align-items:center; padding: 0; pointer-events:none;}
-    .dot{
-      width:10px; height:10px; border-radius:999px;
-      background: rgba(255,255,255,.20);
-      border:1px solid rgba(255,255,255,.10);
-    }
-    .dot.current{ background: rgba(80,170,255,.95); border-color: rgba(80,170,255,.65); }
-    .dot.done{ background: rgba(80,240,140,.95); border-color: rgba(80,240,140,.55); }
-
-    .infoOverlay{
-      position:absolute; inset:0;
-      background: rgba(0,0,0,.70);
-      display:none;
-      padding: 12px;
-    }
-    .infoOverlay.active{ display:flex; }
-    .infoInner{
-      width:100%;
-      border-radius:20px;
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(15,20,30,.85);
-      padding: 10px;
-      display:flex; flex-direction:column;
-      gap:8px;
-    }
-    .infoHdr{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    .infoTitle{ font-size:14px; font-weight:950; }
-    .infoBody{ color: rgba(255,255,255,.92); font-size:13px; line-height:1.3; white-space:pre-line; }
-    .infoClose{ padding: 8px 12px; border-radius: 14px; }
-
-    /* Load input + history in overlay */
-    .loadBox{
-      margin-top: 8px;
-      padding-top: 8px;
-      border-top: 1px solid rgba(255,255,255,.10);
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-    }
-    .loadRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-    .loadInput{
-      flex:1;
-      width:auto;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.10);
-      padding:10px 12px;
-      border-radius:14px;
-      color: var(--text);
-      font-size:14px;
-    }
-    .loadBtn{ padding:10px 12px; border-radius:14px; font-weight:900; }
-    .loadHist{ display:flex; flex-wrap:wrap; gap:8px; }
-    .loadChip{
-      padding:8px 10px;
-      border-radius:999px;
-      background: rgba(255,255,255,.08);
-      border:1px solid rgba(255,255,255,.10);
-      color: rgba(255,255,255,.92);
-      font-size:13px;
-      font-weight:850;
-    }
-    .loadChip:active{ transform: scale(.98); }
-
-    .todoCard{}
-    .todoHdr{ display:flex; align-items:center; justify-content:space-between; }
-    .todoLabel{ font-size:16px; font-weight:950; }
-    .todoMain{ margin-top:6px; font-size:32px; font-weight:950; letter-spacing:-.35px; }
-    .todoDesc{ margin-top:4px; font-size:13px; }
-    .todoChips{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-
-    .timerCard .timerBox{ padding: 8px 4px; }
-    .timerBoxFlat{ background: transparent; box-shadow:none; padding: 8px 4px; }
-    .timerBoxFlat .time{ font-size:56px; } /* ✅ plus petit */
-    .timerBoxFlat .subline{ text-align:center; margin-top: 4px; }
-
-    .btnbar{
-      position: sticky;
-      bottom: 0;
-      padding: 12px 0 calc(12px + var(--safe-bot));
-      background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
-      display:flex; justify-content:center; gap:14px;
-    }
-
-    /* Simplified bottom controls (fixed) */
-    body.inWorkout .btnbar{
-      position: fixed;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      z-index: 80;
-      gap: 14px;
-      padding: 16px 16px calc(16px + var(--safe-bot));
-      background: linear-gradient(180deg, rgba(0,0,0,0), var(--bg) 42%);
-    }
-    body.inWorkout .btnbar .ctrlBtn{
-      flex: 1;
-      height: 56px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,.08);
-      background: rgba(255,255,255,0.06);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-size: 18px;
-      color: rgba(255,255,255,.92);
-      box-shadow: 0 10px 26px rgba(0,0,0,.22);
-    }
-    body.inWorkout .btnbar .ctrlBtn:active{ transform: scale(.97); }
-    body.inWorkout .btnbar .ctrlBtn.primary{
-      background: linear-gradient(180deg, rgba(22,92,140,.55), rgba(10,42,64,.72));
-      border-color: rgba(120,200,255,.18);
-    }
-    body.inWorkout .btnbar #btnPrev,
-    body.inWorkout .btnbar #btnNext{
-      font-weight: 800;
-      letter-spacing: -4px;
-    }
-
-    /* --- Workout: bordures + spacing 5px + largeur cohérente --- */
-    body.inWorkout .card.cardTight{ width:100%; margin:0 0 5px 0; }
-    body.inWorkout .timerCard{ margin-bottom:0 !important; }
-    body.inWorkout .previewCard,
-    body.inWorkout .todoCard,
-    body.inWorkout .timerCard{
-      border: 1px solid rgba(255,255,255,.10);
-      box-shadow:
-        inset 0 0 0 1px rgba(255,255,255,.03),
-        0 10px 28px rgba(0,0,0,.35);
-    }
-    [data-theme="light"] body.inWorkout .previewCard,
-    [data-theme="light"] body.inWorkout .todoCard,
-    [data-theme="light"] body.inWorkout .timerCard{
-      border-color: rgba(10,20,40,.10);
-      box-shadow:
-        inset 0 0 0 1px rgba(10,20,40,.03),
-        0 10px 28px rgba(10,20,40,.12);
-    }
-    body.inWorkout #screenWorkout{ padding-top: 0 !important; }
-
-  
-    /* Settings modal */
-    .modal.hidden{display:none}
-    .modal{
-      position:fixed; inset:0;
-      background:rgba(0,0,0,.45);
-      display:flex; align-items:center; justify-content:center;
-      padding: calc(var(--safe-top) + 12px) 14px calc(var(--safe-bot) + 14px);
-      z-index: 9999;
-    }
-    .modal-content{
-      width:min(520px, 100%);
-      background: var(--card);
-      border-radius: 22px;
-      box-shadow: var(--shadow);
-      padding: 14px 14px 10px;
-      border: 1px solid rgba(255,255,255,.06);
-    }
-    .modal-header{
-      display:flex; align-items:center; justify-content:space-between;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    .setting-row{
-      display:flex; align-items:center; justify-content:space-between;
-      gap: 12px;
-      padding: 12px 6px;
-      border-top: 1px solid rgba(255,255,255,.06);
-    }
-    .icon-btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      width:42px; height:42px;
-      border-radius: 14px;
-      border: 0;
-      background: var(--btn);
-      color: var(--text);
-      box-shadow: none;
-      font-size: 18px;
-    }
-
-
-    /* ===== Historique ===== */
-    .historyFilters{
-      display:flex;
-      gap:8px;
-      overflow:auto;
-      padding-bottom: 6px;
-      -webkit-overflow-scrolling: touch;
-    }
-    .hchip{
-      border: 1px solid rgba(255,255,255,.14);
-      background: transparent;
-      color: inherit;
-      padding: 8px 12px;
-      border-radius: 999px;
-      font-size: 16px;
-      white-space: nowrap;
-      opacity: .85;
-    }
-    [data-theme="light"] .hchip{
-      border-color: rgba(10,20,40,.14);
-    }
-    .hchip.active{
-      opacity: 1;
-      border-color: rgba(255,255,255,.35);
-    }
-    [data-theme="light"] .hchip.active{
-      border-color: rgba(10,20,40,.28);
-    }
-
-    .kpiGrid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-    }
-    .kpiCard{
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 22px;
-      padding: 12px;
-      background: rgba(255,255,255,.04);
-    }
-    [data-theme="light"] .kpiCard{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.03);
-    }
-    .kpiLabel{ font-size: 13px; opacity:.75; }
-    .kpiValue{ font-size: 24px; font-weight: 900; margin-top: 6px; letter-spacing:-.2px; }
-    .kpiSub{ font-size: 13px; opacity:.7; margin-top: 2px; }
-
-    .charts{
-      display:grid;
-      gap:10px;
-    }
-    .chartCard{
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 22px;
-      padding: 12px;
-      background: rgba(255,255,255,.04);
-    }
-    [data-theme="light"] .chartCard{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.03);
-    }
-    .chartTitle{ font-size: 13px; opacity:.8; margin-bottom: 8px; }
-
-    .historyListHeader{
-      display:flex;
-      justify-content: space-between;
-      align-items:center;
-      gap:14px;
-    }
-    .dangerTextBtn{
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      font-size: 13px;
-      font-weight: 800;
-      padding: 8px 10px;
-      border-radius: 12px;
-    }
-    .dangerTextBtn:active{ transform: translateY(1px); }
-
-    .historyList{
-      display:flex;
-      flex-direction: column;
-      gap:10px;
-    }
-    .historyItem{
-      border: 1px solid rgba(255,255,255,.10);
-      border-radius: 22px;
-      padding: 12px;
-      background: rgba(255,255,255,.03);
-    }
-    [data-theme="light"] .historyItem{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.02);
-    }
-    .historyItemTop{
-      display:flex;
-      justify-content: space-between;
-      gap:10px;
-      align-items: baseline;
-    }
-    .historyName{ font-weight: 950; letter-spacing:-.2px; }
-    .historyMeta{ opacity: .75; font-size: 13px; }
-    .historyLine{ margin-top: 6px; opacity: .90; font-size: 13px; }
-
-
-    .finishBar{ margin-top: 10px; }
-    /* Slide sections on home */
-    .homeSection{
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transform: translateY(-4px);
-      transition: max-height 260ms ease, opacity 220ms ease, transform 220ms ease;
-    }
-    .homeSection.open{
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .historyDelBtn{
-      background: transparent;
-      border: none;
-      color: var(--danger);
-      font-size: 16px;
-      font-weight: 900;
-      padding: 6px 10px;
-      border-radius: 12px;
-    }
-    .historyDelBtn:active{ transform: translateY(1px); }
-    /* Icones (sans emojis) */
-    .icoHistory{
-      width: 18px;
-      height: 18px;
-      display:inline-block;
-      position: relative;
-      margin-right: 10px;
-      border: 2px solid currentColor;
-      border-radius: 6px;
-      opacity: .9;
-      flex: 0 0 auto;
-    }
-    .icoHistory::before{
-      content:"";
-      position:absolute;
-      left:4px; right:4px; top:4px; bottom:4px;
-      border-top: 2px solid currentColor;
-      border-bottom: 2px solid currentColor;
-      opacity: .8;
-    }
-    .icoHistory::after{
-      content:"";
-      position:absolute;
-      top:4px; bottom:4px;
-      left:50%;
-      width:0;
-      border-left: 2px solid currentColor;
-      transform: translateX(-1px);
-      opacity: .8;
-    }
-
-
-
-    /* ===== TROPHÉES ===== */
-    .trophySection{
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 22px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.04);
-    }
-    [data-theme="light"] .trophySection{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.03);
-    }
-    .trophyHdr{
-      display:flex;
-      align-items:baseline;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom: 10px;
-    }
-    .trophyHdr .trophyTitle{
-      font-size: 14px;
-      font-weight: 950;
-      margin: 0;
-      letter-spacing: .2px;
-      opacity: .92;
-    }
-    .trophyHdr .trophyCount{
-      font-size: 12px;
-      opacity: .75;
-      font-weight: 800;
-      white-space: nowrap;
-    }
-    .trophyGrid{
-      display:grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap:10px;
-    }
-    .trophyBadge{
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      gap:6px;
-      padding:10px 8px;
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      user-select:none;
-    }
-    [data-theme="light"] .trophyBadge{
-      border-color: rgba(10,20,40,.10);
-      background: rgba(10,20,40,.02);
-    }
-    .trophyBadge img{
-      width: 56px;
-      height: 56px;
-      object-fit: contain;
-      display:block;
-    }
-    .trophyBadge .trophyLbl{
-      font-size: 11px;
-      line-height: 1.1;
-      text-align:center;
-      opacity:.92;
-    }
-    .trophyBadge.locked{ opacity:.45; }
-    .trophyBadge.locked img{ filter: grayscale(1); }
-
-    /* ===== POPUP TROPHÉE (persistante) ===== */
-    .trophyModal.hidden{ display:none; }
-    .trophyModal{
-      position:fixed;
-      inset:0;
-      z-index: 10000;
-      background: rgba(0,0,0,.55);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding: calc(var(--safe-top) + 16px) 16px calc(var(--safe-bot) + 16px);
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-    .trophyModalCard{
-      width: min(460px, 100%);
-      border-radius: 26px;
-      background: rgba(18,26,41,.96);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow: 0 18px 60px rgba(0,0,0,.50);
-      padding: 16px 16px 14px;
-      position: relative;
-    }
-    [data-theme="light"] .trophyModalCard{
-      background: rgba(255,255,255,.96);
-      border-color: rgba(10,20,40,.14);
-      box-shadow: 0 18px 60px rgba(10,20,40,.20);
-    }
-    .trophyModalClose{
-      position:absolute;
-      top: 10px;
-      right: 10px;
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      border: 0;
-      background: rgba(255,255,255,.10);
-      color: var(--text);
-      font-weight: 950;
-      font-size: 18px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-    [data-theme="light"] .trophyModalClose{ background: rgba(10,20,40,.06); }
-    .trophyModalTop{
-      display:flex;
-      gap:14px;
-      align-items:center;
-      padding-right: 44px;
-    }
-    .trophyModalTop img{
-      width: 78px;
-      height: 78px;
-      object-fit: contain;
-      flex: 0 0 auto;
-    }
-    .trophyModalTxt{
-      display:flex;
-      flex-direction:column;
-      gap:4px;
-      min-width:0;
-    }
-    .trophyModalTxt .mini{
-      font-size: 12px;
-      opacity: .75;
-      font-weight: 850;
-      letter-spacing: .2px;
-    }
-    .trophyModalTxt .big{
-      font-size: 18px;
-      font-weight: 950;
-      letter-spacing: -.2px;
-      line-height: 1.05;
-    }
-    .trophyModalTxt .desc{
-      margin-top: 4px;
-      font-size: 13px;
-      opacity: .88;
-      line-height: 1.35;
-      white-space: pre-line;
-    }
-    .trophyModalActions{
-      display:flex;
-      justify-content:flex-end;
-      gap:10px;
-      margin-top: 14px;
-    }
-    .trophyModalActions .btn{ box-shadow:none; }
-    .trophyModalActions .btn.secondary{ background: rgba(255,255,255,.08); }
-
-
-    /* ===== TROPHY MODAL LARGE IMAGE ===== */
-    .trophyModalTop{
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      padding-right: 0;
-    }
-    .trophyModalTop img{
-      width: 140px;
-      height: 140px;
-      margin-bottom: 8px;
-    }
-    .trophyModalTxt{
-      align-items: center;
-    }
-    .trophyModalTxt .big{
-      font-size: 20px;
-    }
-    .trophyModalTxt .desc{
-      font-size: 14px;
-    }
-
-</style>
-
-  <!-- Favicon -->
-  <link rel="icon" href="images/icon-192.png" sizes="192x192">
-  <link rel="apple-touch-icon" href="images/icon-192.png">
-
-</head>
-
-<body>
-  <div class="app">
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="brandWrap">
-        <img class="appLogo" src="./images/icon-192.png" alt="EliteTraining" />
-        <div class="brand">
-          <div class="title" id="brandTitle">EliteTraining</div>
-          <div class="sub" id="userLine">Non connecté</div>
-        </div>
-      </div>
-      <div class="pill" id="pillAuth">
-        <span id="pillStatus">🔒</span>
-<button id="btnLogout" style="display:none">Déconnexion</button>
-      </div>
-    </div>
-
-    <!-- LOGIN -->
-    <section class="screen active" id="screenLogin">
-      <div class="card loginBox">
-        <div class="h1">Connexion</div>
-        <div class="muted small">Charge automatiquement le pack de séances via Firestore (Option B).</div>
-        <div style="height:12px"></div>
-        <div class="stack">
-          <input id="loginEmail" type="email" autocomplete="username" placeholder="Email" />
-          <input id="loginPass" type="password" autocomplete="current-password" placeholder="Mot de passe" />
-          <button class="btn primary wide" id="btnLogin">Se connecter</button>
-          <div class="muted small" id="loginMsg"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- HOME -->
-    <section class="screen" id="screenHome">
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h1">Séances</div>
-            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
-          </div>
-          <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="grid" id="sessionList"></div>
-      </div>
-
-      <div style="height:12px"></div>
-
-      <div class="card" id="legacySettingsCard" style="display:none">
-        <div class="row">
-          <div class="grow">
-            <div class="h2">Réglages</div>
-            <div class="muted small">Sauvegardés par utilisateur.</div>
-          </div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
-        </div>
-      </div>
-    
-
-      <div style="height:12px"></div>
-
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h2">Historique</div>
-            <div class="muted small">Stats + séances passées (local).</div>
-          </div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnHistory"><span class="icoHistory" aria-hidden="true"></span>Historique & réussites</button>
-        </div>
-      </div>
-
-    </section>
-
-    
-    <!-- HISTORY -->
-    <section class="screen" id="screenHistory">
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h1">Historique</div>
-            <div class="muted small">Tes dernières séances et quelques stats (stockées en local).</div>
-          </div>
-          <button id="btnBackFromHistory" class="btn secondary icon" aria-label="Retour" title="Retour">←</button>
-        </div>
-
-        <div style="height:12px"></div>
-
-        <div class="historyFilters" id="historyFilters">
-          <button class="hchip active" data-range="7">7j</button>
-          <button class="hchip" data-range="30">30j</button>
-          <button class="hchip" data-range="90">90j</button>
-          <button class="hchip" data-range="365">1 an</button>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div class="kpiGrid">
-          <div class="kpiCard">
-            <div class="kpiLabel">Séances</div>
-            <div class="kpiValue" id="kpiWorkouts">—</div>
-            <div class="kpiSub" id="kpiWorkoutsSub">sur la période</div>
-          </div>
-          <div class="kpiCard">
-            <div class="kpiLabel">Temps total</div>
-            <div class="kpiValue" id="kpiTime">—</div>
-            <div class="kpiSub">estimé</div>
-          </div>
-          <div class="kpiCard">
-            <div class="kpiLabel">Séries</div>
-            <div class="kpiValue" id="kpiSets">—</div>
-            <div class="kpiSub">total</div>
-          </div>
-          <div class="kpiCard">
-            <div class="kpiLabel">Streak</div>
-            <div class="kpiValue" id="kpiStreak">—</div>
-            <div class="kpiSub">semaines</div>
-          </div>
-        </div>
-
-        <!-- TROPHÉES -->
-        <div class="trophySection" id="trophySection" style="display:none;">
-          <div class="trophyHdr">
-            <h3 class="trophyTitle">Trophées</h3>
-            <div class="trophyCount" id="trophyCount">0/9</div>
-          </div>
-          <div class="trophyGrid" id="trophyGrid"></div>
-        </div>
-
-        <div style="height:12px"></div>
-        <div style="height:12px"></div>
-
-        <div style="height:14px"></div>
-
-        <div class="historyListHeader">
-          <div class="h2" style="margin:0">Dernières séances</div>
-          <button class="dangerTextBtn" id="btnClearHistory">Tout effacer</button>
-        </div>
-
-        <div style="height:10px"></div>
-
-        <div id="historyList" class="historyList"></div>
-      </div>
-    </section>
-
-<!-- WORKOUT -->
-    <section class="screen" id="screenWorkout">
-      <div class="workoutHeader">
-        <button class="btn secondary workoutBack" id="btnBackHome" aria-label="Retour"><span class="chevronLeft" aria-hidden="true"></span></button>
-
-        <div class="workoutHeaderCenter">
-          <div class="workoutTitle" id="workoutTitle">—</div>
-          <div class="workoutSub" id="workoutSubtitle">Exercice</div>
-        </div>
-
-        <div class="workoutHeaderRight">
-          <label class="switch" aria-label="Mode coach">
-            <input type="checkbox" id="coachSwitch2" />
-            <span class="slider"></span>
-          </label>
-        </div>
-      </div>
-
-      <div class="workoutChips">
-        <div class="chip chipPhase" id="chipPhase">Travail</div>
-        <div class="chip chipSeries" id="chipSeries">Série 1/1</div>
-        <div class="chip chipCoach" id="chipCoach">Coach : ON</div>
-      </div>
-
-      <div class="card cardTight">
-        <div class="previewCard" id="previewCard">
-          <img id="exoImg" alt="Exercice" />
-          <div class="loadBadge hidden" id="loadBadge">—</div>
-
-          <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
-
-          <div class="infoOverlay" id="infoOverlay" aria-hidden="true">
-            <div class="infoInner">
-              <div class="infoHdr">
-                <div class="infoTitle">Conseils</div>
-                <button class="btn secondary infoClose" id="btnInfoClose" aria-label="Fermer">✕</button>
-              </div>
-              <div class="infoBody" id="infoBody">—</div>
-
-              <div class="loadBox">
-                <div class="loadRow">
-                  <input class="loadInput" id="loadInput" placeholder="Charge (ex: 2x16, 80kg…)" />
-                  <button class="btn secondary loadBtn" id="btnLoadSave">OK</button>
-                </div>
-                <div class="loadHist" id="loadHist"></div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="nextOverlay" id="overlayNext" aria-hidden="true">
-            <img class="nextBg" id="nextImg" alt="Exercice suivant" />
-            <div class="nextText">
-              <div class="nextTag">EXERCICE SUIVANT</div>
-              <div class="nextName" id="nextName">—</div>
-              <div class="nextLast" id="nextLast"></div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <div class="card cardTight todoCard">
-        <div class="todoHdr">
-          <div class="todoLabel">À faire</div>
-          <div class="setDots" id="setDots" aria-label="Progression séries"></div>
-        </div>
-        <div class="todoMain" id="todoMain">—</div>
-        <div class="todoDesc muted" id="todoDesc">—</div>
-
-        <div class="todoChips">
-          <div class="chip chipSoft" id="chipMuscle">—</div>
-          <div class="chip chipSoft" id="chipRest">Repos: —</div>
-        </div>
-
-        <span class="srOnly" id="kpiReps">—</span>
-        <span class="srOnly" id="kpiRest">—</span>
-        <span class="srOnly" id="kpiLast">—</span>
-        <span class="srOnly" id="exoDesc">—</span>
-      </div>
-
-      <div class="card cardTight timerCard" id="timerCard">
-        <div class="timerBox timerBoxFlat">
-          <div class="time" id="timeText">00:00</div>
-          <!-- ✅ phaseHint supprimé (redondant) -->
-        </div>
-      </div>
-
-      <div class="finishBar hidden" id="finishBar" style="display:none;">
-        <button class="btn wide" id="btnFinishHome" aria-label="Retour accueil"><span class="chevronLeft" aria-hidden="true"></span>&nbsp;Retour accueil</button>
-      </div>
-
-
-      <div class="btnbar">
-        <button class="ctrlBtn" id="btnPrev" title="Précédent" aria-label="Précédent">◀◀</button>
-        <button class="ctrlBtn primary" id="btnPlayPause" title="Start / Pause" aria-label="Start / Pause">▶︎</button>
-        <button class="ctrlBtn" id="btnNext" title="Suivant" aria-label="Suivant">▶▶</button>
-      </div>
-    </section>
-  </div>
-
-  <script src="./images.js"></script>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyAPICbQrWgARovGaebUYYP-WwohxQAYtuw",
-      authDomain: "programme-force.firebaseapp.com",
-      projectId: "programme-force",
-      storageBucket: "programme-force.firebasestorage.app",
-      messagingSenderId: "1070910165788",
-      appId: "1:1070910165788:web:8212aec95671abfbdb60d9"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db   = getFirestore(app);
-
-    const $ = (id)=>document.getElementById(id);
-
-    const APP_TITLE = "EliteTraining";
-
-    /***********************
-     * Fin de séance (aléatoire)
-     ***********************/
-    const FIN_GIFS = [
-      "images/fin_seance.gif",
-      "images/fin_seance_2.gif",
-      "images/fin_seance_3.gif",
-      "images/fin_seance_4.gif",
-      "images/fin_seance_5.gif",
-      "images/fin_seance_6.gif",
-      "images/fin_seance_7.gif",
-      "images/fin_seance_8.gif",
-      // Ajoute d'autres GIFs ici, ex:
-      // "images/fin_seance_2.gif",
-      // "images/fin_seance_3.gif",
-    ];
-
-    const FIN_PHRASES = [
-  "No pain, no gain !",
-  "Tu es sur le chemin pour devenir la meilleure version de toi-même.",
-  "Aujourd’hui tu as gagné contre le canapé.",
-  "Si c’était facile, tout le monde le ferait.",
-  "La discipline bat la motivation. Tousemaines.",
-  "Bravo. Tu peux maintenant marcher comme un robot avec fierté.",
-  "Chaque répétition te rapproche de ton objectif.",
-  "Train insane or remain the same.",
-  "Les excuses ne brûlent pas de calories.",
-  "Encore une séance de plus dans la banque des gains."
-      // Ajoute d'autres phrases ici, ex:
-      // "Bravo ! Petit étirement et récupération, tu l'as mérité.",
-      // "Excellent travail 💪 Pense à bien respirer et à boire un verre d'eau.",
-    ];
-
-    function pickRandom(arr){
-      if(!Array.isArray(arr) || arr.length === 0) return null;
-      return arr[Math.floor(Math.random() * arr.length)];
-    }
-
-    let topbarUserText = "Non connecté";
-    const screens = { login:$("screenLogin"), home:$("screenHome"), history:$("screenHistory"), workout:$("screenWorkout") };
-
-    let currentUser = null;
-    function ukey(suffix){
-      const uid = currentUser?.uid || "anon";
-      return `${uid}__${suffix}`;
-    }
-
-
-    function migrateTrophyStorage(uid){
-      // Merge older keys into the current keys (non-destructive).
-      // This prevents losing trophies when we change suffix names between versions.
-      const newStateKey = `${uid}__trophies_v1`;
-      const newPendingKey = `${uid}__trophies_pending_v1`;
-
-      const legacyStateKeys = [
-        `${uid}__coach_trophies_v1`,
-        `${uid}__coach_trophies`,
-        `${uid}__trophies`,
-        `coach_trophies_v1`,
-        `coach_trophies`,
-        `coach_trophies_v1_${uid}`,
-      ];
-      const legacyPendingKeys = [
-        `${uid}__coach_trophies_pending_v1`,
-        `${uid}__coach_trophies_pending`,
-        `${uid}__trophies_pending`,
-        `coach_trophies_pending_v1`,
-        `coach_trophies_pending`,
-      ];
-
-      function readObj(key){
-        try{
-          const v = localStorage.getItem(key);
-          if(!v) return null;
-          const o = JSON.parse(v);
-          return (o && typeof o === "object" && !Array.isArray(o)) ? o : null;
-        }catch(e){ return null; }
-      }
-      function readArr(key){
-        try{
-          const v = localStorage.getItem(key);
-          if(!v) return null;
-          const a = JSON.parse(v);
-          return Array.isArray(a) ? a : null;
-        }catch(e){ return null; }
-      }
-
-      // State
-      let state = readObj(newStateKey) || {};
-      legacyStateKeys.forEach(k=>{
-        const o = readObj(k);
-        if(o){
-          state = { ...o, ...state }; // keep any newer flags
-        }
-      });
-      localStorage.setItem(newStateKey, JSON.stringify(state));
-
-      // Pending
-      let pending = readArr(newPendingKey) || [];
-      legacyPendingKeys.forEach(k=>{
-        const a = readArr(k);
-        if(a){
-          pending = [...a, ...pending];
-        }
-      });
-      // dedupe
-      pending = pending.filter((v,i,a)=>a.indexOf(v)===i);
-      localStorage.setItem(newPendingKey, JSON.stringify(pending));
-    }
-
-    function showScreen(name){
-      Object.values(screens).forEach(s=>s.classList.remove("active"));
-      screens[name].classList.add("active");
-
-      const bt = $("brandTitle");
-      if(bt) bt.textContent = (name === "workout") ? (curSession?.name || "Séance") : APP_TITLE;
-      const ul = $("userLine");
-      if(ul && name !== "workout") ul.textContent = topbarUserText;
-
-      document.body.classList.toggle("inWorkout", name === "workout");
-
-      const wrap = $("coachSwitchWrap");
-      if(wrap) wrap.style.display = "none";
-      const lo = $("btnLogout");
-      if(lo) lo.style.display = (name === "workout") ? "none" : (currentUser ? "inline-flex" : "none");
-
-      const sb = $("btnSettings");
-      if(sb) sb.style.display = (name === "workout" || name === "history") ? "none" : "inline-flex";
-    }
-    function setMsg(txt){ $("loginMsg").textContent = txt || ""; }
-
-    const THEME_KEY = "coach_theme";
-    function applyTheme(t){
-      document.documentElement.setAttribute("data-theme", t);
-      localStorage.setItem(THEME_KEY, t);
-      const meta = document.querySelector('meta[name="theme-color"]');
-      if(meta) meta.setAttribute("content", t==="light" ? "#f5f7fb" : "#0b0f17");
-    }
-    applyTheme(localStorage.getItem(THEME_KEY) || "dark");
-
-    // --- Réglages (home only) ---
-    (function(){
-      const modal = $("settingsModal");
-      const openBtn = $("btnSettings");
-      const closeBtn = $("closeSettings");
-      const themeT = $("themeToggleModal");
-      const coachT = $("coachToggleModal");
-
-      function openModal(){
-        if(!modal) return;
-        // sync switches
-        if(themeT) themeT.checked = (document.documentElement.getAttribute("data-theme") === "dark");
-        if(coachT) coachT.checked = !!coachMode;
-        modal.classList.remove("hidden");
-      }
-      function closeModal(){
-        if(!modal) return;
-        modal.classList.add("hidden");
-      }
-
-      if(openBtn) openBtn.addEventListener("click", openModal);
-      if(closeBtn) closeBtn.addEventListener("click", closeModal);
-      if(modal) modal.addEventListener("click", (e)=>{ if(e.target === modal) closeModal(); });
-
-      if(themeT){
-        themeT.addEventListener("change", ()=>{
-          applyTheme(themeT.checked ? "dark" : "light");
-        });
-      }
-      if(coachT){
-        coachT.addEventListener("change", ()=>{
-          coachMode = coachT.checked;
-          localStorage.setItem("coachMode", coachMode ? "1" : "0");
-        });
-      }
-    })();
-
-    let coachMode = (localStorage.getItem("coachMode") === "0") ? false : true;
-    let __endSpoken = false;
-    function speak(text){
-      try{
-        if(!coachMode) return;
-        speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "fr-FR";
-        u.rate = 1.0;
-        speechSynthesis.speak(u);
-      }catch(e){}
-    }
-    function beep(freq=880, ms=90){
-      try{
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const o = ctx.createOscillator();
-        const g = ctx.createGain();
-        o.type = "sine";
-        o.frequency.value = freq;
-        o.connect(g); g.connect(ctx.destination);
-        g.gain.value = 0.06;
-        o.start();
-        setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
-      }catch(e){}
-    }
-
-    function loadCoachMode(){
-      const v = localStorage.getItem(ukey("coach_mode"));
-      coachMode = (v === null) ? true : (v === "1");
-      const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    }
-    function toggleCoachMode(){
-      coachMode = !coachMode;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw = $("coachSwitch"); if(sw) sw.checked = coachMode;
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    }
-    $("btnCoachToggle").addEventListener("click", toggleCoachMode);
-
-    $("coachSwitch")?.addEventListener("change", (e)=>{
-      coachMode = !!e.target.checked;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw2 = $("coachSwitch2"); if(sw2) sw2.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    });
-
-    $("coachSwitch2")?.addEventListener("change", (e)=>{
-      coachMode = !!e.target.checked;
-      localStorage.setItem(ukey("coach_mode"), coachMode ? "1" : "0");
-      const sw1 = $("coachSwitch"); if(sw1) sw1.checked = coachMode;
-      $("btnCoachToggle").textContent = coachMode ? "🎧 Coach vocal : ON" : "🎧 Coach vocal : OFF";
-      const cc = $("chipCoach"); if(cc) cc.textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-    });
-
-    function loadScriptOnce(src){
-      return new Promise((resolve, reject)=>{
-        if(document.querySelector(`script[data-dyn="${src}"]`)) return resolve();
-        const s = document.createElement("script");
-        s.src = src;
-        s.async = true;
-        s.setAttribute("data-dyn", src);
-        s.onload = ()=>resolve();
-        s.onerror = ()=>reject(new Error("Impossible de charger: " + src));
-        document.head.appendChild(s);
-      });
-    }
-
-    async function getUserConfig(uid){
-      const ref = doc(db, `users/${uid}/profile/config`);
-      const snap = await getDoc(ref);
-      if(!snap.exists()){
-        throw new Error("Config Firestore manquante : users/{uid}/profile/config");
-      }
-      return snap.data();
-    }
-
-    window.SESSIONS = null;
-
-    async function loadUserSessions(uid){
-      const cfg = await getUserConfig(uid);
-      const file = cfg.sessionsFile;
-      const varName = cfg.sessionsVar;
-
-      if(!file || !varName) throw new Error("Config invalide: sessionsFile/sessionsVar.");
-      await loadScriptOnce(file);
-
-      const obj = window[varName];
-      if(!obj) throw new Error(`Variable sessions introuvable: window["${varName}"]`);
-
-      window.SESSIONS = obj;
-      topbarUserText = cfg.displayName || currentUser?.email || "Connecté";
-      if(!screens.workout.classList.contains("active")) $("userLine").textContent = topbarUserText;
-    }
-
-    function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
-
-    function renderHome(){
-      const sessions = window.SESSIONS || {};
-      const allKeys = Object.keys(sessions);
-
-      const host = $("sessionList");
-      host.innerHTML = "";
-
-      if(allKeys.length === 0){
-        host.innerHTML = `<div class="muted small">Aucune séance trouvée dans ton pack.</div>`;
-        return;
-      }
-
-      // --- Groupes home (app pro) ---
-      // 1) Séances complètes : A1,B1,C1,D1,A2,B2,...
-      // 2) Running : échauffements course (ex: RUN_WU)
-      // (Prévu plus tard) Hockey : clés type HOC_* ou nom contenant "hockey"
-      const isRunning = (k, s) => /^RUN[_-]/i.test(k) || /course|running/i.test(String(s?.name||""));
-      const isHockey  = (k, s) => /^HOC[_-]/i.test(k) || /hockey/i.test(String(s?.name||""));
-      const isWednesdayCoach = (k, s) => /^COACH[_-]/i.test(k);
-
-      const complete = [];
-      const running = [];
-      const hockey = [];
-      const wednesdayCoach = [];
-
-      allKeys.forEach((k)=>{
-        const s = sessions[k];
-        if(isWednesdayCoach(k, s)) wednesdayCoach.push(k);
-        else if(isHockey(k, s)) hockey.push(k);
-        else if(isRunning(k, s)) running.push(k);
-        else complete.push(k);
-      });
-
-      const letterOrder = { A:0, B:1, C:2, D:3 };
-      function sortComplete(a, b){
-        const ma = String(a).match(/^([A-Z])([0-9]+)$/i);
-        const mb = String(b).match(/^([A-Z])([0-9]+)$/i);
-        if(ma && mb){
-          const la = ma[1].toUpperCase(), lb = mb[1].toUpperCase();
-          const na = parseInt(ma[2], 10), nb = parseInt(mb[2], 10);
-          if(na !== nb) return na - nb; // 1 puis 2 puis 3...
-          const oa = (la in letterOrder) ? letterOrder[la] : 99;
-          const ob = (lb in letterOrder) ? letterOrder[lb] : 99;
-          if(oa !== ob) return oa - ob; // A,B,C,D
-          return la.localeCompare(lb);
-        }
-        // fallback alpha
-        return String(a).localeCompare(String(b));
-      }
-
-      complete.sort(sortComplete);
-      running.sort((a,b)=>String(a).localeCompare(String(b)));
-      hockey.sort((a,b)=>String(a).localeCompare(String(b)));
-
-      function addSection(title, keys, opts){
-        const options = opts || {};
-        const sectionId = options.id || title.toLowerCase().replace(/[^a-z0-9]+/g, "_");
-        const defaultOpen = (options.defaultOpen !== undefined) ? options.defaultOpen : true;
-
-        // Header row
-        const header = document.createElement("div");
-        header.style.margin = "14px 2px 8px";
-        header.style.display = "flex";
-        header.style.alignItems = "center";
-        header.style.justifyContent = "space-between";
-        header.style.gap = "10px";
-
-        const t = document.createElement("div");
-        t.className = "h2";
-        t.style.fontSize = "16px";
-        t.style.cursor = "pointer";
-        t.textContent = `${title}`;
-
-        const btn = document.createElement("button");
-        btn.className = "btn";
-        btn.style.padding = "8px 10px";
-        btn.style.minWidth = "44px";
-        btn.setAttribute("aria-expanded", defaultOpen ? "true" : "false");
-        btn.textContent = String(keys.length);
-
-        header.appendChild(t);
-        header.appendChild(btn);
-        host.appendChild(header);
-
-        // Container
-        const container = document.createElement("div");
-        container.dataset.section = sectionId;
-        container.className = "homeSection" + (defaultOpen ? " open" : "");
-        // max-height is set dynamically for smooth slide
-        container.style.maxHeight = defaultOpen ? (container.scrollHeight + "px") : "0px";
-        host.appendChild(container);
-
-        const toggle = ()=>{
-          const isOpen = container.classList.contains("open");
-
-          if(isOpen){
-            // collapse
-            container.style.maxHeight = container.scrollHeight + "px";
-            // force reflow
-            void container.offsetHeight;
-            container.style.maxHeight = "0px";
-            container.classList.remove("open");
-            btn.setAttribute("aria-expanded", "false");
-          }else{
-            container.classList.add("open");
-            container.style.maxHeight = container.scrollHeight + "px";
-            btn.setAttribute("aria-expanded", "true");
-          }
-
-          btn.textContent = String(keys.length);
-        };
-
-        btn.addEventListener("click", toggle);
-        t.addEventListener("click", toggle);
-
-
-        keys.forEach((k)=>addSessionCard(k, container));
-
-        // Update height after cards are inserted
-        if(defaultOpen){
-          container.style.maxHeight = container.scrollHeight + "px";
-        }
-      }
-
-      function addSessionCard(k, mount){
-        const s = sessions[k];
-        const name = s?.name || k;
-        const nWarmup = (s?.warmup||[]).length;
-        const nCooldown = (s?.cooldown||[]).length;
-        const nItems = (s?.items||[]).length;
-
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `
-          <div class="sessionItem">
-            <div class="grow">
-              <div class="h2">${escapeHtml(name)}</div>
-              <div class="muted small">${nWarmup} échauffement • ${nItems} exercices${nCooldown ? ` • ${nCooldown} étirements` : ""}</div>
-            </div>
-            <button class="btn primary">Démarrer</button>
-          </div>
-        `;
-        card.querySelector("button").addEventListener("click", ()=>startSession(k));
-        mount.appendChild(card);
-      }
-
-
-      function updateOpenSectionsHeight(){
-        host.querySelectorAll(".homeSection.open").forEach(el=>{
-          el.style.maxHeight = el.scrollHeight + "px";
-        });
-      }
-      window.addEventListener("resize", ()=>{ updateOpenSectionsHeight(); }, { passive:true });
-
-      // Render
-      if(wednesdayCoach.length){
-        addSection("Séance du mercredi", wednesdayCoach, { id:"wednesdayCoach", defaultOpen:true });
-      }
-
-      if(complete.length){
-        addSection("Séances complètes", complete, { id:"complete", defaultOpen:false });
-      }
-
-      if(running.length){
-        addSection("Running", running, { id:"running", defaultOpen:false });
-      }
-
-      // On ne l'affiche que si tu ajoutes des séances hockey plus tard
-      if(hockey.length){
-        addSection("Hockey", hockey, { id:"hockey", defaultOpen:false });
-      }
-    }
-
-    /***********************
-     * History (per-user) with date
-     ***********************/
-    function histKey(exoId){ return ukey(`hist__${exoId}`); }
-    function todayISO(){
-      const d = new Date();
-      return d.toISOString().slice(0,10);
-    }
-    function getLoadHistory(exoId){
-      const raw = localStorage.getItem(histKey(exoId));
-      if(!raw) return [];
-      if(raw[0] !== "["){
-        const v = raw.trim();
-        return v ? [{ v, d: todayISO() }] : [];
-      }
-      try{
-        const arr = JSON.parse(raw);
-        if(!Array.isArray(arr)) return [];
-        return arr.map(x=>{
-          if(typeof x === "string") return { v:x, d: todayISO() };
-          if(x && x.v) return { v:String(x.v), d: x.d || todayISO() };
-          return null;
-        }).filter(Boolean);
-      }catch(e){ return []; }
-    }
-    function saveLoad(exoId, value){
-      const v = String(value||"").trim();
-      if(!v) return;
-      const arr = getLoadHistory(exoId);
-      const filtered = arr.filter(x => x.v !== v);
-      const entry = { v, d: todayISO() };
-      const capped = [entry, ...filtered].slice(0, 12);
-      localStorage.setItem(histKey(exoId), JSON.stringify(capped));
-    }
-    function getLastLoad(exoId){
-      const arr = getLoadHistory(exoId);
-      return arr[0]?.v || "";
-    }
-
-    let currentExoIdForLoad = null;
-
-
-    function rememberLoadInSession(session, exoId, v){
-      try{
-        if(!session || !exoId) return;
-        const items = session.items || [];
-        for(const it of items){
-          if(it?.id === exoId || it?.name === exoId){
-            it._usedLoad = v;
-          }
-        }
-      }catch(e){}
-    }
-
-    function captureCurrentInputToSessionLoads(){
-      try{
-        if(!currentExoIdForLoad) return;
-        const v = ($("loadInput")?.value || "").trim();
-        if(!v) return;
-        sessionLoadsUsed[currentExoIdForLoad] = v;
-        rememberLoadInSession(curSession, currentExoIdForLoad, v);
-      }catch(e){}
-    }
-
-    function formatDateFR(iso){
-      if(!iso) return "";
-      const [y,m,d] = iso.split("-");
-      return `${d}.${m}.${y}`;
-    }
-
-    function updateLoadBadge(){
-      const b = $("loadBadge");
-      if(!b) return;
-      const v = currentExoIdForLoad ? getLastLoad(currentExoIdForLoad) : "";
-      if(v){
-        b.textContent = v;
-        b.classList.remove("hidden");
-      }else{
-        b.textContent = "—";
-        b.classList.add("hidden");
-      }
-    }
-
-    function renderLoadHistory(){
-      const host = $("loadHist");
-      const input = $("loadInput");
-      if(!host) return;
-      host.innerHTML = "";
-
-      const arr = currentExoIdForLoad ? getLoadHistory(currentExoIdForLoad) : [];
-      if(arr.length === 0) return;
-
-      arr.forEach(item=>{
-        const chip = document.createElement("button");
-        chip.type = "button";
-        chip.className = "loadChip";
-        chip.textContent = `${formatDateFR(item.d)} – ${item.v}`;
-        chip.addEventListener("click", ()=>{
-          if(input) input.value = item.v;
-        });
-        host.appendChild(chip);
-      });
-    }
-
-    function saveFromInput(){
-      if(!currentExoIdForLoad) return;
-      const input = $("loadInput");
-      const v = (input?.value || "").trim();
-      if(!v) return;
-      saveLoad(currentExoIdForLoad, v);
-      
-      try{ sessionLoadsUsed[currentExoIdForLoad] = v; }catch(e){}
-      try{ rememberLoadInSession(curSession, currentExoIdForLoad, v); }catch(e){}
-updateLoadBadge();
-      renderLoadHistory();
-    }
-
-    $("btnLoadSave")?.addEventListener("click", saveFromInput);
-    $("loadInput")?.addEventListener("keydown", (e)=>{
-      if(e.key === "Enter"){
-        e.preventDefault();
-        saveFromInput();
-      }
-    });
-
-    
-    /***********************
-     * Workout History (per-user)
-     ***********************/
-    function workoutHistKey(){ return ukey("workout_history"); }
-
-    function loadWorkoutHistory(){
-      try{
-        return JSON.parse(localStorage.getItem(workoutHistKey()) || "[]");
-      }catch(e){
-        return [];
-      }
-    }
-    function saveWorkoutHistory(arr){
-      localStorage.setItem(workoutHistKey(), JSON.stringify(arr));
-    }
-    /***********************
-     * TROPHÉES (per-user)
-     ***********************/
-    const TROPHY_KEY = ()=> ukey("trophies_v1");
-    const TROPHY_PENDING_KEY = ()=> ukey("trophies_pending_v1");
-
-    const TROPHIES = [
-{ id:"first_session", iconKey:"trophy_first", label:"Première séance",
-        title:"Première victoire",
-        desc:"Tu viens de terminer ta première séance.\nLe plus dur, c’était de commencer.",
-        type:"sessions", threshold:1
+
+// sessions.js
+// =======================
+// DONNÉES DES SÉANCES — Programme Force (compatibles index.html)
+// =======================
+// ⚠️ CE FICHIER NE CONTIENT QUE DES DONNÉES
+// AUCUN HTML / AUCUNE LOGIQUE
+//
+// Structure attendue :
+// window.SESSIONS = { KEY: { name, warmup:[...], items:[...] }, ... }
+//
+// NOTE COMPATIBILITÉ : certaines versions d'index.html lisent `SESSIONS` (sans window.)
+// → on expose les deux (window.SESSIONS et SESSIONS)
+
+window.SESSIONS = {
+
+  /* =====================
+     A — PECTOR AUX / TRICEPS (2 variantes)
+     ===================== */
+
+  A1: {
+    name: "Séance A1 — Pecs / Triceps (Force)",
+    warmup: [
+      { id:"WU-A1-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Cercles d’épaules + ouverture thoracique (amplitude confortable)." },
+      { id:"WU-A1-2", name:"Band pull-aparts", icon:"wu_bandpull", todo:"2×15", seconds:60, desc:"Élastique léger, omoplates basses, contrôle." },
+      { id:"WU-A1-3", name:"Squats à vide", icon:"wu_squat", todo:"2×10", seconds:60, desc:"Descente lente, genoux stables, respiration." },
+      { id:"WU-A1-4", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8–12", seconds:45, desc:"Genoux si besoin, amplitude confortable." }
+    ],
+    cooldown: [
+      { id:"CD-A1-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
+      { id:"CD-A1-2", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"45 s", seconds:45, desc:"Relâche les épaules/pectoraux. Garde les omoplates basses." },
+      { id:"CD-A1-3", name:"Adho Mukha Svanasana — épaules + chaîne post.", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
+      { id:"CD-A1-4", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
+      { id:"CD-A1-5", name:"Cocon — relâchement du haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Arrondis le dos, respire, relâche nuque et épaules." },
+      { id:"CD-A1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"A1-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"6–8", work:45, rest:120,
+        desc:"Mouvement principal : lourd et propre (1–2 reps en réserve).",
+        steps:["Pieds ancrés, omoplates serrées/basses.","Descends en contrôle (≈2s) au niveau des pectoraux.","Pousse stable en expirant (sans cogner les haltères)."],
+        mistakes:["Épaules qui montent","Poignets cassés","Rebond en bas"] },
+
+      { id:"A1-2", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pec + épaules", sets:3, reps:"8–10", work:45, rest:90,
+        desc:"Accent haut pectoraux, trajectoire stable.",
+        steps:["Inclinaison légère.","Descends en contrôle.","Pousse sans perdre le gainage (expire)."],
+        mistakes:["Inclinaison trop forte","Cambrure excessive","Amplitude courte"] },
+
+      { id:"A1-3", name:"Écartés haltères sur banc", icon:"flydb", muscle:"Pectoraux", sets:3, reps:"12–15", work:45, rest:75,
+        desc:"Isolation : étirement + contrôle (charge modérée).",
+        steps:["Bras légèrement fléchis.","Ouvre en arc jusqu’à l’étirement.","Reviens en serrant les pectoraux."],
+        mistakes:["Trop lourd","Descendre trop bas","Bras trop tendus"] },
+
+      { id:"A1-4", name:"Poulie — Triceps vertical prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12–15", work:45, rest:60,
+        desc:"Ta poulie : uniquement ce mouvement, strict.",
+        steps:["Coudes collés, buste stable.","Extension complète + pause 1s.","Retour contrôlé sans bouger les épaules."],
+        mistakes:["Coudes qui s’écartent","Balancer le buste","Trop lourd"] },
+
+      { id:"A1-5", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:3, reps:"15–20", work:45, rest:60,
+        desc:"Largeur d’épaules : léger, strict.",
+        steps:["Épaules basses.","Monte à hauteur d’épaule.","Redescends lentement (≈2s)."],
+        mistakes:["Élan","Trapèzes dominants","Poignets cassés"] },
+
+      { id:"A1-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:60,
+        desc:"Gainage propre : bassin stable, respiration.",
+        steps:["Coudes sous épaules.","Bassin neutre, fessiers serrés.","Respire (pas d’apnée)."],
+        mistakes:["Bassin qui s’affaisse","Apnée","Épaules hautes"] }
+    ]
+  },
+
+  A2: {
+    name: "Séance A2 — Pecs / Triceps (Volume)",
+    warmup: [
+      { id:"WU-A2-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Cercles + ouverture thoracique (progressif)." },
+      { id:"WU-A2-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Tirage léger, pause 1s en fin de course." },
+      { id:"WU-A2-3", name:"Pompes tempo", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"3s descente, contrôle." },
+      { id:"WU-A2-4", name:"Triceps léger (poulie)", icon:"cabletri", todo:"1×15", seconds:45, desc:"Prise serrée, amplitude complète." }
+    ],
+    cooldown: [
+      { id:"CD-A2-1", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"60 s", seconds:60, desc:"Poitrine ouverte, épaules basses, respiration lente." },
+      { id:"CD-A2-2", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"45 s", seconds:45, desc:"Relâche les épaules/pectoraux. Garde les omoplates basses." },
+      { id:"CD-A2-3", name:"Adho Mukha Svanasana — épaules + chaîne post.", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge le dos, talons vers le sol." },
+      { id:"CD-A2-4", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Bassin neutre, fessier serré, respiration." },
+      { id:"CD-A2-5", name:"Cocon — relâchement du haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Arrondis le dos, respire, relâche nuque et épaules." },
+      { id:"CD-A2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"A2-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"8–10", work:45, rest:90,
+        desc:"Volume : garde 1–2 reps en réserve.",
+        steps:["Omoplates serrées/basses.","Descends en contrôle (≈2s).","Pousse stable, expire."],
+        mistakes:["Épaules hautes","Rebond","Amplitude courte"] },
+
+      { id:"A2-2", name:"Développé couché prise neutre (haltères)", icon:"dbbench", muscle:"Pectoraux + triceps", sets:3, reps:"10–12", work:45, rest:75,
+        desc:"Souvent plus confortable pour les épaules.",
+        steps:["Poignets neutres.","Coudes 30–45°.","Pousse sans perdre le gainage."],
+        mistakes:["Coudes trop ouverts","Épaules qui montent","Vitesse"] },
+
+      { id:"A2-3", name:"Écartés inclinés haltères", icon:"flydb", muscle:"Haut pectoraux", sets:3, reps:"15", work:45, rest:60,
+        desc:"Isolation haut pec : contrôle + sensation.",
+        steps:["Bras semi-fléchis.","Ouvre en arc.","Reviens en serrant."],
+        mistakes:["Trop lourd","Bras tendus","Trop bas"] },
+
+      { id:"A2-4", name:"Extension triceps au-dessus de la tête (haltère)", icon:"supersetB", muscle:"Triceps", sets:3, reps:"12", work:45, rest:60,
+        desc:"Long chef du triceps (strict).",
+        steps:["Coudes serrés.","Descends derrière la tête.","Remonte sans cambrer."],
+        mistakes:["Coudes qui s’ouvrent","Cambrure","Trop lourd"] },
+
+      { id:"A2-5", name:"Poulie — Triceps vertical prise serrée (pump)", icon:"cabletri", muscle:"Triceps", sets:2, reps:"15–20", work:45, rest:45,
+        desc:"Finisher triceps : contrôle, amplitude complète.",
+        steps:["Coudes collés.","Extension complète.","Retour contrôlé."],
+        mistakes:["Balancer","Trop lourd","Amplitude courte"] },
+
+      { id:"A2-6", name:"Dead bug", icon:"deadbug", muscle:"Gainage profond", sets:3, reps:"10 / côté", work:45, rest:60,
+        desc:"Anti-extension : bas du dos collé.",
+        steps:["Bas du dos collé.","Allonge bras/jambe opposés.","Retour sans perdre le gainage."],
+        mistakes:["Dos creusé","Trop vite","Apnée"] }
+    ]
+  },
+
+  /* =====================
+     B — DOS / BICEPS (2 variantes)
+     ===================== */
+
+  B1: {
+    name: "Séance B1 — Dos / Biceps (Épaisseur)",
+    warmup: [
+      { id:"WU-B1-1", name:"Hip hinge", icon:"wu_hinge", todo:"2×10", seconds:60, desc:"Charnière hanche à vide, dos neutre." },
+      { id:"WU-B1-2", name:"Row élastique", icon:"wu_rowband", todo:"2×15", seconds:60, desc:"Pause 1s, omoplates basses." },
+      { id:"WU-B1-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"1 min", seconds:60, desc:"Rétractions + rotations douces." }
+    ],
+    cooldown: [
+      { id:"CD-B1-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression dos/épaules, relâche la prise progressivement." },
+      { id:"CD-B1-2", name:"Adho Mukha Svanasana — dorsaux + ischios", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"90 s", seconds:90, desc:"Allonge la colonne, pousse les hanches vers l’arrière." },
+      { id:"CD-B1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre l’avant de la hanche (utile après hinge/row)." },
+      { id:"CD-B1-4", name:"Baddha Konasana — adducteurs/hanches", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
+      { id:"CD-B1-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, respiration." },
+      { id:"CD-B1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"B1-1", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:4, reps:"8", work:45, rest:120,
+        desc:"Arrière jambes + fessiers, dos neutre.",
+        steps:["Hanches en arrière.","Haltères proches des jambes.","Remonte en serrant les fessiers."],
+        mistakes:["Dos rond","Genoux trop pliés","Rebond"] },
+
+      { id:"B1-2", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Grand dorsal", sets:4, reps:"10 / côté", work:45, rest:90,
+        desc:"Tire vers la hanche, pause 1s.",
+        steps:["Buste stable.","Coude vers la hanche.","Redescends lentement."],
+        mistakes:["Rotation","Élan","Tirer vers l’épaule"] },
+
+      { id:"B1-3", name:"Rowing landmine", icon:"landminerow", muscle:"Dos + gainage", sets:3, reps:"10", work:45, rest:90,
+        desc:"Puissant et stable.",
+        steps:["Hinge, dos neutre.","Tire vers sternum bas.","Pause 1s, contrôle."],
+        mistakes:["Dos arrondi","Trapèzes","Bras seulement"] },
+
+      { id:"B1-4", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"10–12", work:45, rest:60,
+        desc:"Strict, sans balancer.",
+        steps:["Coudes fixes.","Monte + pause 1s.","Descends lentement."],
+        mistakes:["Balancer","Coudes en avant","Descente rapide"] },
+
+      { id:"B1-5", name:"Curl marteau", icon:"hammer", muscle:"Brachial + avant-bras", sets:3, reps:"12", work:45, rest:60,
+        desc:"Renforce la prise.",
+        steps:["Poignets neutres.","Monte sans élan.","Contrôle la descente."],
+        mistakes:["Élan","Amplitude courte","Trop lourd"] },
+
+      { id:"B1-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"40 s / côté", type:"time", seconds:40, work:40, rest:60,
+        desc:"Stabilité du tronc.",
+        steps:["Coude sous l’épaule.","Hanches hautes.","Respire."],
+        mistakes:["Hanches qui s’affaissent","Apnée","Épaule mal placée"] }
+    ]
+  },
+
+  B2: {
+    name: "Séance B2 — Dos / Biceps (Contrôle)",
+    warmup: [
+      { id:"WU-B2-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Ouverture thoracique + scapula." },
+      { id:"WU-B2-2", name:"Row élastique tempo", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"2s tirage / 2s retour + pause 1s." },
+      { id:"WU-B2-3", name:"Good morning léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Charnière hanche (léger)." }
+    ],
+    cooldown: [
+      { id:"CD-B2-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression dos/épaules, relâche la prise progressivement." },
+      { id:"CD-B2-2", name:"Adho Mukha Svanasana — dorsaux + ischios", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"90 s", seconds:90, desc:"Allonge la colonne, pousse les hanches vers l’arrière." },
+      { id:"CD-B2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre l’avant de la hanche (utile après hinge/row)." },
+      { id:"CD-B2-4", name:"Baddha Konasana — adducteurs/hanches", icon:"baddha_konasana_posture_du_papillon", todo:"75 s", seconds:75, desc:"Dos grandit, genoux vers le sol sans forcer." },
+      { id:"CD-B2-5", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Stabilité + ouverture côté, respiration." },
+      { id:"CD-B2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"B2-1", name:"Rowing landmine (prise serrée)", icon:"landminerow", muscle:"Dos (épaisseur)", sets:4, reps:"8–10", work:45, rest:90,
+        desc:"Tirage fort, gainage solide.",
+        steps:["Dos neutre.","Tire vers sternum bas.","Pause 1s."],
+        mistakes:["Dos rond","Élan","Trapèzes"] },
+
+      { id:"B2-2", name:"Tirage élastique bras tendus", icon:"wu_bandpull", muscle:"Grand dorsal", sets:3, reps:"15", work:45, rest:60,
+        desc:"Sensation dorsaux (vers les hanches).",
+        steps:["Bras quasi tendus.","Tire vers les hanches.","Contrôle le retour."],
+        mistakes:["Épaules hautes","Coudes trop pliés","Vitesse"] },
+
+      { id:"B2-3", name:"Rowing haltères sur banc incliné", icon:"onearmrow", muscle:"Dos", sets:3, reps:"12", work:45, rest:75,
+        desc:"Moins d’élan, plus d’isolation.",
+        steps:["Poitrine sur banc incliné.","Tire coudes vers l’arrière.","Redescends lentement."],
+        mistakes:["Élan","Épaules hautes","Amplitude courte"] },
+
+      { id:"B2-4", name:"Curl Zottman", icon:"supersetA", muscle:"Biceps + avant-bras", sets:3, reps:"10", work:45, rest:60,
+        desc:"Monte en supination, descends en pronation.",
+        steps:["Monte supination.","Tourne en haut.","Descends pronation (contrôle)."],
+        mistakes:["Élan","Rotation trop rapide","Trop lourd"] },
+
+      { id:"B2-5", name:"Curl marteau (finisher)", icon:"hammer", muscle:"Brachial", sets:2, reps:"15", work:45, rest:45,
+        desc:"Pump bras.",
+        steps:["Neutre.","Strict.","Contrôle."],
+        mistakes:["Élan","Amplitude courte","Trop lourd"] },
+
+      { id:"B2-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:60,
+        desc:"Gainage propre.",
+        steps:["Bassin neutre.","Fessiers serrés.","Respire."],
+        mistakes:["Bassin bas","Apnée","Épaules hautes"] }
+    ]
+  },
+
+  /* =====================
+     C — ÉPAULES (2 variantes)
+     ===================== */
+
+  C1: {
+    name: "Séance C1 — Épaules (Force)",
+    warmup: [
+      { id:"WU-C1-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Cercles + ouverture thoracique." },
+      { id:"WU-C1-2", name:"Rotations externes élastique", icon:"wu_external", todo:"2×12", seconds:60, desc:"Coiffe : léger, contrôle." },
+      { id:"WU-C1-3", name:"Élévations latérales légères", icon:"lateral", todo:"1×15", seconds:45, desc:"Très léger, juste la sensation." }
+    ],
+    cooldown: [
+      { id:"CD-C1-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression épaules, relâche trapèzes." },
+      { id:"CD-C1-2", name:"Adho Mukha Svanasana — épaules + dos", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge la colonne." },
+      { id:"CD-C1-3", name:"Bhujangasana (cobra) — ouverture thoracique", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Ouvre la cage, épaules basses." },
+      { id:"CD-C1-4", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Ouvre le flanc, stabilise l’épaule." },
+      { id:"CD-C1-5", name:"Cocon — relâchement nuque/haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Respire, relâche les tensions." },
+      { id:"CD-C1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"C1-1", name:"Développé militaire haltères", icon:"ohp", muscle:"Épaules + triceps", sets:4, reps:"6–8", work:45, rest:90,
+        desc:"Presse verticale stricte.",
+        steps:["Côtes rentrées.","Pousse au-dessus.","Redescends en contrôle."],
+        mistakes:["Cambrure","Trop devant","Amplitude courte"] },
+
+      { id:"C1-2", name:"Landmine press unilatéral", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"8 / côté", work:45, rest:90,
+        desc:"Trajectoire naturelle, stable.",
+        steps:["Gainage fort.","Pousse en diagonale.","Retour contrôlé."],
+        mistakes:["Cambrure","Rotation","Épaule haute"] },
+
+      { id:"C1-3", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:4, reps:"15", work:45, rest:60,
+        desc:"Léger, strict.",
+        steps:["Épaules basses.","Monte à hauteur d’épaule.","Descends lentement."],
+        mistakes:["Élan","Trapèzes","Poignets cassés"] },
+
+      { id:"C1-4", name:"Oiseau (reverse fly)", icon:"reversefly", muscle:"Arrière épaules", sets:3, reps:"15", work:45, rest:60,
+        desc:"Équilibre le travail des pectoraux.",
+        steps:["Buste penché.","Ouvre + pause 1s.","Contrôle."],
+        mistakes:["Trapèzes","Élan","Dos arrondi"] },
+
+      { id:"C1-5", name:"Farmer walk", icon:"farmer", muscle:"Gainage + grip", sets:3, reps:"50 s", type:"time", seconds:50, work:50, rest:90,
+        desc:"Posture, grip, gainage.",
+        steps:["Épaules basses.","Marche lente.","Respire."],
+        mistakes:["Se pencher","Pas rapides","Trapèzes"] },
+
+      { id:"C1-6", name:"Dead bug", icon:"deadbug", muscle:"Gainage profond", sets:3, reps:"10 / côté", work:45, rest:60,
+        desc:"Anti-extension.",
+        steps:["Dos collé.","Allonge opposés.","Retour contrôlé."],
+        mistakes:["Dos creusé","Trop vite","Apnée"] }
+    ]
+  },
+
+  C2: {
+    name: "Séance C2 — Épaules (Volume + stabilité)",
+    warmup: [
+      { id:"WU-C2-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Thorax + scapula." },
+      { id:"WU-C2-2", name:"Rotations externes élastique", icon:"wu_external", todo:"2×12", seconds:60, desc:"Léger, contrôle." },
+      { id:"WU-C2-3", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Ouverture hanches, amplitude confortable." }
+    ],
+    cooldown: [
+      { id:"CD-C2-1", name:"Dead Hang (suspension passive)", icon:"dead_hang_suspension_passive", todo:"60 s", seconds:60, desc:"Décompression épaules, relâche trapèzes." },
+      { id:"CD-C2-2", name:"Adho Mukha Svanasana — épaules + dos", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Pousse le sol, allonge la colonne." },
+      { id:"CD-C2-3", name:"Bhujangasana (cobra) — ouverture thoracique", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Ouvre la cage, épaules basses." },
+      { id:"CD-C2-4", name:"Ardha Chandrasana — ouverture latérale", icon:"ardha_chandrasana_posture_de_la_demi_lune", todo:"45 s / côté", seconds:90, desc:"Ouvre le flanc, stabilise l’épaule." },
+      { id:"CD-C2-5", name:"Cocon — relâchement nuque/haut du dos", icon:"cocon", todo:"60 s", seconds:60, desc:"Respire, relâche les tensions." },
+      { id:"CD-C2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"C2-1", name:"Arnold press haltères", icon:"ohp", muscle:"Épaules", sets:4, reps:"10", work:45, rest:90,
+        desc:"Plus de volume, contrôle.",
+        steps:["Rotation en montant.","Gainage.","Redescends contrôlé."],
+        mistakes:["Cambrure","Trop lourd","Amplitude courte"] },
+
+      { id:"C2-2", name:"Élévations latérales tempo", icon:"lateral", muscle:"Deltoïde moyen", sets:3, reps:"20", work:45, rest:60,
+        desc:"2s montée / 2s descente.",
+        steps:["Strict.","Tempo lent.","Pas d’élan."],
+        mistakes:["Élan","Trapèzes","Poignets cassés"] },
+
+      { id:"C2-3", name:"Oiseau sur banc incliné", icon:"reversefly", muscle:"Arrière épaules", sets:3, reps:"15", work:45, rest:60,
+        desc:"Isolation arrière deltoïde.",
+        steps:["Poitrine sur banc.","Ouvre + pause.","Contrôle."],
+        mistakes:["Élan","Trapèzes","Amplitude courte"] },
+
+      { id:"C2-4", name:"Landmine press (finisher)", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"12", work:45, rest:75,
+        desc:"Stable, bon finisher.",
+        steps:["Gainage.","Pousse diagonale.","Retour contrôlé."],
+        mistakes:["Cambrure","Épaule haute","Rotation"] },
+
+      { id:"C2-5", name:"Farmer walk", icon:"farmer", muscle:"Gainage + grip", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:90,
+        desc:"Stabilité et posture.",
+        steps:["Grandis-toi.","Marche lente.","Respire."],
+        mistakes:["Se pencher","Pas rapides","Trapèzes"] },
+
+      { id:"C2-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:60,
+        desc:"Gainage propre.",
+        steps:["Bassin neutre.","Fessiers serrés.","Respire."],
+        mistakes:["Bassin bas","Apnée","Épaules hautes"] }
+    ]
+  },
+
+  /* =====================
+     D — BRAS / MÉTABOLIQUE (2 variantes)
+     ===================== */
+
+  D1: {
+    name: "Séance D1 — Bras (Lourd)",
+    warmup: [
+      { id:"WU-D1-1", name:"Curl léger", icon:"dbcurl", todo:"2×12", seconds:60, desc:"Très léger, activation biceps." },
+      { id:"WU-D1-2", name:"Triceps léger (poulie)", icon:"cabletri", todo:"2×12", seconds:60, desc:"Prise serrée, amplitude complète." },
+      { id:"WU-D1-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Prépare triceps/pecs." }
+    ],
+    cooldown: [
+      { id:"CD-D1-1", name:"Adho Mukha Svanasana — full body", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Étire chaîne postérieure, épaules." },
+      { id:"CD-D1-2", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Contrebalance les pompes / pressing." },
+      { id:"CD-D1-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre hanches après métabolique." },
+      { id:"CD-D1-4", name:"Baddha Virabhadrasana — ouverture hanches", icon:"baddha_virabhadrasana_posture_du_guerrier_humble", todo:"45 s / côté", seconds:90, desc:"Respire, épaules relâchées." },
+      { id:"CD-D1-5", name:"Ardha Navasana — gainage doux", icon:"ardha_navasana_posture_du_demi_bateau", todo:"45 s", seconds:45, desc:"Gainage contrôlé, respiration." },
+      { id:"CD-D1-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"D1-1", name:"Superset : Curl Zottman + Extension triceps au-dessus de la tête", muscle:"Bras", sets:4, reps:"10 + 10", work:45, rest:60,
+        images:{ a:"supersetA", b:"supersetB" },
+        desc:"Sans repos entre les deux exercices : curl puis extension triceps.",
+        steps:["10 curls Zottman stricts.","Sans pause : 10 extensions triceps au-dessus de la tête.","Repos 60s."],
+        mistakes:["Élan","Coudes qui bougent","Trop lourd"] },
+
+      { id:"D1-2", name:"Curl marteau", icon:"hammer", muscle:"Brachial + avant-bras", sets:3, reps:"12", work:45, rest:60,
+        desc:"Renforce la prise.",
+        steps:["Poignets neutres.","Monte sans élan.","Contrôle la descente."],
+        mistakes:["Élan","Amplitude courte","Trop lourd"] },
+
+      { id:"D1-3", name:"Poulie — Triceps vertical prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12–15", work:45, rest:60,
+        desc:"Pause 1s en bas.",
+        steps:["Coudes collés.","Extension complète.","Retour contrôlé."],
+        mistakes:["Balancer","Coudes qui s’ouvrent","Trop lourd"] },
+
+      { id:"D1-4", name:"Farmer walk", icon:"farmer", muscle:"Gainage + grip", sets:3, reps:"50 s", type:"time", seconds:50, work:50, rest:90,
+        desc:"Posture, grip, gainage.",
+        steps:["Grandis-toi.","Marche lente.","Respire."],
+        mistakes:["Se pencher","Pas rapides","Trapèzes"] },
+
+      { id:"D1-5", name:"Élévations latérales (pump)", icon:"lateral", muscle:"Épaules", sets:2, reps:"20", work:45, rest:45,
+        desc:"Finisher épaules.",
+        steps:["Très léger.","Strict.","Contrôle."],
+        mistakes:["Élan","Trapèzes","Poignets cassés"] },
+
+      { id:"D1-6", name:"Dead bug", icon:"deadbug", muscle:"Tronc", sets:3, reps:"10 / côté", work:45, rest:60,
+        desc:"Stabilité.",
+        steps:["Dos collé.","Allonge opposés.","Retour contrôlé."],
+        mistakes:["Dos creusé","Trop vite","Apnée"] }
+    ]
+  },
+
+  D2: {
+    name: "Séance D2 — Bras + Métabolique",
+    warmup: [
+      { id:"WU-D2-1", name:"Jumping jacks", icon:"wu_jj", todo:"2 min", seconds:120, desc:"Monte progressivement le cardio." },
+      { id:"WU-D2-2", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Ouverture hanches, amplitude confortable." },
+      { id:"WU-D2-3", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Activation haut du corps." }
+    ],
+    cooldown: [
+      { id:"CD-D2-1", name:"Adho Mukha Svanasana — full body", icon:"adho_mukha_svanasana_posture_du_chien_tete_en_bas", todo:"75 s", seconds:75, desc:"Étire chaîne postérieure, épaules." },
+      { id:"CD-D2-2", name:"Bhujangasana (cobra) — ouverture poitrine", icon:"bhujangasana_posture_du_cobra", todo:"45 s", seconds:45, desc:"Contrebalance les pompes / pressing." },
+      { id:"CD-D2-3", name:"Anjaneyasana — fléchisseurs de hanche", icon:"anjaneyasana_posture_du_croissant_de_lune", todo:"60 s / côté", seconds:120, desc:"Ouvre hanches après métabolique." },
+      { id:"CD-D2-4", name:"Baddha Virabhadrasana — ouverture hanches", icon:"baddha_virabhadrasana_posture_du_guerrier_humble", todo:"45 s / côté", seconds:90, desc:"Respire, épaules relâchées." },
+      { id:"CD-D2-5", name:"Ardha Navasana — gainage doux", icon:"ardha_navasana_posture_du_demi_bateau", todo:"45 s", seconds:45, desc:"Gainage contrôlé, respiration." },
+      { id:"CD-D2-6", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s. Relâche épaules et mâchoire." },
+    ],
+    items: [
+      { id:"D2-1", name:"Kettlebell swing", icon:"swing", muscle:"Fessiers + cardio", sets:4, reps:"15", work:45, rest:75,
+        desc:"Explosif hanche.",
+        steps:["Hinge (charnière hanche).","Explose les hanches.","Contrôle le retour."],
+        mistakes:["Squat au lieu de hinge","Dos rond","Lever avec les bras"] },
+
+      { id:"D2-2", name:"Pompes pieds sur banc", icon:"pushup", muscle:"Pectoraux + triceps", sets:3, reps:"12–15", work:45, rest:90,
+        desc:"Cardio + pecs/triceps.",
+        steps:["Gainage.","Descends poitrine.","Pousse, expire."],
+        mistakes:["Hanches basses","Amplitude courte","Coudes trop ouverts"] },
+
+      { id:"D2-3", name:"Superset : Curl Zottman + Extension triceps au-dessus de la tête", muscle:"Bras", sets:3, reps:"12 + 12", work:45, rest:45,
+        images:{ a:"supersetA", b:"supersetB" },
+        desc:"Volume bras : sans élan, strict.",
+        steps:["12 curls Zottman.","Sans pause : 12 extensions triceps.","Repos 45 s."],
+        mistakes:["Élan","Coudes qui bougent","Trop lourd"] },
+
+      { id:"D2-4", name:"Farmer walk", icon:"farmer", muscle:"Gainage + grip", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:90,
+        desc:"Stabilité et posture.",
+        steps:["Grandis-toi.","Marche lente.","Respire."],
+        mistakes:["Se pencher","Pas rapides","Trapèzes"] },
+
+      { id:"D2-5", name:"Gainage dynamique", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:60,
+        desc:"Mountain climbers lents ou planche dynamique.",
+        steps:["Rythme contrôlé.","Bassin stable.","Respire."],
+        mistakes:["Bassin qui bouge","Trop vite","Apnée"] },
+
+      { id:"D2-6", name:"Élévations latérales (finisher)", icon:"lateral", muscle:"Épaules", sets:2, reps:"20", work:45, rest:45,
+        desc:"Finisher épaules (léger).",
+        steps:["Léger.","Strict.","Contrôle."],
+        mistakes:["Élan","Trapèzes","Poignets cassés"] }
+    ]
+  }
+
+  ,
+
+  /* =====================
+     RUN — ÉCHAUFFEMENT COURSE (7–10 km)
+     ===================== */
+
+
+  /* =====================
+     HOCKEY — FORCE + PHYSIQUE (4 séances full body)
+     Durée cible : 50–60 min
+     ===================== */
+
+  H1: {
+    name: "Hockey H1 — Unilatéral + stabilité + bras",
+    warmup: [
+      { id:"WU-H1-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H1-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Ouvertures contrôlées." },
+      { id:"WU-H1-3", name:"Abduction élastique", icon:"wu_band_abduction", todo:"2×12", seconds:60, desc:"Fessier moyen." },
+      { id:"WU-H1-4", name:"Hip hinge", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Charnière propre." }
+    ],
+    cooldown: [
+      { id:"CD-H1-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Retour au calme." },
+      { id:"CD-H1-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Thorax." },
+      { id:"CD-H1-3", name:"Respiration", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme." }
+    ],
+    items: [
+      { id:"H1-1", name:"Bulgarian split squat", icon:"bulgarian", muscle:"Jambes", sets:4, reps:"8 / jambe", work:45, rest:120 },
+      { id:"H1-2", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios/fessiers", sets:3, reps:"8–10", work:45, rest:120 },
+      { id:"H1-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:3, reps:"10 / côté", work:45, rest:90 },
+      { id:"H1-4", name:"Landmine press unilatéral", icon:"landminepress", muscle:"Épaules", sets:3, reps:"8 / côté", work:45, rest:90 },
+      { id:"H1-5", name:"Pallof press", icon:"pallof_press_band", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 },
+      { id:"H1-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"40 s / côté", type:"time", seconds:40, work:40, rest:60 },
+      { id:"H1-7", name:"Poulie triceps (bonus)", icon:"cabletri", muscle:"Triceps", sets:2, reps:"12–15", work:45, rest:45 },
+      { id:"H1-8", name:"Curl marteau (bonus)", icon:"hammer", muscle:"Biceps", sets:2, reps:"12–15", work:45, rest:45 }
+    ]
+  },
+
+  H2: {
+    name: "Hockey H2 — Puissance hanche",
+    warmup: [
+      { id:"WU-H2-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H2-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Hanches libres." }
+    ],
+    cooldown: [
+      { id:"CD-H2-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Relâche." },
+      { id:"CD-H2-2", name:"Respiration", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme." }
+    ],
+    items: [
+      { id:"H2-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance", sets:5, reps:"12–15", work:45, rest:75 },
+      { id:"H2-2", name:"Hip thrust haltère", icon:"hip_thrust_db", muscle:"Fessiers", sets:4, reps:"8–10", work:45, rest:120 },
+      { id:"H2-3", name:"Landmine squat", icon:"landminesquat", muscle:"Jambes", sets:3, reps:"8–10", work:45, rest:120 },
+      { id:"H2-4", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:3, reps:"8–10", work:45, rest:90 },
+      { id:"H2-5", name:"Farmer walk", icon:"farmer", muscle:"Grip", sets:3, reps:"50 s", type:"time", seconds:50, work:50, rest:90 },
+      { id:"H2-6", name:"Hollow hold", icon:"hollow_hold", muscle:"Core", sets:3, reps:"35 s", type:"time", seconds:35, work:35, rest:60 }
+    ]
+  },
+
+  H3: {
+    name: "Hockey H3 — Dos + pecs/bras",
+    warmup: [
+      { id:"WU-H3-1", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"2 min", seconds:120, desc:"Scapula." },
+      { id:"WU-H3-2", name:"Face pull", icon:"wu_facepull", todo:"2×12", seconds:60, desc:"Activation." }
+    ],
+    cooldown: [
+      { id:"CD-H3-1", name:"Mobilité épaules", icon:"wu_shoulder_mob", todo:"90 s", seconds:90, desc:"Relâche." },
+      { id:"CD-H3-2", name:"Respiration", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme." }
+    ],
+    items: [
+      { id:"H3-1", name:"Row poitrine sur banc", icon:"chest_supported_row", muscle:"Dos", sets:4, reps:"10–12", work:45, rest:90 },
+      { id:"H3-2", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux", sets:4, reps:"6–10", work:45, rest:120 },
+      { id:"H3-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:3, reps:"10 / côté", work:45, rest:90 },
+      { id:"H3-4", name:"Landmine press", icon:"landmine_press", muscle:"Épaules", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H3-5", name:"Superset bras", icon:"superset_arms", muscle:"Biceps + triceps", sets:3, reps:"12 + 12", work:45, rest:60 },
+      { id:"H3-6", name:"Pallof press", icon:"pallof_press_band", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 }
+    ]
+  },
+
+  H4: {
+    name: "Hockey H4 — Athlétique + pecs",
+    warmup: [
+      { id:"WU-H4-1", name:"Cardio bas impact", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H4-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Appuis." }
+    ],
+    cooldown: [
+      { id:"CD-H4-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Retour au calme." },
+      { id:"CD-H4-2", name:"Respiration", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme." }
+    ],
+    items: [
+      { id:"H4-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance", sets:4, reps:"12–15", work:45, rest:75 },
+      { id:"H4-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:4, reps:"15", work:45, rest:60 },
+      { id:"H4-3", name:"Hip thrust pause", icon:"hip_thrust_pause", muscle:"Fessiers", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H4-4", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pec", sets:3, reps:"8–12", work:45, rest:90 },
+      { id:"H4-5", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 },
+      { id:"H4-6", name:"Poulie triceps (bonus)", icon:"cabletri", muscle:"Triceps", sets:2, reps:"12–15", work:45, rest:45 }
+    ]
+  },
+
+/* =====================
+   SUMMER — intégré après H4
+   ===================== */
+
+  H5: {
+    name: "H5 — Push fondation",
+    warmup: [
+      { id:"WU-H5-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Monte doucement la température corporelle." },
+      { id:"WU-H5-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"2 min", seconds:120, desc:"Cercles d’épaules + ouverture thoracique." },
+      { id:"WU-H5-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"2×15", seconds:60, desc:"Active le haut du dos." },
+      { id:"WU-H5-4", name:"Pompes faciles", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Activation progressive." }
+    ],
+    cooldown: [
+      { id:"CD-H5-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4s, expire 6s." },
+      { id:"CD-H5-2", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Relâche les deltoïdes." },
+      { id:"CD-H5-3", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"75 s", seconds:75, desc:"Respire lentement." }
+    ],
+    items: [
+      { id:"H5-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:4, reps:"6–8", work:45, rest:120 },
+      { id:"H5-2", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pectoraux + épaules", sets:3, reps:"8–10", work:45, rest:90 },
+      { id:"H5-3", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H5-4", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H5-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12", work:45, rest:60 },
+      { id:"H5-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 }
+    ]
+  },
+
+  H6: {
+    name: "H6 — Pull fondation",
+    warmup: [
+      { id:"WU-H6-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Progressif." },
+      { id:"WU-H6-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Active les omoplates." },
+      { id:"WU-H6-3", name:"Rotations externes", icon:"wu_external", todo:"2×12", seconds:60, desc:"Prépare les épaules." },
+      { id:"WU-H6-4", name:"Hip hinge léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Place le dos." }
+    ],
+    cooldown: [
+      { id:"CD-H6-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Redescends progressivement." },
+      { id:"CD-H6-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Relâche le haut du dos." },
+      { id:"CD-H6-3", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Amplitude confortable." }
+    ],
+    items: [
+      { id:"H6-1", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:4, reps:"8", work:45, rest:90 },
+      { id:"H6-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H6-3", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Grand dorsal", sets:3, reps:"10 / côté", work:45, rest:90 },
+      { id:"H6-4", name:"Reverse fly", icon:"reversefly", muscle:"Arrière d’épaules", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H6-5", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12", work:45, rest:60 },
+      { id:"H6-6", name:"Dead bug", icon:"deadbug", muscle:"Gainage profond", sets:3, reps:"10 / côté", work:45, rest:60 }
+    ]
+  },
+
+  H7: {
+    name: "H7 — Push intensification",
+    warmup: [
+      { id:"WU-H7-1", name:"Tapis de course léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Très facile." },
+      { id:"WU-H7-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"90 s", seconds:90, desc:"Prépare le pressing." },
+      { id:"WU-H7-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"2×15", seconds:60, desc:"Scapula actives." },
+      { id:"WU-H7-4", name:"Pompes tempo", icon:"wu_pushup", todo:"1×8", seconds:45, desc:"Descente lente." }
+    ],
+    cooldown: [
+      { id:"CD-H7-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme progressif." },
+      { id:"CD-H7-2", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Déverrouille la cage." },
+      { id:"CD-H7-3", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Relâche sans forcer." }
+    ],
+    items: [
+      { id:"H7-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:5, reps:"5", work:45, rest:120 },
+      { id:"H7-2", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:4, reps:"8", work:45, rest:90 },
+      { id:"H7-3", name:"Pompes pieds sur banc", icon:"pushup", muscle:"Pectoraux + triceps", sets:3, reps:"10–15", work:45, rest:75 },
+      { id:"H7-4", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:4, reps:"12", work:45, rest:60 },
+      { id:"H7-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"10–12", work:45, rest:60 },
+      { id:"H7-6", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"35 s / côté", type:"time", seconds:35, work:35, rest:60 }
+    ]
+  },
+
+  H8: {
+    name: "H8 — Pull intensification",
+    warmup: [
+      { id:"WU-H8-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Cardio progressif." },
+      { id:"WU-H8-2", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Active les dorsaux." },
+      { id:"WU-H8-3", name:"Face pull léger", icon:"wu_facepull", todo:"2×12", seconds:60, desc:"Prépare l’arrière d’épaule." },
+      { id:"WU-H8-4", name:"Hip hinge léger", icon:"wu_hinge", todo:"1×10", seconds:45, desc:"Prépare le gainage." }
+    ],
+    cooldown: [
+      { id:"CD-H8-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Calme le rythme." },
+      { id:"CD-H8-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"90 s", seconds:90, desc:"Décompresse le haut du dos." },
+      { id:"CD-H8-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Amplitude douce." }
+    ],
+    items: [
+      { id:"H8-1", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:5, reps:"5", work:45, rest:105 },
+      { id:"H8-2", name:"Row élastique assis", icon:"band_row_seated", muscle:"Dos", sets:4, reps:"12–15", work:45, rest:60 },
+      { id:"H8-3", name:"Face pull", icon:"facepull_band", muscle:"Arrière épaules + posture", sets:3, reps:"15", work:45, rest:60 },
+      { id:"H8-4", name:"Curl marteau", icon:"hammer", muscle:"Brachial + avant-bras", sets:3, reps:"10–12", work:45, rest:60 },
+      { id:"H8-5", name:"Farmer walk", icon:"farmer", muscle:"Grip + posture + gainage", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:90 },
+      { id:"H8-6", name:"Pallof press", icon:"pallof_press_band", muscle:"Core anti-rotation", sets:3, reps:"10 / côté", work:45, rest:60 }
+    ]
+  },
+
+  H9: {
+    name: "H9 — Spécial course",
+    warmup: [
+      { id:"WU-H9-1", name:"Rameur ou tapis léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Très progressif." },
+      { id:"WU-H9-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Ouvertures contrôlées." },
+      { id:"WU-H9-3", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:60, desc:"Prépare les appuis." },
+      { id:"WU-H9-4", name:"Hip hinge", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Charnière hanche propre." }
+    ],
+    cooldown: [
+      { id:"CD-H9-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Récupération active." },
+      { id:"CD-H9-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"90 s", seconds:90, desc:"Relâche le bassin." },
+      { id:"CD-H9-3", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Détends la chaîne postérieure haute." }
+    ],
+    items: [
+      { id:"H9-1", name:"Kettlebell swing", icon:"swing", muscle:"Puissance hanche", sets:4, reps:"15", work:45, rest:75 },
+      { id:"H9-2", name:"Hip thrust haltère", icon:"hip_thrust_db", muscle:"Fessiers", sets:3, reps:"12", work:45, rest:90 },
+      { id:"H9-3", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H9-4", name:"Fentes dynamiques", icon:"wu_lunge", muscle:"Appuis + mobilité", sets:3, reps:"10 / jambe", work:45, rest:60 },
+      { id:"H9-5", name:"Dead bug", icon:"deadbug", muscle:"Core", sets:3, reps:"10 / côté", work:45, rest:60 },
+      { id:"H9-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"45 s", type:"time", seconds:45, work:45, rest:60 }
+    ]
+  },
+
+  H10: {
+    name: "H10 — Haut du corps volume",
+    warmup: [
+      { id:"WU-H10-1", name:"Rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Mise en route." },
+      { id:"WU-H10-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"90 s", seconds:90, desc:"Épaules libres." },
+      { id:"WU-H10-3", name:"Row élastique", icon:"wu_rowband", todo:"2×12", seconds:60, desc:"Scapula actives." },
+      { id:"WU-H10-4", name:"Rotations externes", icon:"wu_external", todo:"2×12", seconds:60, desc:"Prépare le haut du corps." }
+    ],
+    cooldown: [
+      { id:"CD-H10-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Retour au calme." },
+      { id:"CD-H10-2", name:"Mobilité épaules douce", icon:"wu_shoulder", todo:"75 s", seconds:75, desc:"Relâche les tensions." },
+      { id:"CD-H10-3", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"75 s", seconds:75, desc:"Respiration ample." }
+    ],
+    items: [
+      { id:"H10-1", name:"Développé incliné haltères", icon:"inclinedb", muscle:"Haut pectoraux", sets:4, reps:"10–12", work:45, rest:90 },
+      { id:"H10-2", name:"Rowing unilatéral haltère", icon:"onearmrow", muscle:"Dos", sets:4, reps:"10–12 / côté", work:45, rest:75 },
+      { id:"H10-3", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12–15", work:45, rest:60 },
+      { id:"H10-4", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12–15", work:45, rest:60 },
+      { id:"H10-5", name:"Élévations latérales", icon:"lateral", muscle:"Deltoïde moyen", sets:4, reps:"15", work:45, rest:60 },
+      { id:"H10-6", name:"Reverse fly", icon:"reversefly", muscle:"Arrière d’épaules", sets:3, reps:"15", work:45, rest:60 }
+    ]
+  },
+
+  H11: {
+    name: "H11 — Haut du corps rapide",
+    warmup: [
+      { id:"WU-H11-1", name:"Tapis ou rameur léger", icon:"wu_cardio_lowimpact", todo:"2 min", seconds:120, desc:"Rapide mais progressif." },
+      { id:"WU-H11-2", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Prépare le haut du corps." },
+      { id:"WU-H11-3", name:"Band pull-aparts", icon:"wu_bandpull", todo:"1×20", seconds:45, desc:"Active le haut du dos." }
+    ],
+    cooldown: [
+      { id:"CD-H11-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"90 s", seconds:90, desc:"Fais redescendre le rythme." },
+      { id:"CD-H11-2", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Déverrouille le thorax." }
+    ],
+    items: [
+      { id:"H11-1", name:"Développé couché haltères", icon:"dbbench", muscle:"Pectoraux + triceps", sets:3, reps:"8", work:45, rest:90 },
+      { id:"H11-2", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:3, reps:"8", work:45, rest:90 },
+      { id:"H11-3", name:"Landmine press", icon:"landminepress", muscle:"Épaules", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H11-4", name:"Curl haltères alterné", icon:"dbcurl", muscle:"Biceps", sets:3, reps:"12", work:45, rest:45 },
+      { id:"H11-5", name:"Poulie triceps prise serrée", icon:"cabletri", muscle:"Triceps", sets:3, reps:"12", work:45, rest:45 },
+      { id:"H11-6", name:"Planche", icon:"plank", muscle:"Tronc", sets:3, reps:"40 s", type:"time", seconds:40, work:40, rest:45 }
+    ]
+  },
+
+  H12: {
+    name: "H12 — Full body runner",
+    warmup: [
+      { id:"WU-H12-1", name:"Tapis de course léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Montée progressive." },
+      { id:"WU-H12-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"75 s", seconds:75, desc:"Ouvre les hanches." },
+      { id:"WU-H12-3", name:"Mobilité épaules", icon:"wu_shoulder", todo:"60 s", seconds:60, desc:"Prépare la poussée." },
+      { id:"WU-H12-4", name:"Hip hinge léger", icon:"wu_hip_hinge", todo:"1×10", seconds:45, desc:"Place bien la chaîne postérieure." }
+    ],
+    cooldown: [
+      { id:"CD-H12-1", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Retour au calme complet." },
+      { id:"CD-H12-2", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"75 s", seconds:75, desc:"Relâche les appuis." },
+      { id:"CD-H12-3", name:"Ouverture T-spine", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Respiration ample." }
+    ],
+    items: [
+      { id:"H12-1", name:"Landmine squat", icon:"landminesquat", muscle:"Jambes + tronc", sets:3, reps:"10", work:45, rest:90 },
+      { id:"H12-2", name:"Landmine press", icon:"landminepress", muscle:"Épaules + haut pec", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H12-3", name:"Rowing landmine", icon:"landminerow", muscle:"Dos", sets:3, reps:"10", work:45, rest:75 },
+      { id:"H12-4", name:"Kettlebell swing", icon:"swing", muscle:"Puissance hanche", sets:3, reps:"15", work:45, rest:75 },
+      { id:"H12-5", name:"Gainage latéral", icon:"sideplank", muscle:"Obliques", sets:3, reps:"30 s / côté", type:"time", seconds:30, work:30, rest:45 },
+      { id:"H12-6", name:"Hollow hold", icon:"hollow_hold", muscle:"Core", sets:3, reps:"30 s", type:"time", seconds:30, work:30, rest:45 }
+    ]
+  },
+
+  COACH_W1: {
+    name: "Coach — Mercredi · Full Body A",
+    warmup: [
+      { id:"WU-COACH-W1-1", name:"Mobilité épaules", icon:"wu_shoulder", todo:"1 min", seconds:60, desc:"Cercles d’épaules + ouverture thoracique. Amplitude progressive." },
+      { id:"WU-COACH-W1-2", name:"Squats à vide", icon:"wu_squat", todo:"1 min", seconds:60, desc:"Descente contrôlée, genoux dans l’axe des pieds." },
+      { id:"WU-COACH-W1-3", name:"Hip hinge", icon:"wu_hip_hinge", todo:"1 min", seconds:60, desc:"Hanches vers l’arrière, dos neutre. Prépare la chaîne postérieure." },
+      { id:"WU-COACH-W1-4", name:"Row élastique", icon:"wu_bandpull", todo:"1 min", seconds:60, desc:"Tirage léger, omoplates basses, pause en fin de mouvement." },
+      { id:"WU-COACH-W1-5", name:"Pompes faciles", icon:"pushup", todo:"1 min", seconds:60, desc:"Activation progressive des pectoraux et triceps." }
+    ],
+    cooldown: [
+      { id:"CD-COACH-W1-1", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"60 s", seconds:60, desc:"Mouvements doux, sans chercher une amplitude maximale." },
+      { id:"CD-COACH-W1-2", name:"Ouverture thoracique", icon:"wu_tspine_open", todo:"60 s", seconds:60, desc:"Respiration lente et relâchement du haut du dos." },
+      { id:"CD-COACH-W1-3", name:"Respiration / relâchement", icon:"wu_breath_core", todo:"2 min", seconds:120, desc:"Inspire 4 s, expire 6 s. Relâche épaules et mâchoire." }
+    ],
+    items: [
+      {
+        id:"COACH-W1-1", name:"Développé couché barre", icon:"dbbench", muscle:"Pectoraux + triceps", sets:3, reps:"6–8", work:45, rest:90,
+        desc:"Mouvement principal du haut du corps. Charge contrôlée, environ 2 répétitions en réserve.",
+        steps:["Pieds solidement ancrés au sol.","Omoplates serrées et abaissées contre le banc.","Descends la barre en contrôle vers le bas des pectoraux.","Pousse en expirant sans décoller les épaules du banc."],
+        mistakes:["Épaules qui partent vers l’avant","Poignets cassés","Rebond de la barre sur la poitrine","Aller jusqu’à l’échec"]
       },
-      { id:"sessions_10", iconKey:"trophy_10", label:"10 séances",
-        title:"La régularité paie",
-        desc:"10 séances complétées.\nCe n’est plus un hasard, c’est une habitude.",
-        type:"sessions", threshold:10
+      {
+        id:"COACH-W1-2", name:"Landmine squat", icon:"landminesquat", muscle:"Quadriceps + fessiers + tronc", sets:3, reps:"8", work:45, rest:75,
+        desc:"Travail des jambes volontairement modéré pour conserver de la fraîcheur pour le vélo du jeudi.",
+        steps:["Tiens l’extrémité de la barre devant la poitrine.","Garde le buste haut et le tronc gainé.","Descends en laissant les genoux suivre la direction des pieds.","Pousse le sol pour remonter."],
+        mistakes:["Genoux qui rentrent vers l’intérieur","Dos qui s’arrondit","Descente trop rapide","Chercher l’échec musculaire"]
       },
-      { id:"sessions_30", iconKey:"trophy_30", label:"30 séances",
-        title:"Discipline installée",
-        desc:"30 séances au compteur.\nTu construis quelque chose de solide.",
-        type:"sessions", threshold:30
+      {
+        id:"COACH-W1-3", name:"Tirage vertical poulie haute", icon:"facepull_band", muscle:"Grand dorsal + haut du dos", sets:3, reps:"8–10", work:45, rest:75,
+        desc:"Tirage vertical contrôlé. Garde environ 2 répétitions en réserve.",
+        steps:["Poitrine légèrement sortie et épaules basses.","Tire les coudes vers le bas.","Amène la poignée vers le haut de la poitrine.","Contrôle complètement la remontée."],
+        mistakes:["Tirer derrière la nuque","Donner de l’élan avec le buste","Hausser les épaules","Relâcher brutalement la charge"]
       },
-      { id:"ton_1", iconKey:"trophy_1t", label:"1 tonne",
-        title:"Première tonne",
-        desc:"1 000 kg soulevés au total.\nBrique après brique, tu progresses.",
-        type:"tonnageKg", threshold:1000
+      {
+        id:"COACH-W1-4", name:"Soulevé de terre roumain haltères", icon:"rdl", muscle:"Ischios + fessiers", sets:2, reps:"8", work:45, rest:90,
+        desc:"Chaîne postérieure avec volume limité pour préserver les jambes.",
+        steps:["Haltères proches des cuisses.","Recule les hanches en gardant une légère flexion des genoux.","Maintiens le dos neutre pendant toute la descente.","Remonte en poussant les hanches vers l’avant et en serrant les fessiers."],
+        mistakes:["Arrondir le dos","Transformer le mouvement en squat","Éloigner les haltères des jambes","Descendre au-delà de ta mobilité"]
       },
-      { id:"ton_10", iconKey:"trophy_10t", label:"10 tonnes",
-        title:"Force cumulée",
-        desc:"10 tonnes déplacées.\nLa constance fait la différence.",
-        type:"tonnageKg", threshold:10000
+      {
+        id:"COACH-W1-5", name:"Rowing poulie basse", icon:"band_row_seated", muscle:"Dos + biceps", sets:2, reps:"10–12", work:45, rest:60,
+        desc:"Tirage horizontal contrôlé pour compléter le travail du dos.",
+        steps:["Buste stable et poitrine ouverte.","Tire les coudes vers l’arrière.","Marque une courte pause en fin de tirage.","Reviens lentement sans arrondir le dos."],
+        mistakes:["Balancer le buste","Épaules qui montent","Tirer uniquement avec les bras","Retour trop rapide"]
       },
-{ id:"weeks_3", iconKey:"trophy_weeks_3", label:"3 semaines",
-  title:"Le rythme est lancé",
-  desc:"3 semaines avec au moins une séance.\nLa régularité commence à s’installer.",
-  type:"weeks", threshold:3
-},
-{ id:"weeks_10", iconKey:"trophy_weeks_10", label:"10 semaines",
-  title:"Habitude solide",
-  desc:"10 semaines actives.\nTu tiens le cap.",
-  type:"weeks", threshold:10
-},
-{ id:"weeks_26", iconKey:"trophy_weeks_26", label:"26 semaines",
-  title:"Mi-année de constance",
-  desc:"26 semaines actives.\nLa constance devient ta norme.",
-  type:"weeks", threshold:26
-},
-{ id:"weeks_52", iconKey:"trophy_weeks_52", label:"52 semaines",
-  title:"Année complète",
-  desc:"52 semaines actives.\nTu as construit une vraie discipline.",
-  type:"weeks", threshold:52
-},
-    ];
-
-    function loadTrophyState(){
-      try{ return JSON.parse(localStorage.getItem(TROPHY_KEY()) || "{}") || {}; }
-      catch(e){ return {}; }
-    }
-    function saveTrophyState(s){
-      localStorage.setItem(TROPHY_KEY(), JSON.stringify(s || {}));
-    }
-
-    function loadPendingTrophies(){
-      try{
-        const arr = JSON.parse(localStorage.getItem(TROPHY_PENDING_KEY()) || "[]");
-        return Array.isArray(arr) ? arr : [];
-      }catch(e){ return []; }
-    }
-    function savePendingTrophies(ids){
-      localStorage.setItem(TROPHY_PENDING_KEY(), JSON.stringify(Array.isArray(ids) ? ids : []));
-    }
-
-    function parseLoadToKg(loadStr){
-      const s = String(loadStr||"").trim().toLowerCase();
-      if(!s) return 0;
-      // "2x16" => 32
-      let m = s.match(/(\d+(?:\.\d+)?)\s*[x×]\s*(\d+(?:\.\d+)?)/);
-      if(m){
-        const a = parseFloat(m[1]);
-        const b = parseFloat(m[2]);
-        if(isFinite(a) && isFinite(b)) return a*b;
+      {
+        id:"COACH-W1-6", name:"Pallof press", icon:"pallof_press_band", muscle:"Core · anti-rotation", sets:2, reps:"10 / côté", work:40, rest:30,
+        desc:"Gainage anti-rotation particulièrement intéressant pour le vélo et le hockey.",
+        steps:["Place-toi de côté par rapport à la poulie ou à l’élastique.","Gaine le tronc avant de tendre les bras.","Pousse les mains devant toi sans laisser le buste tourner.","Ramène lentement les mains vers la poitrine."],
+        mistakes:["Rotation du bassin","Cambrure excessive","Épaules qui montent","Charge trop importante"]
       }
-      // "80kg" or "80" => 80
-      m = s.match(/(\d+(?:\.\d+)?)/);
-      if(m){
-        const v = parseFloat(m[1]);
-        return isFinite(v) ? v : 0;
-      }
-      return 0;
-    }
-
-    function parseRepsToNumber(reps){
-      const s = String(reps||"").trim();
-      // "8-10" -> 8, "12" -> 12
-      const m = s.match(/(\d+)/);
-      return m ? Math.max(1, parseInt(m[1],10)) : 10;
-    }
-
-    function computeSessionTonnageKg(session, usedLoads){
-      try{
-        const items = session?.items || [];
-        let total = 0;
-        const map = (usedLoads && typeof usedLoads === "object") ? usedLoads : {};
-        items.forEach(e=>{
-          const sets = Number(e?.sets || 1);
-          const reps = parseRepsToNumber(e?.reps || "");
-          const exoId = e?.id || e?.name || "exo";
-          // ✅ Priorité: charge saisie pendant CETTE séance, sinon dernière charge connue
-          const loadStr = (e?._usedLoad != null && String(e._usedLoad).trim() !== "") ? e._usedLoad
-            : ((map[exoId] != null && String(map[exoId]).trim() !== "") ? map[exoId] : (getLastLoad(exoId) || ""));
-          const kg = parseLoadToKg(loadStr);
-          if(kg > 0) total += kg * reps * sets;
-        });
-        return Math.round(total);
-      }catch(e){
-        return 0;
-      }
-    }
-
-    function getTrophyProgress(all){
-      const sessions = all.length;
-      const streakDays = computeStreakFromHistory(all);
-      const weeksStreak = computeWeeklyStreakFromHistory(all);
-      const tonnageKg = all.reduce((a,x)=>a + (Number(x.tonnageKg||0) || 0), 0);
-      return { sessions, streakDays, weeksStreak, tonnageKg };
-    }
-
-    function evaluateAndUnlockTrophies(all){
-      const state = loadTrophyState();
-      const prog = getTrophyProgress(all);
-
-      const newly = [];
-      TROPHIES.forEach(t=>{
-        if(state[t.id]) return;
-
-        const cur =
-          (t.type === "sessions") ? prog.sessions :
-          (t.type === "weeks") ? prog.weeksStreak :
-          (t.type === "streak") ? prog.streakDays :
-          (t.type === "tonnageKg") ? prog.tonnageKg : 0;
-
-        if(cur >= t.threshold){
-          state[t.id] = true;
-          newly.push(t.id);
-        }
-      });
-
-      if(newly.length){
-        saveTrophyState(state);
-        // accumulate pending (avoid duplicates)
-        const pending = loadPendingTrophies();
-        const merged = [...pending, ...newly].filter((v,i,a)=>a.indexOf(v)===i);
-        savePendingTrophies(merged);
-      }
-      return newly;
-    }
-
-    function renderTrophiesSection(all){
-      const section = $("trophySection");
-      const grid = $("trophyGrid");
-      const count = $("trophyCount");
-      if(!section || !grid || !count) return;
-
-      const state = loadTrophyState();
-      const unlocked = TROPHIES.filter(t=>!!state[t.id]).length;
-
-      section.style.display = "block";
-      count.textContent = `${unlocked}/${TROPHIES.length}`;
-
-      grid.innerHTML = "";
-      TROPHIES.forEach(t=>{
-        const div = document.createElement("div");
-        div.className = "trophyBadge" + (state[t.id] ? "" : " locked");
-
-        const img = document.createElement("img");
-        img.alt = t.label;
-        setImg(img, t.iconKey);
-
-        const lbl = document.createElement("div");
-        lbl.className = "trophyLbl";
-        lbl.textContent = t.label;
-
-        div.appendChild(img);
-        div.appendChild(lbl);
-        div.addEventListener("click", ()=>{
-          try{ openTrophyInfoModal(t, state, all); }catch(e){}
-        });
-
-        grid.appendChild(div);
-      });
-    }
-
-
-    function formatNumberFR(n){
-      try{ return new Intl.NumberFormat("fr-CH").format(n); }catch(e){ return String(n); }
-    }
-
-    function computeTrophyCurrentValue(t, all){
-      const prog = getTrophyProgress(all);
-      return (t.type === "sessions") ? prog.sessions :
-             (t.type === "weeks") ? prog.weeksStreak :
-             (t.type === "streak") ? prog.streakDays :
-             (t.type === "tonnageKg") ? prog.tonnageKg : 0;
-    }
-
-    function openTrophyInfoModal(t, state, all){
-      const modal = $("trophyModal");
-      if(!modal) return;
-
-      const unlocked = !!state[t.id];
-      const cur = computeTrophyCurrentValue(t, all);
-      const need = t.threshold;
-
-      setImg($("trophyModalImg"), t.iconKey);
-      $("trophyModalTitle").textContent = t.title || t.label;
-      // If locked, show progress line appended
-      const progressLine = unlocked ? "" : `\n\nProgression : ${formatNumberFR(cur)} / ${formatNumberFR(need)}`;
-      $("trophyModalDesc").textContent = (t.desc || "") + progressLine;
-      $("trophyModalMini").textContent = unlocked ? "Trophée débloqué" : "Trophée verrouillé";
-
-      // When opening from history, OK just closes (doesn't consume queue)
-      __trophyQueue = [];
-      __trophyInfoMode = true;
-      const nextBtn = $("trophyModalNext");
-      if(nextBtn) nextBtn.style.display = "none";
-
-      // Set OK button to close (temporary override)
-      const ok = $("trophyModalOk");
-      if(ok){
-        ok.textContent = "Fermer";
-        
-      }
-
-      modal.classList.remove("hidden");
-    }
-
-    // --- Modal / popup ---
-    let __trophyQueue = [];
-    let __trophyInfoMode = false;
-    function openTrophyModalFor(id){
-      __trophyInfoMode = false;
-      const t = TROPHIES.find(x=>x.id===id);
-      if(!t) return;
-
-      const modal = $("trophyModal");
-      if(!modal) return;
-
-      setImg($("trophyModalImg"), t.iconKey);
-      $("trophyModalTitle").textContent = t.title || t.label;
-      $("trophyModalDesc").textContent = t.desc || "";
-      $("trophyModalMini").textContent = "Nouveau trophée débloqué";
-
-      // Ensure modal buttons are in "reward" mode
-      const ok = $("trophyModalOk");
-      if(ok){ ok.textContent = "OK"; ok.onclick = null; }
-
-      const nextBtn = $("trophyModalNext");
-      if(nextBtn) nextBtn.style.display = (__trophyQueue.length > 0) ? "inline-flex" : "none";
-
-      modal.classList.remove("hidden");
-    }
-
-    function closeTrophyModal(){
-      const modal = $("trophyModal");
-      if(modal) modal.classList.add("hidden");
-    }
-
-    function showPendingTrophiesModal(){
-      const ids = loadPendingTrophies();
-      if(!ids.length) return;
-
-      // queue everything and show first
-      __trophyQueue = ids.slice(1);
-      openTrophyModalFor(ids[0]);
-    }
-
-    function consumeCurrentAndShowNext(){
-      // remove what we're currently showing by shifting from saved pending list
-      const ids = loadPendingTrophies();
-      if(ids.length) ids.shift();
-      savePendingTrophies(ids);
-
-      if(__trophyQueue.length){
-        const nextId = __trophyQueue.shift();
-        openTrophyModalFor(nextId);
-        const nextBtn = $("trophyModalNext");
-        if(nextBtn) nextBtn.style.display = (__trophyQueue.length > 0) ? "inline-flex" : "none";
-      }else{
-        closeTrophyModal();
-      }
-    }
-
-    function clearAllPendingAndClose(){
-      __trophyInfoMode = false;
-      savePendingTrophies([]);
-      __trophyQueue = [];
-      // Restore modal button label if it was overridden
-      const ok = $("trophyModalOk");
-      if(ok){ ok.textContent = "OK"; ok.onclick = null; }
-      closeTrophyModal();
-    }
-
-    $("trophyModalClose")?.addEventListener("click", clearAllPendingAndClose);
-    $("trophyModalOk")?.addEventListener("click", ()=>{
-      if(__trophyInfoMode){ clearAllPendingAndClose(); return; }
-      consumeCurrentAndShowNext();
-    });
-    $("trophyModalNext")?.addEventListener("click", consumeCurrentAndShowNext);
-
-
-    function formatDateShort(ts){
-      const d = new Date(ts);
-      return d.toLocaleDateString(undefined, { weekday:"short", day:"2-digit", month:"short" });
-    }
-    function formatHhMmFromSec(sec){
-      const m = Math.round((sec||0)/60);
-      const h = Math.floor(m/60);
-      const mm = m%60;
-      if(h<=0) return `${mm} min`;
-      return `${h}h${String(mm).padStart(2,"0")}`;
-    }
-
-    function computeStreakFromHistory(all){
-      const days = new Set(all.map(x=>{
-        const d = new Date(x.ts);
-        d.setHours(0,0,0,0);
-        return d.getTime();
-      }));
-      let streak = 0;
-      const cur = new Date();
-      cur.setHours(0,0,0,0);
-      while(days.has(cur.getTime())){
-        streak++;
-        cur.setDate(cur.getDate()-1);
-      }
-      return streak;
-    }
-
-
-    function startOfISOWeekMs(ts){
-      const d = new Date(ts);
-      d.setHours(0,0,0,0);
-      // Convert JS Sunday=0..Saturday=6 to Monday=0..Sunday=6
-      const day = (d.getDay() + 6) % 7;
-      d.setDate(d.getDate() - day);
-      return d.getTime();
-    }
-
-    function computeWeeklyStreakFromHistory(all){
-      const weeks = new Set(all.map(x=>startOfISOWeekMs(x.ts)));
-      if(weeks.size === 0) return 0;
-
-      let latest = 0;
-      weeks.forEach(v=>{ if(v > latest) latest = v; });
-
-      let streak = 0;
-      let cur = latest;
-      const WEEK_MS = 7*24*3600*1000;
-
-      while(weeks.has(cur)){
-        streak++;
-        cur -= WEEK_MS;
-      }
-      return streak;
-    }
-
-    function weeklyBuckets8(all){
-      const now = new Date();
-      now.setHours(0,0,0,0);
-      const buckets = Array.from({length:8}, ()=>({ workouts:0, timeSec:0 }));
-
-      // bucket 0 oldest, 7 newest
-      for(let i=0;i<8;i++){
-        const start = new Date(now);
-        start.setDate(start.getDate() - (7*(7-i)) - 6);
-        const end = new Date(now);
-        end.setDate(end.getDate() - (7*(7-i)) + 1); // exclusive
-
-        all.forEach(x=>{
-          if(x.ts >= start.getTime() && x.ts < end.getTime()){
-            buckets[i].workouts += 1;
-            buckets[i].timeSec += (x.durationSec || 0);
-          }
-        });
-      }
-      return buckets;
-    }
-
-    function drawBars(canvas, values){
-      if(!canvas) return;
-      const ctx = canvas.getContext("2d");
-      const dpr = window.devicePixelRatio || 1;
-
-      // Resize (this also clears the canvas)
-      const cw = Math.max(1, Math.floor(canvas.clientWidth));
-      const ch = Math.max(1, Math.floor(canvas.clientHeight));
-      canvas.width  = Math.floor(cw * dpr);
-      canvas.height = Math.floor(ch * dpr);
-
-      // Reset transform + clear
-      ctx.setTransform(1,0,0,1,0,0);
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-
-      const w = canvas.width, h = canvas.height;
-      const pad = 10*dpr;
-      const max = Math.max(1, ...values);
-      const n = values.length;
-      const gap = 6*dpr;
-      const barW = (w - pad*2 - gap*(n-1)) / n;
-
-      const color = getComputedStyle(document.documentElement).getPropertyValue("--text").trim() || "#fff";
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.9;
-
-      for(let i=0;i<n;i++){
-        const v = values[i];
-        const bh = (h - pad*2) * (v / max);
-        const x = pad + i*(barW+gap);
-        const y = h - pad - bh;
-        ctx.fillRect(x, y, barW, bh);
-      }
-      ctx.globalAlpha = 1;
-    }
-
-    let historyRangeDays = 30;
-
-    function filterHistoryByRange(all){
-      const cutoff = Date.now() - historyRangeDays*24*3600*1000;
-      return all.filter(x => x.ts >= cutoff);
-    }
-
-    function renderHistory(){
-      const all = loadWorkoutHistory();
-      const period = filterHistoryByRange(all);
-
-      const workouts = period.length;
-      const timeSec = period.reduce((a,x)=>a+(x.durationSec||0),0);
-      const sets = period.reduce((a,x)=>a+(x.setsCount||0),0);
-      const streak = computeWeeklyStreakFromHistory(all);
-
-      $("kpiWorkouts").textContent = workouts;
-      $("kpiWorkoutsSub").textContent = `sur ${historyRangeDays} semaines`;
-      $("kpiTime").textContent = formatHhMmFromSec(timeSec);
-      $("kpiSets").textContent = sets ? String(sets) : "—";
-      $("kpiStreak").textContent = String(streak);
-
-      const buckets = weeklyBuckets8(all);
-      drawBars($("chartWorkouts"), buckets.map(b=>b.workouts));
-      drawBars($("chartTime"), buckets.map(b=>Math.round((b.timeSec||0)/60))); // minutes
-
-      // Render trophies grid
-      try{ renderTrophiesSection(all); }catch(e){}
-
-      const list = $("historyList");
-      if(!list) return;
-
-      if(period.length === 0){
-        list.innerHTML = `<div class="historyItem"><div class="historyName">Aucune séance</div><div class="historyMeta">Commence une séance, elle apparaîtra ici.</div></div>`;
-        // Render trophies even if no sessions in selected range
-        try{ renderTrophiesSection(all); }catch(e){}
-        return;
-      }
-
-      list.innerHTML = period.slice(0, 30).map(x=>{
-        const dur = x.durationSec ? formatHhMmFromSec(x.durationSec) : "—";
-        const meta = `${formatDateShort(x.ts)} • ${dur}`;
-        const line = `${x.exercisesCount||0} exercices • ${x.setsCount||0} séries`;
-        return `
-          <div class="historyItem">
-            <div class="historyItemTop">
-              <div class="historyName">${escapeHtml(x.sessionName || "Séance")}</div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <div class="historyMeta">${meta}</div>
-                <button class="historyDelBtn" data-delhist="${escapeHtml(x.id)}" aria-label="Supprimer cette entrée" title="Supprimer">✕</button>
-              </div>
-            </div>
-            <div class="historyLine">${line}</div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function openHistory(){
-      showScreen("history");
-      // render after layout to get correct canvas sizes
-      setTimeout(()=>{
-        renderHistory();
-        try{ renderTrophiesSection(loadWorkoutHistory()); }catch(e){}
-      }, 0);
-    }
-
-
-/***********************
-     * Workout state
-     ***********************/
-    let curSessionId = null;
-    let workoutStartMs = null;
-    let workoutLogged = false;
-
-    let curSession = null;
-    let sessionLoadsUsed = {}; // exoId -> charge utilisée pendant CETTE séance
-
-    let seq = [];
-    let idx = 0;
-
-    let running = false;
-    let timer = null;
-    let remaining = 0;
-
-    function mmss(sec){
-      const s = Math.max(0, Math.floor(sec));
-      const m = Math.floor(s/60);
-      const r = s%60;
-      return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
-    }
-
-    function setPhaseUI(phase, hint){
-      const cp = $("chipPhase");
-      if(cp) cp.textContent = (phase || "").toString();
-      const ph = $("phaseHint");
-      if(ph) ph.textContent = hint || "";
-    }
-
-    function stopTimer(){
-      running = false;
-      if(timer){ clearInterval(timer); timer=null; }
-      $("btnPlayPause").textContent = "▶︎";
-    }
-
-    function startTimer(){
-      if(running) return;
-      // Guard: don't restart timer on end screen
-      if(idx >= seq.length || !seq[idx]){
-        $("btnPlayPause").textContent = "▶︎";
-        running = false;
-        return;
-      }
-      running = true;
-      $("btnPlayPause").textContent = "II";
-      let lastTick = Date.now();
-
-      timer = setInterval(()=>{
-        const now = Date.now();
-        const dt = (now - lastTick) / 1000;
-        lastTick = now;
-        remaining -= dt;
-
-        const cur = seq[idx];
-      const fb = $("finishBar");
-      const tc = $("timerCard");
-      if(cur){
-        if(fb){ fb.classList.add("hidden"); fb.style.display = "none"; }
-        if(tc) tc.style.display = "";
-      }
-        if(cur?.type === "work"){
-          if(Math.ceil(remaining) === 3) speak("3");
-          if(Math.ceil(remaining) === 2) speak("2");
-          if(Math.ceil(remaining) === 1) speak("1");
-        }
-
-        if(remaining <= 0){
-          clearInterval(timer); timer=null;
-          running = false;
-          $("btnPlayPause").textContent = "▶︎";
-          onPhaseEnd();
-          return;
-        }
-        $("timeText").textContent = mmss(remaining);
-      }, 120);
-    }
-
-    function onPhaseStart(){
-      const cur = seq[idx];
-      if(!cur) return;
-
-      remaining = cur.seconds || 0;
-      $("timeText").textContent = mmss(remaining);
-
-      if(cur.type === "work"){
-        setPhaseUI("Travail", "");
-        speak("Début de l'exercice");
-        beep(880, 80);
-      }else if(cur.type === "rest"){
-        setPhaseUI("Repos", "");
-        speak("Début du repos");
-        beep(660, 80);
-      }else if(cur.type === "warmup" || cur.type === "cooldown"){
-        setPhaseUI("Échauffement", "");
-        speak("Début de l'échauffement");
-        beep(740, 80);
-      }else{
-        setPhaseUI("Prêt", "");
-      }
-
-      if(cur.type === "rest" && cur.isLastRestOfExercise) showNextOverlay();
-      else hideNextOverlay();
-    }
-
-    function onPhaseEnd(){
-      hideNextOverlay();
-
-      if(coachMode){
-        idx = Math.min(seq.length, idx+1);
-        renderWorkoutStep();
-        startTimer();
-      }else{
-        idx = Math.min(seq.length, idx+1);
-        renderWorkoutStep();
-      }
-    }
-
-    function setImg(imgEl, iconKey){
-      const map = window.IMG || {};
-      const path = map[iconKey] || iconKey || "";
-      if(!path){
-        imgEl.removeAttribute("src");
-        imgEl.style.display = "none";
-        return;
-      }
-      imgEl.style.display = "block";
-      imgEl.src = path;
-    }
-
-    function updateInfoOverlayContent(cur){
-      const body = $("infoBody");
-      if(!body) return;
-
-      if(cur?.type === "work" || cur?.type === "rest"){
-        const e = cur.exo || {};
-        const parts = [];
-
-        const howTxt =
-          e.how || e.howto || e.do || e.cues || e.tips || "";
-
-        const avoidTxt =
-          e.mistakes || e.dont || e.avoid || e.warnings || "";
-
-        if(howTxt){
-          parts.push("Comment faire\n" + String(howTxt).trim());
-        }
-        if(avoidTxt){
-          parts.push("Erreurs à éviter\n" + String(avoidTxt).trim());
-        }
-
-        if(parts.length === 0){
-          const fallback = e.desc || e.muscle || "—";
-          parts.push(String(fallback).trim());
-        }
-
-        body.textContent = parts.join("\n\n");
-      }else if(cur?.type === "warmup"){
-        body.textContent = String(cur.desc || "—");
-      }else{
-        body.textContent = "—";
-      }
-    }
-
-    function openInfo(){
-      const ov = $("infoOverlay");
-      if(!ov) return;
-      ov.classList.add("active");
-      ov.setAttribute("aria-hidden", "false");
-      renderLoadHistory();
-    }
-    function closeInfo(){
-      const ov = $("infoOverlay");
-      if(!ov) return;
-      ov.classList.remove("active");
-      ov.setAttribute("aria-hidden", "true");
-    }
-
-    function getExerciseProgress(){
-      const items = curSession?.items || [];
-      if(!items.length) return null;
-      const cur = seq[idx];
-      if(!cur || !cur.exo) return null;
-      const i = items.findIndex(e => e === cur.exo);
-      if(i === -1) return null;
-      return { current: i + 1, total: items.length };
-    }
-
-    
-    function normalizeStepText(obj){
-      if(!obj) return "";
-      if(typeof obj === "string") return obj;
-      const t = obj.desc ?? obj.todo ?? obj.text ?? obj.instructions ?? obj.instruction ?? obj.note ?? obj.notes ?? obj.do ?? "";
-      if(Array.isArray(t)) return t.filter(Boolean).join(" • ");
-      return String(t || "");
-    }
-    function normalizeStepIcon(obj){
-      if(!obj || typeof obj === "string") return "";
-      return obj.icon || obj.gif || obj.img || obj.image || obj.media || "";
-    }
-
-function buildSequence(session){
-      const out = [];
-
-      (session.warmup || []).forEach((w)=>{
-        out.push({
-          type:"warmup",
-          title: (typeof w === "string") ? w : (w.name || "Échauffement"),
-          desc: normalizeStepText(w),
-          seconds: (typeof w === "string") ? 60 : (w.seconds || 60),
-          icon: normalizeStepIcon(w)
-        });
-      });
-
-      (session.items || []).forEach((e)=>{
-        const sets = Number(e.sets || 1);
-        const work = Number(e.work || (e.type==="time" ? e.seconds : 45) || 45);
-        const rest = Number(e.rest || 60);
-
-        for(let s=1; s<=sets; s++){
-          out.push({ type:"work", exo:e, setIndex:s, setTotal:sets, seconds:work });
-          out.push({ type:"rest", exo:e, setIndex:s, setTotal:sets, seconds:rest, isLastRestOfExercise:(s===sets) });
-        }
-      });
-
-      // Cooldown / Étirements (si présents)
-      (session.cooldown || []).forEach((c)=>{
-        out.push({
-          type:"cooldown",
-          title: (typeof c === "string") ? c : (c.name || "Étirements"),
-          desc: normalizeStepText(c),
-          seconds: (typeof c === "string") ? 60 : (c.seconds || 60),
-          icon: normalizeStepIcon(c)
-        });
-      });
-
-
-      return out;
-    }
-
-    function renderWorkoutStep(){
-      // 🔒 Always hide finish button by default (only shown on end screen)
-      const __fb = $("finishBar");
-      if(__fb){
-        __fb.classList.add("hidden");
-        __fb.style.display = "none";
-      }
-
-      stopTimer();
-
-      const cur = seq[idx];
-      if(!cur){
-        // --- Log workout once when sequence ends ---
-        if(!workoutLogged && workoutStartMs){
-          const durationSec = Math.max(0, Math.round((Date.now() - workoutStartMs)/1000));
-          // Avoid logging super short accidental opens (<45s)
-          if(durationSec >= 45){
-            const items = curSession?.items || [];
-            const exercisesCount = items.length || 0;
-            const setsCount = items.reduce((a,e)=>a + Number(e?.sets || 0), 0);
-
-            const all = loadWorkoutHistory();
-            all.unshift({
-              id: String(Date.now()),
-              ts: Date.now(),
-              sessionId: curSessionId || "",
-              sessionName: curSession?.name || "Séance",
-              durationSec,
-              exercisesCount,
-              setsCount,
-              tonnageKg: computeSessionTonnageKg(curSession, sessionLoadsUsed)
-            });
-            saveWorkoutHistory(all.slice(0, 200)); // keep last 200
-
-            // Check & unlock trophies (store pending for popup later)
-            try{ evaluateAndUnlockTrophies(all); }catch(e){}
-          }
-          workoutLogged = true;
-        }
-
-        stopTimer();
-        hideNextOverlay();
-        closeInfo();
-        $("workoutTitle").textContent = "Félicitations";
-        $("workoutSubtitle").textContent = "Fin de séance 🎉";
-        // Fin de séance GIF (ajoute fin_seance.gif dans /images)
-        const gif = pickRandom(FIN_GIFS) || "images/fin_seance.gif";
-        setImg($("exoImg"), gif);
-        $("todoMain").textContent = "Félicitations 🎉";
-        const __phraseFin = pickRandom(FIN_PHRASES) || "Séance terminée. Hydrate-toi et pense à noter tes charges si besoin.";
-        $("todoDesc").textContent = __phraseFin;
-        // 🔊 Coach vocal : "Séance terminée" puis punchline (une seule fois)
-        if(coachMode && !__endSpoken){
-          speak("Séance terminée");
-          setTimeout(()=>speak(__phraseFin), 900);
-          __endSpoken = true;
-        }
-        $("chipMuscle").textContent = "Bravo";
-        $("chipRest").textContent = "Repos: —";
-        const fb = $("finishBar"); if(fb){ fb.classList.remove("hidden"); fb.style.display = ""; }
-        const tc = $("timerCard"); if(tc) tc.style.display = "none";
-
-        const cp = $("chipPhase"); if(cp) cp.textContent = "Terminé";
-        const cs = $("chipSeries"); if(cs) cs.textContent = "—";
-        $("timeText").textContent = "00:00";
-        $("btnPlayPause").disabled = true;
-        $("btnNext").disabled = true;
-        $("btnPrev").disabled = false;
-
-        return;
-      }
-
-      $("btnPlayPause").disabled = false;
-      $("btnNext").disabled = false;
-
-      let title = "";
-      let desc  = "";
-      let reps  = "—";
-      let rest  = "—";
-      let imgKey = "";
-      let muscle = "—";
-      let todoLine = "—";
-
-      if(cur.type === "warmup" || cur.type === "cooldown"){
-        title = cur.title || (cur.type === "cooldown" ? "Étirements" : "Échauffement");
-        desc = cur.desc || "";
-        imgKey = cur.icon || "";
-        $("chipSeries").textContent = (cur.type === "cooldown") ? "Étire." : "Échauff.";
-        todoLine = "—";
-        muscle = (cur.type === "cooldown") ? "Étirements" : "Échauffement";
-        rest = "—";
-        currentExoIdForLoad = null;
-        updateLoadBadge();
-      }else if(cur.type === "work" || cur.type === "rest"){
-        const e = cur.exo || {};
-        title = e.name || "Exercice";
-        desc  = e.todo || e.desc || "";
-        reps  = e.reps || (e.type==="time" ? `${e.seconds || e.work || 0}s` : "—");
-        rest  = (e.rest != null) ? (String(e.rest) + "s") : "—";
-        imgKey = e.icon || "";
-        muscle = e.muscle || e.group || e.target || "—";
-
-        const sets = Number(e.sets || cur.setTotal || 1);
-        todoLine = `${sets} × ${reps}`;
-        $("chipSeries").textContent = `Série ${cur.setIndex}/${cur.setTotal}`;
-
-        const exoId = e.id || e.name || title;
-        currentExoIdForLoad = exoId;
-
-        updateLoadBadge();
-        const inp = $("loadInput");
-        if(inp) inp.value = getLastLoad(currentExoIdForLoad) || "";
-        renderLoadHistory();
-      }
-
-      $("workoutTitle").textContent = title;
-
-      if(cur.type === "warmup" || cur.type === "cooldown"){
-        $("workoutSubtitle").textContent = (cur.type === "cooldown") ? "Étirements" : "Échauffement";
-      }else{
-        const p = getExerciseProgress();
-        $("workoutSubtitle").textContent = p ? `Exercice ${p.current}/${p.total}` : "Exercice";
-      }
-
-      const phaseTxt =
-        (cur.type === "work") ? "Travail" :
-        (cur.type === "rest") ? "Repos" :
-        (cur.type === "warmup") ? "Échauffement" :
-        (cur.type === "cooldown") ? "Étirements" : "Prêt";
-      $("chipPhase").textContent = phaseTxt;
-      $("chipCoach").textContent = coachMode ? "Coach : ON" : "Coach : OFF";
-
-      setImg($("exoImg"), imgKey);
-
-      $("todoMain").textContent = todoLine;
-      $("todoDesc").textContent = desc || "—";
-      $("chipMuscle").textContent = muscle || "—";
-      $("chipRest").textContent = (rest && rest !== "—") ? `Repos: ${rest}` : "Repos: —";
-
-      $("exoDesc").textContent = desc || "—";
-      $("kpiReps").textContent = reps;
-      $("kpiRest").textContent = rest;
-
-      const dots = $("setDots");
-      if(dots){
-        dots.innerHTML = "";
-        if(cur.type === "work" || cur.type === "rest"){
-          const total = Number(cur.setTotal || 1);
-          const current = Number(cur.setIndex || 1);
-
-          for(let s=1; s<=total; s++){
-            const d = document.createElement("div");
-            d.className = "dot";
-
-            if(cur.type === "work" && s === current) d.classList.add("current");
-            const done = (s < current) || (cur.type === "rest" && s <= current);
-            if(done){ d.classList.add("done"); d.classList.remove("current"); }
-            dots.appendChild(d);
-          }
-          dots.style.display = "flex";
-        }else{
-          dots.style.display = "none";
-        }
-      }
-
-      updateInfoOverlayContent(cur);
-      onPhaseStart();
-    }
-
-    function startSession(sessionId){
-      __endSpoken = false;
-      curSessionId = sessionId;
-      sessionLoadsUsed = {}; // reset
-
-      curSession = (window.SESSIONS || {})[sessionId];
-      workoutStartMs = Date.now();
-      workoutLogged = false;
-
-      if(!curSession) return;
-
-      seq = buildSequence(curSession);
-      idx = 0;
-
-      showScreen("workout");
-      renderWorkoutStep();
-    }
-
-    function stepPrev(){
-      // Count typed load even if not explicitly saved
-      try{ captureCurrentInputToSessionLoads(); }catch(e){}
-      stopTimer();
-      idx = Math.max(0, idx-1);
-      renderWorkoutStep();
-    }
-    function stepNext(){
-      // Count typed load even if not explicitly saved
-      try{ captureCurrentInputToSessionLoads(); }catch(e){}
-      stopTimer();
-      // allow going one step past the last item to reach the end screen
-      idx = Math.min(seq.length, idx+1);
-      renderWorkoutStep();
-    }
-
-    $("btnPrev").addEventListener("click", stepPrev);
-    $("btnNext").addEventListener("click", stepNext);
-
-    $("btnPlayPause").addEventListener("click", ()=>{
-      if(running) stopTimer();
-      else startTimer();
-    });
-
-    $("btnFinishHome")?.addEventListener("click", ()=>{
-      stopTimer();
-      showScreen("home");
-      // Popup trophées (persistante) après retour accueil
-      try{ setTimeout(()=>showPendingTrophiesModal(), 120); }catch(e){}
-    });
-
-$("btnBackHome").addEventListener("click", ()=>{
-      stopTimer();
-      // Log partial workout if user exits early (optional)
-      if(!workoutLogged && workoutStartMs){
-        const durationSec = Math.max(0, Math.round((Date.now() - workoutStartMs)/1000));
-        if(durationSec >= 120){ // only if meaningful
-          const items = curSession?.items || [];
-          const exercisesCount = items.length || 0;
-          const setsCount = items.reduce((a,e)=>a + Number(e?.sets || 0), 0);
-
-          const all = loadWorkoutHistory();
-          all.unshift({
-            id: String(Date.now()),
-            ts: Date.now(),
-            sessionId: curSessionId || "",
-            sessionName: (curSession?.name || "Séance") + " (arrêtée)",
-            durationSec,
-            exercisesCount,
-            setsCount
-          });
-          saveWorkoutHistory(all.slice(0, 200));
-          workoutLogged = true;
-        }
-      }
-
-      showScreen("home");
-    });
-
-    // --- Historique navigation ---
-    $("btnHistory")?.addEventListener("click", openHistory);
-    $("btnBackFromHistory")?.addEventListener("click", ()=>showScreen("home"));
-
-    // Range chips
-    $("historyFilters")?.addEventListener("click", (e)=>{
-      const btn = e.target.closest("button[data-range]");
-      if(!btn) return;
-      $("historyFilters").querySelectorAll(".hchip").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      historyRangeDays = parseInt(btn.dataset.range, 10) || 30;
-      renderHistory();
-    });
-
-    // Clear history
-    $("btnClearHistory")?.addEventListener("click", ()=>{
-      if(!confirm("Supprimer tout l’historique ?")) return;
-      saveWorkoutHistory([]);
-      renderHistory();
-    });
-
-    // Delete a single history entry
-    $("historyList")?.addEventListener("click", (e)=>{
-      const btn = e.target.closest("[data-delhist]");
-      if(!btn) return;
-      const id = btn.getAttribute("data-delhist");
-      if(!id) return;
-      if(!confirm("Supprimer cette séance de l’historique ?")) return;
-
-      const all = loadWorkoutHistory();
-      const next = all.filter(x => String(x.id) !== String(id));
-      saveWorkoutHistory(next);
-      renderHistory();
-    });
-
-
-
-
-    $("btnInfo")?.addEventListener("click", openInfo);
-    $("btnInfoClose")?.addEventListener("click", closeInfo);
-    $("infoOverlay")?.addEventListener("click", (e)=>{ if(e.target?.id === "infoOverlay") closeInfo(); });
-
-    function showNextOverlay(){
-      const next = seq.slice(idx+1).find(x=>x.type==="work");
-      if(!next || !next.exo) return;
-
-      const e = next.exo;
-      $("nextName").textContent = e.name || "Exercice";
-      const last = getLastLoad(e.id || e.name) || "";
-      $("nextLast").textContent = last ? `Dernière charge : ${last}` : "";
-      setImg($("nextImg"), e.icon || "");
-
-      $("overlayNext").classList.add("active");
-      $("overlayNext").setAttribute("aria-hidden", "false");
-    }
-    function hideNextOverlay(){
-      $("overlayNext").classList.remove("active");
-      $("overlayNext").setAttribute("aria-hidden", "true");
-    }
-
-    $("btnLogin").addEventListener("click", async ()=>{
-      setMsg("");
-      const email = $("loginEmail").value.trim();
-      const pass  = $("loginPass").value;
-      if(!email || !pass){
-        setMsg("Entre email + mot de passe.");
-        return;
-      }
-      try{
-        await signInWithEmailAndPassword(auth, email, pass);
-      }catch(e){
-        setMsg("Connexion impossible : " + (e?.message || e));
-      }
-    });
-
-    $("btnLogout").addEventListener("click", async ()=>{
-      try{ await signOut(auth); }catch(e){}
-    });
-
-    onAuthStateChanged(auth, async (user)=>{
-      currentUser = user;
-
-      if(!user){
-        topbarUserText = "Non connecté";
-        $("userLine").textContent = topbarUserText;
-        $("pillStatus").textContent = "🔒";
-        $("btnLogout").style.display = "none";
-        showScreen("login");
-        return;
-      }
-
-      $("pillStatus").textContent = "";
-      $("btnLogout").style.display = "inline-flex";
-
-      try{
-        try{ migrateTrophyStorage(user.uid); }catch(e){}
-        await loadUserSessions(user.uid);
-        loadCoachMode();
-        renderHome();
-        showScreen("home");
-      }catch(e){
-        showScreen("login");
-        setMsg("Erreur chargement config/séances : " + (e?.message || e));
-      }
-    });
-    // ===== PWA / Service Worker (mise à jour propre) =====
-    if("serviceWorker" in navigator){
-      (async ()=>{
-        try{
-          const reg = await navigator.serviceWorker.register("./service-worker.js");
-
-          // Force an update check on each launch (helps iOS)
-          try{ await reg.update(); }catch(e){}
-
-          const banner = $("updateBanner");
-          const btnNow = $("updateNow");
-          const btnLater = $("updateLater");
-
-          function showBanner(){ if(banner) banner.style.display = "block"; }
-          function hideBanner(){ if(banner) banner.style.display = "none"; }
-
-          if(reg.waiting) showBanner();
-
-          reg.addEventListener("updatefound", ()=>{
-            const nw = reg.installing;
-            if(!nw) return;
-            nw.addEventListener("statechange", ()=>{
-              if(nw.state === "installed" && navigator.serviceWorker.controller){
-                showBanner();
-              }
-            });
-          });
-
-          btnLater?.addEventListener("click", hideBanner);
-
-          btnNow?.addEventListener("click", ()=>{
-            const w = reg.waiting;
-            if(w) w.postMessage({ type:"SKIP_WAITING" });
-          });
-
-          let refreshing = false;
-          navigator.serviceWorker.addEventListener("controllerchange", ()=>{
-            if(refreshing) return;
-            refreshing = true;
-            hideBanner();
-            location.reload();
-          });
-
-        }catch(e){
-          // no-op
-        }
-      })();
-    }
-
-    let lastTouchEnd = 0;
-    document.addEventListener("touchend", function (event) {
-      const now = Date.now();
-      if (now - lastTouchEnd <= 300) event.preventDefault();
-      lastTouchEnd = now;
-    }, { passive:false });
-
-  </script>
-
-<div id="settingsModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
-  <div class="modal-content">
-    <div class="modal-header">
-      <div class="h2" id="settingsTitle">Réglages</div>
-      <button id="closeSettings" class="icon-btn" aria-label="Fermer">✕</button>
-    </div>
-
-    <div class="setting-row">
-      <span>Thème clair / sombre</span>
-      <label class="switch" aria-label="Thème clair/sombre">
-        <input type="checkbox" id="themeToggleModal">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="setting-row">
-      <span>Mode coach</span>
-      <label class="switch" aria-label="Mode coach on/off">
-        <input type="checkbox" id="coachToggleModal">
-        <span class="slider"></span>
-      </label>
-    </div>
-  </div>
-</div>
-
-
-<!-- TROPHY POPUP -->
-<div id="trophyModal" class="trophyModal hidden" role="dialog" aria-modal="true" aria-label="Trophée débloqué">
-  <div class="trophyModalCard">
-    <button class="trophyModalClose" id="trophyModalClose" aria-label="Fermer">✕</button>
-
-    <div class="trophyModalTop">
-      <img id="trophyModalImg" alt="Trophée" />
-      <div class="trophyModalTxt">
-        <div class="mini" id="trophyModalMini">Nouveau trophée</div>
-        <div class="big" id="trophyModalTitle">—</div>
-        <div class="desc" id="trophyModalDesc">—</div>
-      </div>
-    </div>
-
-    <div class="trophyModalActions">
-      <button class="btn secondary" id="trophyModalNext" style="display:none;">Suivant</button>
-      <button class="btn primary" id="trophyModalOk">OK</button>
-    </div>
-  </div>
-</div>
-
-
-<!-- PWA UPDATE BANNER -->
-<div id="updateBanner" style="display:none; position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom)); z-index:9999;">
-  <div style="
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:12px 12px; border-radius:18px;
-    border:1px solid rgba(255,255,255,.14);
-    background: rgba(20,20,20,.92);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    box-shadow: 0 18px 60px rgba(0,0,0,.35);
-  ">
-    <div style="display:flex; flex-direction:column; gap:2px; min-width:0;">
-      <div style="font-weight:950; font-size:13px; letter-spacing:.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Mise à jour disponible</div>
-      <div style="font-size:12px; opacity:.8;">Appuie pour charger la nouvelle version.</div>
-    </div>
-    <div style="display:flex; gap:8px; flex:0 0 auto;">
-      <button class="btn secondary" id="updateLater" style="padding:10px 12px;">Plus tard</button>
-      <button class="btn primary" id="updateNow" style="padding:10px 12px;">Mettre à jour</button>
-    </div>
-  </div>
-</div>
-
-</body>
-</html>
+    ]
+  },
+
+  RUN_WU: {
+    name: "Échauffement course — 7 à 10 km",
+    warmup: [
+      { id:"WU-RUN-1", name:"Marche active / footing léger", icon:"wu_cardio_lowimpact", todo:"3 min", seconds:180, desc:"Démarre très facile, augmente progressivement la cadence." },
+      { id:"WU-RUN-2", name:"Mobilité chevilles", icon:"wu_hip_mobility", todo:"1 min", seconds:60, desc:"Cercles de chevilles + flexions/ extensions (amplitude confortable)." },
+      { id:"WU-RUN-3", name:"Mobilité hanches", icon:"wu_hip_mobility", todo:"1 min", seconds:60, desc:"Ouvertures de hanches, rotations, sans à-coups." },
+      { id:"WU-RUN-4", name:"Fentes dynamiques", icon:"wu_lunge", todo:"1×10 / jambe", seconds:80, desc:"Pas contrôlé, buste haut, ouverture hanches." },
+      { id:"WU-RUN-5", name:"Montées de genoux", icon:"wu_cardio_lowimpact", todo:"45 s", seconds:45, desc:"Rythme progressif, posture haute." },
+      { id:"WU-RUN-6", name:"Talons-fesses", icon:"wu_cardio_lowimpact", todo:"45 s", seconds:45, desc:"Cadence légère, sans tirer sur le genou." },
+      { id:"WU-RUN-7", name:"Skippings légers", icon:"wu_cardio_lowimpact", todo:"30 s", seconds:30, desc:"Petites foulées, coordination, sans forcer." },
+      { id:"WU-RUN-8", name:"Accélérations progressives", icon:"wu_cardio_lowimpact", todo:"3×20 s", seconds:60, desc:"3 accélérations de 20s : 60% → 75% → 85%, récup marche entre." }
+    ],
+    items: []
+  }
+
+};
+
+// Expose aussi la variable globale `SESSIONS` pour compatibilité
+// (si une ancienne version d'index.html fait Object.keys(SESSIONS))
+var SESSIONS = window.SESSIONS;
