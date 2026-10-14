@@ -13,6 +13,31 @@
 // → on expose les deux (window.SESSIONS et SESSIONS)
 
 window.SESSIONS = {
+  COACH_FULL_BODY_B: {
+    name: "Coach — Full Body B (40 min)",
+    warmup: [
+      { id:"WU-CFB-1", name:"Échauffement dynamique", icon:"wu_cardio_lowimpact", todo:"4 min", seconds:240, desc:"Mobilité des épaules, hanches et chevilles, puis mouvements progressifs sans charge." }
+    ],
+    items: [
+      { id:"CFB-1", name:"Soulevé de terre roumain — barre", icon:"rdl", muscle:"Ischio-jambiers / fessiers", sets:3, reps:"8", work:45, rest:75, desc:"Garder deux répétitions en réserve (RIR 2).", steps:["Pousser les hanches vers l'arrière, dos neutre.","Remonter en contractant les fessiers."], mistakes:["Arrondir le dos","Aller à l'échec"] },
+      { id:"CFB-2", name:"Développé couché — haltères", icon:"dbbench", muscle:"Pectoraux / triceps", sets:3, reps:"10", work:45, rest:75, desc:"Référence précédente : 18 kg (réglage à confirmer). RIR 2.", steps:["Stabiliser les omoplates sur le banc.","Descendre avec contrôle puis pousser."], mistakes:["Rebondir en bas","Perdre la stabilité"] },
+      { id:"CFB-3", name:"Tirage poulie basse assis", icon:"onearmrow", muscle:"Dos / biceps", sets:3, reps:"10", work:45, rest:60, desc:"RIR 2. Remplace les tractions à cause du plafond bas.", steps:["Garder le buste stable.","Ramener les coudes vers l'arrière."], mistakes:["Tirer avec l'élan","Arrondir le dos"] },
+      { id:"CFB-4", name:"Squat bulgare — poids du corps", icon:"bulgarian", muscle:"Quadriceps / fessiers", sets:3, reps:"8 / jambe", work:60, rest:60, desc:"Pied arrière sur banc. Conserver de la fraîcheur pour le vélo et le hockey.", steps:["Poser le pied arrière sur le banc.","Descendre lentement et remonter."], mistakes:["Perdre l'équilibre","Forcer une amplitude douloureuse"] },
+      { id:"CFB-5", name:"Élévations latérales — élastique", icon:"lateral_raise", muscle:"Épaules", sets:3, reps:"12–15", work:45, rest:45, desc:"RIR 2, sans changement de poids d'haltères.", steps:["Lever les bras sur les côtés.","Redescendre lentement."], mistakes:["Hausser les épaules","Utiliser l'élan"] },
+      { id:"CFB-6", name:"Pompes sur parallettes", icon:"pushup", muscle:"Pectoraux / triceps", sets:2, reps:"10–15", work:45, rest:45, desc:"Garder environ deux répétitions en réserve.", steps:["Gainer le tronc.","Descendre puis pousser en conservant l'alignement."], mistakes:["Creuser le dos","Aller à l'échec"] },
+      { id:"CFB-7", name:"Pallof press — poulie", icon:"pallof_press_band", muscle:"Abdominaux / anti-rotation", sets:2, reps:"10 / côté", work:45, rest:30, desc:"Résister à la rotation du buste.", steps:["Se placer de profil à la poulie.","Tendre les bras sans tourner le buste."], mistakes:["Tourner le bassin","Choisir trop lourd"] },
+      { id:"CFB-8", name:"Planche", icon:"plank", muscle:"Gainage", sets:2, reps:"45 s", work:45, rest:30, desc:"Respiration régulière, posture stable.", steps:["Aligner épaules, bassin et talons.","Respirer sans perdre la posture."], mistakes:["Creuser le bas du dos","Bloquer la respiration"] }
+    ],
+    cooldown: [
+      { id:"CD-CFB-1", name:"Retour au calme", icon:"wu_hip_mobility", todo:"2 min", seconds:120, desc:"Respiration lente et mobilité douce." }
+    ]
+  },
+
+
+  /* =====================
+     A — PECTOR AUX / TRICEPS (2 variantes)
+     ===================== */
+
 
   /* =====================
      A — PECTOR AUX / TRICEPS (2 variantes)
