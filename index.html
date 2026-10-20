@@ -2455,6 +2455,25 @@ updateLoadBadge();
       return obj.icon || obj.gif || obj.img || obj.image || obj.media || "";
     }
 
+let workoutMode = "classic";
+function buildCircuitSequence(session){
+ const out=[];
+ (session.warmup||[]).forEach(w=>out.push({type:"warmup",title:typeof w==="string"?w:w.name||"Échauffement",desc:normalizeStepText(w),seconds:typeof w==="string"?60:w.seconds||60,icon:normalizeStepIcon(w)}));
+ const items=session.items||[];
+ for(let start=0;start<items.length;start+=3){
+  const group=items.slice(start,start+3),rounds=Math.max(...group.map(e=>Math.max(1,Number(e.sets||1))));
+  for(let round=1;round<=rounds;round++){
+   const active=group.filter(e=>round<=Number(e.sets||1));
+   active.forEach((e,i)=>{
+    const label="Circuit "+(Math.floor(start/3)+1)+" · Tour "+round+"/"+rounds;
+    out.push({type:"work",exo:e,setIndex:round,setTotal:Number(e.sets||1),seconds:Number(e.work||45),circuitLabel:label});
+    out.push({type:"rest",exo:e,setIndex:round,setTotal:Number(e.sets||1),seconds:i===active.length-1?90:25,circuitLabel:label});
+   });
+  }
+ }
+ (session.cooldown||[]).forEach(c=>out.push({type:"cooldown",title:typeof c==="string"?c:c.name||"Étirements",desc:normalizeStepText(c),seconds:typeof c==="string"?60:c.seconds||60,icon:normalizeStepIcon(c)}));
+ return out;
+}
 function buildSequence(session){
       const out = [];
 
@@ -2615,7 +2634,7 @@ function buildSequence(session){
         $("workoutSubtitle").textContent = (cur.type === "cooldown") ? "Étirements" : "Échauffement";
       }else{
         const p = getExerciseProgress();
-        $("workoutSubtitle").textContent = p ? `Exercice ${p.current}/${p.total}` : "Exercice";
+        $("workoutSubtitle").textContent = cur.circuitLabel || (p ? `Exercice ${p.current}/${p.total}` : "Exercice");
       }
 
       const phaseTxt =
@@ -2674,7 +2693,8 @@ function buildSequence(session){
 
       if(!curSession) return;
 
-      seq = buildSequence(curSession);
+      workoutMode = confirm("Choisir le mode CIRCUIT ?\\nOK : circuit · Annuler : classique") ? "circuit" : "classic";
+      seq = workoutMode === "circuit" ? buildCircuitSequence(curSession) : buildSequence(curSession);
       idx = 0;
 
       showScreen("workout");
