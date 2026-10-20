@@ -917,6 +917,38 @@
 #loadQuickCard .loadQuickRow button{padding:10px}
 #loadQuickCard #loadQuickFeedback{margin-top:8px}
 #loadQuickCard.is-saved{display:none!important}
+
+/* EliteTraining dashboard */
+.dashWelcome{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:4px 2px 18px}
+.dashEyebrow{font-size:10px;font-weight:750;letter-spacing:1.5px;color:var(--accent2)}
+.dashWelcome h1{font-size:25px;line-height:1.15;letter-spacing:-.7px;margin:7px 0 6px}
+.dashWelcome p{font-size:12px;color:var(--muted);margin:0}
+.dashSettings{width:43px;height:43px;flex:none;border-radius:15px;background:var(--card);color:var(--text);border:1px solid rgba(128,160,205,.16);font-size:21px}
+.dashHero{border-radius:22px;padding:19px;background:linear-gradient(128deg,#174f87 0%,#123458 53%,#102037 100%);border:1px solid #386995;box-shadow:0 14px 28px #0003;color:white}
+.dashHeroTop{display:flex;justify-content:space-between;align-items:center;color:#a9d9ff;font-size:10px;font-weight:750;letter-spacing:1.4px}
+.dashHeroIcon{font-size:24px;color:#79d6ff}
+.dashHero h2{font-size:25px;line-height:1.15;margin:12px 0 6px}
+#dashNextMeta{font-size:12px;color:#c4ddf5}
+#dashStart{margin-top:20px;width:100%;border:0;border-radius:13px;padding:14px 15px;color:white;font-size:14px;font-weight:750;background:linear-gradient(105deg,#2487f0,#05b4d4);display:flex;justify-content:space-between;align-items:center}
+#dashStart:disabled{opacity:.45}
+.dashKpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.dashKpi{background:var(--card);border:1px solid rgba(128,160,205,.12);border-radius:16px;padding:12px 10px;min-width:0}
+.dashKpi span,.dashKpi small{display:block;color:var(--muted);font-size:10px}
+.dashKpi strong{display:block;font-size:20px;letter-spacing:-.5px;margin:7px 0 3px;white-space:nowrap}
+.dashPanel{margin-top:12px;padding:16px;border-radius:18px;background:var(--card);border:1px solid rgba(128,160,205,.12)}
+.dashPanelTitle,.dashSectionHead{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.dashPanelTitle strong{font-size:14px}.dashPanelTitle span,.dashSectionHead span{font-size:11px;color:var(--muted)}
+.dashWeek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:7px;margin-top:15px}
+.dashDay{text-align:center;font-size:10px;color:var(--muted)}.dashDayBox{height:29px;display:grid;place-items:center;border-radius:9px;background:rgba(128,160,205,.13);margin-top:7px;color:#fff}
+.dashDayBox.done{background:linear-gradient(145deg,#298ee6,#00accd)}
+.dashWeekFoot{font-size:11px;color:var(--muted);margin-top:11px}
+.dashSectionHead{margin:24px 2px 10px}.dashSectionHead h2{font-size:18px;margin:0}
+.dashSessionList .card{background:var(--card);border:1px solid rgba(128,160,205,.14);border-radius:16px;padding:14px;margin:0 0 8px}
+.dashSessionList .sessionItem .h2{font-size:14px}
+.dashSessionList .sessionItem .small{font-size:11px}
+.dashSessionList .sessionItem button{font-size:12px;padding:9px 12px;flex:none}
+.dashHistory{width:100%;margin-top:13px;display:flex;justify-content:space-between;align-items:center;border-radius:16px;border:1px solid rgba(128,160,205,.14);padding:17px 15px;background:var(--card);color:var(--text);font-size:14px;font-weight:700}
+[data-theme="light"] .dashHero{background:linear-gradient(120deg,#195f9c,#174477)}
 </style>
 
   <!-- Favicon -->
@@ -959,53 +991,34 @@
 
     <!-- HOME -->
     <section class="screen" id="screenHome">
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h1">Séances</div>
-            <div class="muted small">Choisis une séance. Le mode coach est actif par défaut.</div>
-          </div>
-          <button id="btnSettings" class="icon-btn" aria-label="Réglages" title="Réglages">⚙️</button>
-        </div>
-
-        <div style="height:12px"></div>
-        <div class="grid" id="sessionList"></div>
+      <div class="dashWelcome">
+        <div><div class="dashEyebrow">ELITETRAINING · TABLEAU DE BORD</div><h1>Prêt à t'entraîner ?</h1><p>Chaque séance te rapproche de ton objectif.</p></div>
+        <button id="btnSettings" class="dashSettings" aria-label="Réglages" title="Réglages">⚙</button>
       </div>
-
-      <div style="height:12px"></div>
-
+      <div class="dashHero">
+        <div class="dashHeroTop"><span>PROCHAINE SÉANCE</span><span class="dashHeroIcon">✦</span></div>
+        <h2 id="dashNextName">Ton entraînement</h2>
+        <div id="dashNextMeta">Sélectionne une séance pour commencer</div>
+        <button id="dashStart" type="button">Démarrer la séance <span>→</span></button>
+      </div>
+      <div class="dashKpis">
+        <div class="dashKpi"><span>Séances · 30 j</span><strong id="dashSessions">0</strong><small>terminées</small></div>
+        <div class="dashKpi"><span>Temps · 30 j</span><strong id="dashDuration">0 min</strong><small>entraînement</small></div>
+        <div class="dashKpi"><span>Tonnage · 30 j</span><strong id="dashTonnage">0 kg</strong><small>soulevés</small></div>
+      </div>
+      <div class="dashPanel">
+        <div class="dashPanelTitle"><strong>Ta régularité</strong><span>7 derniers jours</span></div>
+        <div id="dashWeek" class="dashWeek"></div>
+        <div class="dashWeekFoot" id="dashWeekFoot">Chaque séance compte.</div>
+      </div>
+      <div class="dashSectionHead"><h2>Mes séances</h2><span id="dashSessionCount"></span></div>
+      <div class="grid dashSessionList" id="sessionList"></div>
+      <button class="dashHistory" id="btnHistory" type="button"><span>▥ &nbsp; Historique & réussites</span><span>→</span></button>
       <div class="card" id="legacySettingsCard" style="display:none">
-        <div class="row">
-          <div class="grow">
-            <div class="h2">Réglages</div>
-            <div class="muted small">Sauvegardés par utilisateur.</div>
-          </div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
-        </div>
+        <button class="btn wide" id="btnCoachToggle">🎧 Coach vocal : ON</button>
       </div>
-    
-
-      <div style="height:12px"></div>
-
-      <div class="card">
-        <div class="row">
-          <div class="grow">
-            <div class="h2">Historique</div>
-            <div class="muted small">Stats + séances passées (local).</div>
-          </div>
-        </div>
-        <div style="height:10px"></div>
-        <div class="row">
-          <button class="btn wide" id="btnHistory"><span class="icoHistory" aria-hidden="true"></span>Historique & réussites</button>
-        </div>
-      </div>
-
     </section>
 
-    
     <!-- HISTORY -->
     <section class="screen" id="screenHistory">
       <div class="card">
@@ -1329,6 +1342,7 @@
       if(ul && name !== "workout") ul.textContent = topbarUserText;
 
       document.body.classList.toggle("inWorkout", name === "workout");
+      if(name==="home" && typeof renderDashboard==="function")try{renderDashboard()}catch(e){}
 
       const wrap = $("coachSwitchWrap");
       if(wrap) wrap.style.display = "none";
@@ -1488,7 +1502,34 @@
 
     function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;" }[m])); }
 
-    function renderHome(){
+    function renderDashboard(){
+      const sessions=window.SESSIONS||{},keys=Object.keys(sessions);
+      const all=loadWorkoutHistory(),now=Date.now(),month=all.filter(x=>Number(x.ts)>=now-30*86400000);
+      const totalSeconds=month.reduce((n,x)=>n+(Number(x.durationSec)||0),0);
+      const totalKg=month.reduce((n,x)=>n+(Number(x.tonnageKg)||0),0);
+      $("dashSessions").textContent=String(month.length);
+      $("dashDuration").textContent=totalSeconds>=3600?(Math.round(totalSeconds/360)/10)+" h":Math.round(totalSeconds/60)+" min";
+      $("dashTonnage").textContent=totalKg>=1000?(Math.round(totalKg/100)/10)+" t":Math.round(totalKg)+" kg";
+      $("dashSessionCount").textContent=keys.length+" disponibles";
+      const last=all.find(x=>x.sessionId&&sessions[x.sessionId]);
+      const nextKey=keys.length?(keys.find(k=>k!==last?.sessionId)||keys[0]):null;
+      const next=nextKey?sessions[nextKey]:null;
+      $("dashNextName").textContent=next?.name||"Aucune séance disponible";
+      $("dashNextMeta").textContent=next?((next.items||[]).length+" exercices · Circuit ou classique"):"Ajoute un entraînement pour commencer";
+      $("dashStart").disabled=!nextKey;
+      $("dashStart").onclick=()=>{if(nextKey)startSession(nextKey)};
+      const days=["D","L","M","M","J","V","S"];
+      const today=new Date();today.setHours(0,0,0,0);
+      const week=Array.from({length:7},(_,i)=>{
+        const d=new Date(today);d.setDate(today.getDate()-6+i);
+        const start=d.getTime(),done=all.some(x=>Number(x.ts)>=start&&Number(x.ts)<start+86400000);
+        return '<div class="dashDay">'+days[d.getDay()]+'<div class="dashDayBox'+(done?' done':'')+'">'+(done?'✓':'')+'</div></div>';
+      });
+      $("dashWeek").innerHTML=week.join("");
+      $("dashWeekFoot").textContent=all.filter(x=>Number(x.ts)>=today.getTime()-6*86400000).length+" séance(s) ces 7 derniers jours";
+    }
+        function renderHome(){
+      renderDashboard();
       const sessions = window.SESSIONS || {};
       const allKeys = Object.keys(sessions);
 
@@ -1641,16 +1682,16 @@
 
       // Render
       if(complete.length){
-        addSection("Séances complètes", complete, { id:"complete", defaultOpen:false });
+        addSection("Séances complètes", complete, { id:"complete", defaultOpen:true });
       }
 
       if(running.length){
-        addSection("Running", running, { id:"running", defaultOpen:false });
+        addSection("Running", running, { id:"running", defaultOpen:true });
       }
 
       // On ne l'affiche que si tu ajoutes des séances hockey plus tard
       if(hockey.length){
-        addSection("Hockey", hockey, { id:"hockey", defaultOpen:false });
+        addSection("Hockey", hockey, { id:"hockey", defaultOpen:true });
       }
     }
 
