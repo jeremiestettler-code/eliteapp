@@ -909,7 +909,7 @@
 .mode-recommended{display:inline-block;margin-top:7px;color:#48c2ff;font-size:12px;font-weight:700}
 .mode-start{width:100%;border:0;border-radius:16px;padding:17px 12px;background:linear-gradient(105deg,#348dff,#00c5d5);color:white;font-size:17px;font-weight:800;margin-top:8px}
 
-</style>
+.loadQuickHead{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}.loadQuickHead span,.loadQuickHint{color:#9cacc1;font-size:12px}.loadQuickRow{display:flex;align-items:center;gap:8px}.loadQuickRow input{min-width:0;flex:1;width:100%;border-radius:12px;border:1px solid #46566d;background:#151f30;color:white;padding:12px;font-size:21px}.loadQuickRow button{border:0;border-radius:12px;background:linear-gradient(100deg,#318fff,#00bdcf);color:white;padding:13px;font-weight:700}.loadQuickHint{margin-top:8px}#loadQuickFeedback{margin-top:12px;gap:7px;align-items:center;flex-wrap:wrap}#loadQuickFeedback select,#loadQuickFeedback input{background:#172235;color:white;border:1px solid #46566d;border-radius:8px;padding:8px}#loadQuickFeedback label{font-size:12px}</style>
 
   <!-- Favicon -->
   <link rel="icon" href="images/icon-192.png" sizes="192x192">
@@ -1130,7 +1130,14 @@
         </div>
       </div>
 
-      <div class="card cardTight todoCard">
+      <div class="card cardTight" id="loadQuickCard" style="display:none">
+ <div class="loadQuickHead"><strong>Charge de la série</strong><span id="loadQuickState"></span></div>
+ <div class="loadQuickRow"><input id="loadQuickInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="Poids total" aria-label="Poids total en kg"><span>kg</span><button type="button" id="loadQuickSave">Valider</button></div>
+ <div class="loadQuickHint">Haltères : poids total des deux, sans ×2.</div>
+ <div id="loadQuickSuggestion" class="loadQuickHint"></div>
+ <div id="loadQuickFeedback" style="display:none"><label for="loadQuickReps">Répétitions réalisées</label><input id="loadQuickReps" type="number" inputmode="numeric" min="1" max="100" style="width:68px"><label for="loadQuickEffort">Effort</label><select id="loadQuickEffort"><option value="good">Adapté (2–3 reps en réserve)</option><option value="easy">Facile (4+ en réserve)</option><option value="hard">Difficile (0–1 en réserve)</option></select></div>
+ </div>
+ <div class="card cardTight todoCard">
         <div class="todoHdr">
           <div class="todoLabel">À faire</div>
           <div class="setDots" id="setDots" aria-label="Progression séries"></div>
@@ -1692,6 +1699,59 @@
       }catch(e){}
     }
 
+    // Per-set tracking, persisted locally per signed-in user.
+    let setLoads = {};
+    function setKey(cur){return (cur?.exo?.id||cur?.exo?.name||"")+"#"+(cur?.setIndex||1);}
+    function progressionKey(id){return ukey("progression_v1_"+id);}
+    function progressionRecords(id){try{return JSON.parse(localStorage.getItem(progressionKey(id))||"[]")}catch(e){return []}}
+    function progressionProposal(exo){
+      const id=exo.id||exo.name,history=progressionRecords(id);
+      const last=history[0],baseline=last?.kg ?? parseLoadToKg(getLastLoad(id)||exo.defaultLoadKg||"");
+      if(!baseline)return {kg:"",text:"Première séance : indique ta charge totale."};
+      const recent=history.filter(x=>Date.now()-x.ts<28*86400000);
+      const target=String(exo.reps||"").match(/\d+/g),upper=target?Number(target[target.length-1]):10;
+      const successful=recent.filter(x=>x.kg===baseline&&x.reps>=upper&&x.effort!=="hard");
+      const distinct=new Set(successful.map(x=>new Date(x.ts).toDateString()));
+      const earliest=successful.length?Math.min(...successful.map(x=>x.ts)):Date.now();
+      if(distinct.size>=2&&Date.now()-earliest>=14*86400000){
+        const increment=baseline>=40?2.5:2;
+        return {kg:baseline+increment,text:"Progression proposée : +"+increment+" kg après plusieurs séances réussies. Tu peux conserver l'ancien poids."};
+      }
+      return {kg:baseline,text:"Charge précédente proposée. Augmentation envisagée après 2 séances réussies sur au moins 2 semaines (jusqu'à 4 semaines selon tes sensations)."};
+    }
+    function renderQuickLoad(cur){
+      const card=$("loadQuickCard");if(!card)return;
+      card.style.display=cur?.type==="work"?"":"none";
+      if(cur?.type!=="work")return;
+      const key=setKey(cur),proposal=progressionProposal(cur.exo),prior=setLoads[key];
+      const current=prior?.kg ?? sessionLoadsUsed[cur.exo.id||cur.exo.name] ?? proposal.kg;
+      $("loadQuickInput").value=current===""?"":String(parseLoadToKg(current));
+      $("loadQuickReps").value=prior?.reps??parseRepsToNumber(cur.exo.reps);
+      $("loadQuickEffort").value=prior?.effort||"good";
+      $("loadQuickState").textContent=prior?"✓ Validé":"À confirmer";
+      $("loadQuickSuggestion").textContent=proposal.text;
+      $("loadQuickFeedback").style.display="flex";
+    }
+    function saveQuickLoad(){
+      const cur=seq[idx];if(cur?.type!=="work")return;
+      const input=$("loadQuickInput"),raw=input.value.trim().replace(",",".");
+      if(raw===""||!Number.isFinite(Number(raw))||Number(raw)<0){$("loadQuickState").textContent="Charge invalide";return}
+      const kg=Number(raw),id=cur.exo.id||cur.exo.name,key=setKey(cur);
+      const reps=Number($("loadQuickReps").value)||parseRepsToNumber(cur.exo.reps),effort=$("loadQuickEffort").value;
+      const previous=setLoads[key];
+      const record={kg,reps,effort,ts:previous?.ts||Date.now(),sessionId:curSessionId,set:cur.setIndex};
+      setLoads[key]=record;sessionLoadsUsed[id]=String(kg);
+      rememberLoadInSession(curSession,id,String(kg));saveLoad(id,String(kg));
+      const all=progressionRecords(id).filter(x=>!(x.sessionId===curSessionId&&x.set===cur.setIndex&&Math.abs(x.ts-record.ts)<86400000));
+      all.unshift(record);localStorage.setItem(progressionKey(id),JSON.stringify(all.slice(0,150)));
+      $("loadQuickState").textContent="✓ Validé";
+      const old=$("loadInput");if(old)old.value=String(kg);
+      updateLoadBadge();
+    }
+    function autoSaveQuickLoad(){if(seq[idx]?.type==="work"&&$("loadQuickInput")?.value.trim())saveQuickLoad()}
+    $("loadQuickSave").addEventListener("click",saveQuickLoad);
+    $("loadQuickInput").addEventListener("input",()=>{$("loadQuickState").textContent="À confirmer"});
+    $("loadQuickInput").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();saveQuickLoad();e.target.blur()}});
     function captureCurrentInputToSessionLoads(){
       try{
         if(!currentExoIdForLoad) return;
@@ -1890,7 +1950,9 @@ updateLoadBadge();
           const loadStr = (e?._usedLoad != null && String(e._usedLoad).trim() !== "") ? e._usedLoad
             : ((map[exoId] != null && String(map[exoId]).trim() !== "") ? map[exoId] : (getLastLoad(exoId) || ""));
           const kg = parseLoadToKg(loadStr);
-          if(kg > 0) total += kg * reps * sets;
+          const actual=Object.entries(setLoads).filter(([key])=>key.startsWith(exoId+"#")).map(([,x])=>x);
+          if(actual.length)total+=actual.reduce((sum,x)=>sum+x.kg*x.reps,0);
+          else if(kg>0)total+=kg*reps*sets;
         });
         return Math.round(total);
       }catch(e){
@@ -2378,6 +2440,7 @@ updateLoadBadge();
     }
 
     function onPhaseEnd(){
+      autoSaveQuickLoad();
       hideNextOverlay();
 
       if(coachMode){
@@ -2542,6 +2605,7 @@ function buildSequence(session){
       stopTimer();
 
       const cur = seq[idx];
+      renderQuickLoad(cur);
       if(!cur){
         // --- Log workout once when sequence ends ---
         if(!workoutLogged && workoutStartMs){
@@ -2704,6 +2768,7 @@ function buildSequence(session){
       __endSpoken = false;
       curSessionId = sessionId;
       sessionLoadsUsed = {}; // reset
+      setLoads = {};
 
       curSession = (window.SESSIONS || {})[sessionId];
       workoutStartMs = Date.now();
@@ -2737,6 +2802,7 @@ function buildSequence(session){
     });
 
     function stepPrev(){
+      try{autoSaveQuickLoad()}catch(e){}
       // Count typed load even if not explicitly saved
       try{ captureCurrentInputToSessionLoads(); }catch(e){}
       stopTimer();
@@ -2744,6 +2810,7 @@ function buildSequence(session){
       renderWorkoutStep();
     }
     function stepNext(){
+      try{autoSaveQuickLoad()}catch(e){}
       // Count typed load even if not explicitly saved
       try{ captureCurrentInputToSessionLoads(); }catch(e){}
       stopTimer();
