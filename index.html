@@ -909,7 +909,15 @@
 .mode-recommended{display:inline-block;margin-top:7px;color:#48c2ff;font-size:12px;font-weight:700}
 .mode-start{width:100%;border:0;border-radius:16px;padding:17px 12px;background:linear-gradient(105deg,#348dff,#00c5d5);color:white;font-size:17px;font-weight:800;margin-top:8px}
 
-.loadQuickHead{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}.loadQuickHead span,.loadQuickHint{color:#9cacc1;font-size:12px}.loadQuickRow{display:flex;align-items:center;gap:8px}.loadQuickRow input{min-width:0;flex:1;width:100%;border-radius:12px;border:1px solid #46566d;background:#151f30;color:white;padding:12px;font-size:21px}.loadQuickRow button{border:0;border-radius:12px;background:linear-gradient(100deg,#318fff,#00bdcf);color:white;padding:13px;font-weight:700}.loadQuickHint{margin-top:8px}#loadQuickFeedback{margin-top:12px;gap:7px;align-items:center;flex-wrap:wrap}#loadQuickFeedback select,#loadQuickFeedback input{background:#172235;color:white;border:1px solid #46566d;border-radius:8px;padding:8px}#loadQuickFeedback label{font-size:12px}</style>
+.loadQuickHead{display:flex;justify-content:space-between;gap:8px;margin-bottom:10px}.loadQuickHead span,.loadQuickHint{color:#9cacc1;font-size:12px}.loadQuickRow{display:flex;align-items:center;gap:8px}.loadQuickRow input{min-width:0;flex:1;width:100%;border-radius:12px;border:1px solid #46566d;background:#151f30;color:white;padding:12px;font-size:21px}.loadQuickRow button{border:0;border-radius:12px;background:linear-gradient(100deg,#318fff,#00bdcf);color:white;padding:13px;font-weight:700}.loadQuickHint{margin-top:8px}#loadQuickFeedback{margin-top:12px;gap:7px;align-items:center;flex-wrap:wrap}#loadQuickFeedback select,#loadQuickFeedback input{background:#172235;color:white;border:1px solid #46566d;border-radius:8px;padding:8px}#loadQuickFeedback label{font-size:12px}
+#previewCard{position:relative}
+#loadQuickCard{position:absolute;z-index:7;left:10px;right:10px;bottom:10px;margin:0!important;padding:12px!important;background:rgba(12,19,31,.95);border:1px solid #3c526b;border-radius:16px;box-shadow:0 6px 24px #0009;max-height:82%;overflow:auto;backdrop-filter:blur(8px)}
+#loadQuickCard .loadQuickHint{font-size:11px}
+#loadQuickCard .loadQuickRow input{font-size:17px;padding:9px}
+#loadQuickCard .loadQuickRow button{padding:10px}
+#loadQuickCard #loadQuickFeedback{margin-top:8px}
+#loadQuickCard.is-saved{display:none!important}
+</style>
 
   <!-- Favicon -->
   <link rel="icon" href="images/icon-192.png" sizes="192x192">
@@ -1096,6 +1104,14 @@
         <div class="previewCard" id="previewCard">
           <img id="exoImg" alt="Exercice" />
           <div class="loadBadge hidden" id="loadBadge">—</div>
+<div class="card cardTight" id="loadQuickCard" style="display:none">
+ <div class="loadQuickHead"><strong>Charge de la série</strong><span id="loadQuickState"></span></div>
+ <div class="loadQuickRow"><input id="loadQuickInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="Poids total" aria-label="Poids total en kg"><span>kg</span><button type="button" id="loadQuickSave">Valider</button></div>
+ <div class="loadQuickHint">Haltères : poids total des deux, sans ×2.</div>
+ <div id="loadQuickSuggestion" class="loadQuickHint"></div>
+ <div id="loadQuickFeedback" style="display:none"><label for="loadQuickReps">Répétitions réalisées</label><input id="loadQuickReps" type="number" inputmode="numeric" min="1" max="100" style="width:68px"><label for="loadQuickEffort">Effort</label><select id="loadQuickEffort"><option value="good">Adapté (2–3 reps en réserve)</option><option value="easy">Facile (4+ en réserve)</option><option value="hard">Difficile (0–1 en réserve)</option></select></div>
+ </div>
+ 
 
           <button class="infoBtn" id="btnInfo" aria-label="Infos">i</button>
 
@@ -1130,14 +1146,7 @@
         </div>
       </div>
 
-      <div class="card cardTight" id="loadQuickCard" style="display:none">
- <div class="loadQuickHead"><strong>Charge de la série</strong><span id="loadQuickState"></span></div>
- <div class="loadQuickRow"><input id="loadQuickInput" type="number" inputmode="decimal" step="0.5" min="0" placeholder="Poids total" aria-label="Poids total en kg"><span>kg</span><button type="button" id="loadQuickSave">Valider</button></div>
- <div class="loadQuickHint">Haltères : poids total des deux, sans ×2.</div>
- <div id="loadQuickSuggestion" class="loadQuickHint"></div>
- <div id="loadQuickFeedback" style="display:none"><label for="loadQuickReps">Répétitions réalisées</label><input id="loadQuickReps" type="number" inputmode="numeric" min="1" max="100" style="width:68px"><label for="loadQuickEffort">Effort</label><select id="loadQuickEffort"><option value="good">Adapté (2–3 reps en réserve)</option><option value="easy">Facile (4+ en réserve)</option><option value="hard">Difficile (0–1 en réserve)</option></select></div>
- </div>
- <div class="card cardTight todoCard">
+      <div class="card cardTight todoCard">
         <div class="todoHdr">
           <div class="todoLabel">À faire</div>
           <div class="setDots" id="setDots" aria-label="Progression séries"></div>
@@ -1721,6 +1730,7 @@
     }
     function renderQuickLoad(cur){
       const card=$("loadQuickCard");if(!card)return;
+      card.classList.toggle("is-saved",cur?.type==="work" && !!setLoads[setKey(cur)]);
       card.style.display=cur?.type==="work"?"":"none";
       if(cur?.type!=="work")return;
       const key=setKey(cur),proposal=progressionProposal(cur.exo),prior=setLoads[key];
@@ -1745,6 +1755,7 @@
       const all=progressionRecords(id).filter(x=>!(x.sessionId===curSessionId&&x.set===cur.setIndex&&Math.abs(x.ts-record.ts)<86400000));
       all.unshift(record);localStorage.setItem(progressionKey(id),JSON.stringify(all.slice(0,150)));
       $("loadQuickState").textContent="✓ Validé";
+      $("loadQuickCard").classList.add("is-saved");
       const old=$("loadInput");if(old)old.value=String(kg);
       updateLoadBadge();
     }
@@ -2505,12 +2516,20 @@ updateLoadBadge();
       ov.classList.add("active");
       ov.setAttribute("aria-hidden", "false");
       renderLoadHistory();
+      const cur=seq[idx];
+      if(cur?.type==="work"){
+        $("loadQuickCard").classList.remove("is-saved");
+        const saved=setLoads[setKey(cur)];
+        if(saved){$("loadQuickInput").value=saved.kg;$("loadQuickReps").value=saved.reps;$("loadQuickEffort").value=saved.effort;}
+      }
     }
     function closeInfo(){
       const ov = $("infoOverlay");
       if(!ov) return;
       ov.classList.remove("active");
       ov.setAttribute("aria-hidden", "true");
+      const cur=seq[idx];
+      if(cur?.type==="work" && setLoads[setKey(cur)]) $("loadQuickCard").classList.add("is-saved");
     }
 
     function getExerciseProgress(){
