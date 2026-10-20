@@ -891,6 +891,24 @@
       font-size: 14px;
     }
 
+
+/* Choix du mode de séance — EliteTraining */
+.mode-overlay{position:fixed;inset:0;z-index:9999;background:rgba(1,5,12,.76);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(7px)}
+.mode-overlay[hidden]{display:none!important}
+.mode-panel{width:min(100%,430px);max-height:calc(100dvh - 36px);overflow-y:auto;background:linear-gradient(155deg,#141e30,#0c111c);border:1px solid #354157;border-radius:26px;padding:24px 18px 20px;box-shadow:0 22px 70px #000b;color:#f6f8fc}
+.mode-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.mode-symbol{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;background:#123b52;color:#32b8ff;font-size:25px}
+.mode-close{border:0;border-radius:50%;width:38px;height:38px;background:#1c273b;color:#cbd5e1;font-size:24px}
+.mode-panel h2{font-size:24px;line-height:1.2;margin:8px 0 6px;text-align:center}
+.mode-sub{color:#a5b5cb;text-align:center;font-size:14px;margin:0 0 18px}
+.mode-option{width:100%;text-align:left;display:flex;gap:12px;align-items:flex-start;background:#121b29;border:2px solid #354052;border-radius:18px;padding:16px 14px;color:#f3f6fa;margin-bottom:12px}
+.mode-option[aria-pressed="true"]{border-color:#1caaf8;background:#10263b;box-shadow:inset 0 0 0 1px #126caa}
+.mode-option-icon{flex:none;width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#21344b;color:#39b7ff;font-size:24px}
+.mode-option strong{display:block;font-size:18px;margin-bottom:5px}
+.mode-option small{display:block;font-size:13px;color:#aabbd0;line-height:1.5}
+.mode-recommended{display:inline-block;margin-top:7px;color:#48c2ff;font-size:12px;font-weight:700}
+.mode-start{width:100%;border:0;border-radius:16px;padding:17px 12px;background:linear-gradient(105deg,#348dff,#00c5d5);color:white;font-size:17px;font-weight:800;margin-top:8px}
+
 </style>
 
   <!-- Favicon -->
@@ -2693,13 +2711,30 @@ function buildSequence(session){
 
       if(!curSession) return;
 
-      workoutMode = confirm("Choisir le mode CIRCUIT ?\\nOK : circuit · Annuler : classique") ? "circuit" : "classic";
-      seq = workoutMode === "circuit" ? buildCircuitSequence(curSession) : buildSequence(curSession);
-      idx = 0;
+      workoutMode = "circuit";
+      const overlay = $("modeOverlay");
+      $("modeCircuit").setAttribute("aria-pressed","true");
+      $("modeClassic").setAttribute("aria-pressed","false");
+      overlay.hidden = false;
+    }
 
+    function setWorkoutMode(mode){
+      workoutMode=mode;
+      $("modeCircuit").setAttribute("aria-pressed",String(mode==="circuit"));
+      $("modeClassic").setAttribute("aria-pressed",String(mode==="classic"));
+    }
+    $("modeCircuit").addEventListener("click",()=>setWorkoutMode("circuit"));
+    $("modeClassic").addEventListener("click",()=>setWorkoutMode("classic"));
+    $("modeClose").addEventListener("click",()=>{ $("modeOverlay").hidden=true; });
+    $("modeOverlay").addEventListener("click",(e)=>{ if(e.target===$("modeOverlay")) $("modeOverlay").hidden=true; });
+    $("modeStart").addEventListener("click",()=>{
+      $("modeOverlay").hidden=true;
+      workoutStartMs=Date.now();
+      seq=workoutMode==="circuit"?buildCircuitSequence(curSession):buildSequence(curSession);
+      idx=0;
       showScreen("workout");
       renderWorkoutStep();
-    }
+    });
 
     function stepPrev(){
       // Count typed load even if not explicitly saved
@@ -2989,6 +3024,24 @@ $("btnBackHome").addEventListener("click", ()=>{
       <button class="btn secondary" id="updateLater" style="padding:10px 12px;">Plus tard</button>
       <button class="btn primary" id="updateNow" style="padding:10px 12px;">Mettre à jour</button>
     </div>
+  </div>
+</div>
+
+
+<div class="mode-overlay" id="modeOverlay" hidden role="dialog" aria-modal="true" aria-labelledby="modeTitle">
+  <div class="mode-panel">
+    <div class="mode-top"><span class="mode-symbol" aria-hidden="true">🏋️</span><button type="button" class="mode-close" id="modeClose" aria-label="Fermer">×</button></div>
+    <h2 id="modeTitle">Mode d'entraînement</h2>
+    <p class="mode-sub">Comment veux-tu faire cette séance ?</p>
+    <button type="button" class="mode-option" id="modeCircuit" aria-pressed="true">
+      <span class="mode-option-icon" aria-hidden="true">↻</span>
+      <span><strong>Mode Circuit</strong><small>Enchaîne plusieurs exercices, puis répète le circuit. 25 s entre exercices, 90 s entre les tours.</small><span class="mode-recommended">✓ Recommandé</span></span>
+    </button>
+    <button type="button" class="mode-option" id="modeClassic" aria-pressed="false">
+      <span class="mode-option-icon" aria-hidden="true">▥</span>
+      <span><strong>Mode Classique</strong><small>Termine toutes les séries d'un exercice avant de passer au suivant.</small></span>
+    </button>
+    <button type="button" class="mode-start" id="modeStart">Démarrer la séance</button>
   </div>
 </div>
 
